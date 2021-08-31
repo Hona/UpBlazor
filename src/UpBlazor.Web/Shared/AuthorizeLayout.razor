@@ -1,36 +1,24 @@
 @inherits LayoutComponentBase
 
-@inject AuthenticationStateProvider _authenticationStateProvider
-@inject NavigationManager _navigationManager
+<AuthorizeView Policy="@Constants.AllowedEmailAuthorizationPolicy">
+    <Authorized>
+        <div class="page">
+            <div class="sidebar">
+                <NavMenu/>
+            </div>
 
-<div class="page">
-    <div class="sidebar">
-        <NavMenu/>
-    </div>
+            <div class="main">
+                <div class="top-row px-4">
+                    <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
+                </div>
 
-    <div class="main">
-        <div class="top-row px-4">
-            <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
+                <div class="content px-4">
+                    @Body
+                </div>
+            </div>
         </div>
-
-        <div class="content px-4">
-            @Body
-        </div>
-    </div>
-</div>
-
-@code
-{
-    protected override async Task OnInitializedAsync()
-    {
-        var authenticationState = await _authenticationStateProvider.GetAuthenticationStateAsync();
-        var user = authenticationState.User;
-
-        if (user.Identity?.IsAuthenticated ?? false)
-        {
-            return;
-        }
-        
-        _navigationManager.NavigateTo("/signin");
-    }
-}
+    </Authorized>
+    <NotAuthorized>
+        <RedirectToLogin/>
+    </NotAuthorized>
+</AuthorizeView>

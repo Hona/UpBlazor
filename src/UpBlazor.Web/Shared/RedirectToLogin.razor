@@ -1,0 +1,20 @@
+﻿@inject NavigationManager _navigationManager
+
+@code {
+    [CascadingParameter]
+    private Task<AuthenticationState> AuthenticationStateTask { get; set; }
+    
+    protected override async Task OnInitializedAsync()
+    {
+        var authenticationState = await AuthenticationStateTask;
+        var user = authenticationState.User;
+        
+        if (user.Identity?.IsAuthenticated ?? false)
+        {
+            _navigationManager.NavigateTo("/access-denied");
+            return;
+        }
+        
+        _navigationManager.NavigateTo("/signin", true);
+    }
+}

@@ -16,15 +16,15 @@
                         <Dropdown Placement="@PlacementType.BottomLeft">
                             <Overlay>
                                 <Menu>
-                                    <MenuItem>
-                                        <a target="_blank" @onclick='() => _navigationManager.NavigateTo("/signout", true)'>Sign out</a>
+                                    <MenuItem OnClick='() => _navigationManager.NavigateTo("/signout", true)'>
+                                        Sign out
                                     </MenuItem>
-                                    <MenuItem>
-                                        <a target="_blank" @onclick='() => _navigationManager.NavigateTo("/switch-user", true)'>Switch user</a>
+                                    <MenuItem OnClick='() => _navigationManager.NavigateTo("/switch-user", true)'>
+                                        Switch user
                                     </MenuItem>
                                     <MenuDivider />
-                                    <MenuItem>
-                                        <a target="_blank" @onclick='() => _navigationManager.NavigateTo("/settings/up-access-token", true)'>Settings</a>
+                                    <MenuItem OnClick='() => _navigationManager.NavigateTo("/settings/up-access-token", true)'>
+                                        Settings
                                     </MenuItem>
                                 </Menu>
                             </Overlay>
@@ -33,7 +33,6 @@
                                     <span style="padding-left: 0.25rem">
                                         @(context.User.FindFirst(ClaimTypes.GivenName)?.Value ?? "User")
                                     </span>
-                                    
                                 </AntDesign.Button>
                             </ChildContent>
                         </Dropdown>

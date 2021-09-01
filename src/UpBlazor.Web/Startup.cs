@@ -78,9 +78,7 @@ namespace UpBlazor.Web
                 options.Schema.For<TwoUp>()
                     .Identity(x => x.MartenId);
             });
-
-            services.AddHttpContextAccessor();
-
+            
             services.AddSingleton<IUpUserTokenRepository, UpUserTokenRepository>();
 
             services.AddScoped<ICurrentUserService, CurrentUserService>();

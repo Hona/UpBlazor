@@ -9,7 +9,6 @@ using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Up.NET.Api;
 using UpBlazor.Core.Models;
 using UpBlazor.Core.Repositories;
 using UpBlazor.Core.Services;
@@ -87,17 +86,14 @@ namespace UpBlazor.Web
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            app.Use((context, next) =>
-            {
-                context.Request.Protocol = "https";
-
-                return next();
-            });
-            
-            app.UseForwardedHeaders(new ForwardedHeadersOptions
+            // All requests are forced through NGINX, we can clear all network/proxy restrictions
+            var forwardedOptions = new ForwardedHeadersOptions
             {
                 ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
-            });
+            };
+            forwardedOptions.KnownNetworks.Clear();
+            forwardedOptions.KnownProxies.Clear();
+            app.UseForwardedHeaders(forwardedOptions);
             
             if (env.IsDevelopment())
             {

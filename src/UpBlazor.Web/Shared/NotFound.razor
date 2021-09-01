@@ -1,0 +1,9 @@
+﻿@layout MainLayoutWrapper
+
+@inject NavigationManager _navigationManager
+
+<Result Status="404" Title="404" SubTitle="Sorry, the page you visited does not exist.">
+    <Extra>
+        <Button Type="primary" OnClick='() => _navigationManager.NavigateTo("/")'>Back Home</Button>
+    </Extra>
+</Result>

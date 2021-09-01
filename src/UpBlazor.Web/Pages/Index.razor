@@ -1,5 +1,53 @@
 @page "/"
+@using Up.NET.Api
+@using Up.NET.Api.Accounts
+@using Up.NET.Models
 
-<h1>Hello, world!</h1>
+@inject UpApi _upApi
 
-Welcome to your new app.
+@if (_accounts == null)
+{
+    <Spin />
+}
+else if (!_accounts.Success)
+{
+    <Result Id="200">Error</Result>
+}
+else if (!_accounts.Response.Data.Any())
+{
+    <span>No data</span>
+}
+else
+{
+    <div style="display: flex; justify-content: center; align-items: center">
+        @foreach (var transactionAccount in _accounts.Response.Data.Where(x => x.Attributes.AccountType == AccountType.Transactional))
+        {
+            <Card Title="@transactionAccount.Attributes.DisplayName"
+                  Bordered="@true"
+                  Hoverable="@true"
+                  Style="margin: 1rem">
+                @transactionAccount.Attributes.CreatedAt
+                $@transactionAccount.Attributes.Balance.Value
+            </Card>
+        }
+    </div>
+    
+    
+    <Table TItem="AccountResource" DataSource="_accounts.Response.Data.Where(x => x.Attributes.AccountType == AccountType.Saver)">
+        <Column Title="Account" DataIndex="Attributes.DisplayName" TData="string" Sortable></Column>
+        <Column DataIndex="Attributes.CreatedAt" TData="DateTime" Format="dd/MM/yyyy"></Column>
+        <Column DataIndex="Attributes.Balance.Value" TData="string" Sortable>
+            <span>$@context.Attributes.Balance.Value</span>
+        </Column>
+    </Table>
+}
+
+@code
+{
+    private UpResponse<PaginatedDataResponse<AccountResource>> _accounts = null;
+    
+    protected override async Task OnInitializedAsync()
+    {
+        _accounts = await _upApi.GetAccountsAsync();
+    }
+}

@@ -1,3 +1,7 @@
+body {
+    font-family: Circular, Roboto, Helvetica, Arial, sans-serif;
+}
+
 #blazor-error-ui {
     background: lightyellow;
     bottom: 0;

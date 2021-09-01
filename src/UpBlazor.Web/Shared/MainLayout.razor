@@ -1,8 +1,52 @@
-﻿<Layout>
-    <Sider>Sider</Sider>
+﻿@using System.Security.Claims
+@inject NavigationManager _navigationManager
+
+<Layout Style="min-height: 100vh; min-width: 100vw">
+    <Sider Theme="SiderTheme.Dark">
+        <div style="display: flex; justify-content: center; align-items: flex-end; padding: 0 0.75rem">
+            <Image Preview="false" Src="/img/up-logo-light-transparent-bg.svg"/>
+            <Title Level="2" Style="padding-left: 0.75rem; color: #fff">Blazor</Title>
+        </div>
+    </Sider>
     <Layout>
-        <Header>Header</Header>
-        <Content>@Body</Content>
+        <Header Style="background: #fff">
+            <div style="width: 100%; height: 100%; display: flex; justify-content: flex-end; align-items: center">
+                <AuthorizeView>
+                    <Authorized>
+                        <Dropdown Placement="@PlacementType.BottomLeft">
+                            <Overlay>
+                                <Menu>
+                                    <MenuItem>
+                                        <a target="_blank" @onclick='() => _navigationManager.NavigateTo("/signout", true)'>Sign out</a>
+                                    </MenuItem>
+                                    <MenuItem>
+                                        <a target="_blank" @onclick='() => _navigationManager.NavigateTo("/switch-user", true)'>Switch user</a>
+                                    </MenuItem>
+                                </Menu>
+                            </Overlay>
+                            <ChildContent>
+                                <AntDesign.Button Icon="user">
+                                    <span style="padding-left: 0.25rem">
+                                        @(context.User.FindFirst(ClaimTypes.GivenName)?.Value ?? "User")
+                                    </span>
+                                    
+                                </AntDesign.Button>
+                            </ChildContent>
+                        </Dropdown>
+                    </Authorized>
+                    <NotAuthorized>
+                        <Button Type="primary" OnClick='() => _navigationManager.NavigateTo("/signin", true)'>Sign in</Button>
+                    </NotAuthorized>
+                </AuthorizeView>
+            </div>
+        </Header>
+        <Content Style="padding: 24px; margin: 0; min-height: 280px;">@ChildContent</Content>
         <Footer>Footer</Footer>
     </Layout>
 </Layout>
+
+@code
+{
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+}

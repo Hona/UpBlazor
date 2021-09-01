@@ -1,5 +1,17 @@
-﻿@layout EmptyLayout
+﻿@layout MainLayoutWrapper
 
 @page "/signout/success"
 
-<h3>Signout Success!</h3>
+@inject NavigationManager _navigationManager
+
+<Result
+    Status="success"
+    Title="Success"
+    SubTitle="You are now signed out."
+>
+    <Extra>
+        <Template>
+            <Button OnClick="@(() => _navigationManager.NavigateTo("/signin", true))">Switch User</Button>
+        </Template>
+    </Extra>
+</Result>

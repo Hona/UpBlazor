@@ -1,16 +1,14 @@
-using System;
 using System.Linq;
 using System.Security.Claims;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.MicrosoftAccount;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpOverrides;
-using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Up.NET.Api;
 
 namespace UpBlazor.Web
 {
@@ -41,6 +39,7 @@ namespace UpBlazor.Web
                     options.ClientId = Configuration["Authentication:Microsoft:ClientId"];
                     options.ClientSecret = Configuration["Authentication:Microsoft:ClientSecret"];
                     options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                    options.AuthorizationEndpoint = MicrosoftAccountDefaults.AuthorizationEndpoint + "?prompt=select_account";
                 });
 
             services.AddAuthorization(options =>

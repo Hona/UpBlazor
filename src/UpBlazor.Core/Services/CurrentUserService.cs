@@ -34,6 +34,11 @@ namespace UpBlazor.Core.Services
 
             var userToken = await _upUserTokenRepository.GetByUserIdAsync(userId);
 
+            if (userToken == null)
+            {
+                return null;
+            }
+
             _upApi = new UpApi(userToken.AccessToken);
             return _upApi;
         }

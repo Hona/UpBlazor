@@ -1,17 +1,26 @@
 @page "/"
-@using Up.NET.Api
 @using Up.NET.Api.Accounts
 @using Up.NET.Models
+@using UpBlazor.Core.Services
+@using Up.NET.Api
 
-@inject UpApi _upApi
+@inject ICurrentUserService _currentUserService
 
-@if (_accounts == null)
+@if (_loadingApi)
+{
+    <Spin />
+}
+else if (_upApi == null)
+{
+    <Result Status="error" Title="No Access Token" SubTitle="You have not set your Up API access token, please add it in the settings"></Result>
+}
+else if (_accounts == null)
 {
     <Spin />
 }
 else if (!_accounts.Success)
 {
-    <Result Id="200">Error</Result>
+    <Result Status="error" Title="API Error"></Result>
 }
 else if (!_accounts.Response.Data.Any())
 {
@@ -45,9 +54,21 @@ else
 @code
 {
     private UpResponse<PaginatedDataResponse<AccountResource>> _accounts = null;
-    
+    private UpApi _upApi;
+    private bool _loadingApi;
+
     protected override async Task OnInitializedAsync()
     {
+        _loadingApi = true;
+        _upApi = await _currentUserService.GetApiAsync();
+        _loadingApi = false;
+        
+        if (_upApi == null)
+        {
+            // TODO: Make this check better
+            return;
+        }
+        
         _accounts = await _upApi.GetAccountsAsync();
     }
 }

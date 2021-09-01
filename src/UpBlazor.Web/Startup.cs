@@ -1,5 +1,6 @@
 using System.Linq;
 using System.Security.Claims;
+using Marten;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.MicrosoftAccount;
 using Microsoft.AspNetCore.Builder;
@@ -9,7 +10,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Up.NET.Api;
+using UpBlazor.Core.Models;
+using UpBlazor.Core.Repositories;
 using UpBlazor.Core.Services;
+using UpBlazor.Infrastructure.Repositories;
 
 namespace UpBlazor.Web
 {
@@ -64,7 +68,18 @@ namespace UpBlazor.Web
                 });
             });
 
+            services.AddMarten(options =>
+            {
+                options.Connection(Configuration.GetConnectionString("Marten"));
+
+                options.AutoCreateSchemaObjects = AutoCreate.All;
+
+                options.Schema.For<UpUserToken>().Identity(x => x.UserId);
+            });
+
             services.AddHttpContextAccessor();
+
+            services.AddSingleton<IUpUserTokenRepository, UpUserTokenRepository>();
 
             services.AddScoped<ICurrentUserService, CurrentUserService>();
         }

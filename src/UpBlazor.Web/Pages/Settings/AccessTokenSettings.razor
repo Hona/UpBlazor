@@ -1,0 +1,149 @@
+﻿@page "/settings/up-access-token"
+
+@using UpBlazor.Core.Services
+@using Up.NET.Api
+@using Up.NET.Models
+@using UpBlazor.Core.Repositories
+@using Up.NET.Api.Utilities
+@using System.ComponentModel.DataAnnotations
+@using System.ComponentModel
+@using UpBlazor.Core.Models
+
+@inject ICurrentUserService _currentUserService
+@inject IUpUserTokenRepository _upUserTokenRepository
+
+@if (_loading)
+{
+    <Spin />
+}
+else if (IsSet)
+{
+    if (_pingResponse == null)
+    {
+        <div style="width: 100%; height: 200px; display: flex; justify-content: center; align-items: center;">
+            <Spin Tip="Testing existing API access..."/>
+        </div>
+    }
+    else if (!_pingResponse.Success)
+    {
+        <Result Status="error" Title="Could not access your account" SubTitle="@string.Join(Environment.NewLine, _pingResponse.Errors.Select(x => x.Detail))"/>
+    }
+    else
+    {
+        <Result Status="success" Title="Valid account access!" SubTitle="@($"Ping Status: {_pingResponse.Response.Meta.StatusEmoji}")"/>
+    }
+}
+else
+{
+    <Result Status="warning" Title="No access token has been set" SubTitle="Please set it below..."/>
+}
+
+<Divider />
+
+<Form Model="@_setAccessToken"
+      LabelColSpan="4"
+      WrapperColSpan="20"
+      OnFinish="OnFinishAsync"
+      Style="width: 100%"
+      ValidateMessages="_errorMessages"
+      Loading="_formLoading">
+    <FormItem>
+        <Input @bind-Value="@context.Value" />
+    </FormItem>
+    <FormItem WrapperColOffset="4" WrapperColSpan="20">
+        <Button Type="@ButtonType.Primary" HtmlType="submit">
+            Save
+        </Button>
+    </FormItem>
+</Form>
+
+<Divider />
+
+<AntDesign.Button Danger OnClick="OnClearAccessTokenClickAsync">Clear Token</AntDesign.Button>
+
+@code
+{
+    private UpApi _upApi;
+    private bool IsSet => _upApi != null;
+    private bool _loading;
+    private bool _formLoading;
+    private FormValidateErrorMessages _errorMessages;
+    
+    private UpResponse<PingResponse> _pingResponse;
+
+    private SetAccessToken _setAccessToken = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        _loading = true;
+        
+        _upApi = await _currentUserService.GetApiAsync(true);
+
+        _loading = false;
+
+        if (_upApi != null)
+        {
+            _pingResponse = await _upApi.GetPingAsync();
+        }
+    }
+    
+    private async Task OnFinishAsync(EditContext editContext)
+    {
+        _formLoading = true;
+        
+        var temporaryApi = new UpApi(_setAccessToken.Value);
+
+        var pingResponse = await temporaryApi.GetPingAsync();
+
+        if (pingResponse.Success)
+        {
+            // Good token
+            _errorMessages = null;
+
+            await _upUserTokenRepository.AddOrUpdateAsync(new UpUserToken
+            {
+                UserId = _currentUserService.GetUserId(),
+                AccessToken = _setAccessToken.Value
+            });
+            
+            _setAccessToken.Value = string.Empty;
+        }
+        else
+        {
+            // Bad token
+            _setAccessToken.Value = string.Empty;
+
+            _errorMessages = new FormValidateErrorMessages
+            {
+                Required = "You did not input a valid access token - did you copy and paste the whole token?"
+            };
+        }
+
+        _formLoading = false;
+
+        await OnInitializedAsync();
+    }
+
+    private async Task OnClearAccessTokenClickAsync()
+    {
+        _loading = true;
+
+        var userId = _currentUserService.GetUserId();
+        var existingToken = await _upUserTokenRepository.GetByUserIdAsync(userId);
+
+        if (existingToken != null)
+        {
+            await _upUserTokenRepository.DeleteAsync(existingToken);
+        }
+
+        _loading = false;
+        
+        await OnInitializedAsync();
+    }
+
+    private class SetAccessToken
+    {
+        [Required, DisplayName("API Access Token")]
+        public string Value { get; set; }
+    }
+}

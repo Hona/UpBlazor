@@ -9,11 +9,11 @@ namespace UpBlazor.Infrastructure.Repositories
     {
         public UpUserTokenRepository(IDocumentStore store) : base(store) { }
 
-        public Task<UpUserToken> GetByUserIdAsync(string id)
+        public async Task<UpUserToken> GetByUserIdAsync(string id)
         {
             using var session = Store.QuerySession();
 
-            return session.Query<UpUserToken>()
+            return await session.Query<UpUserToken>()
                 .SingleOrDefaultAsync(x => x.UserId == id);
         }
     }

@@ -14,11 +14,13 @@
       <PackageReference Include="AntDesign" Version="0.9.3" />
       <PackageReference Include="AntDesign.Charts" Version="0.2.1" />
       <PackageReference Include="HUp.NET" Version="1.0.0" />
+      <PackageReference Include="Marten" Version="3.13.4" />
       <PackageReference Include="Microsoft.AspNetCore.Authentication.MicrosoftAccount" Version="5.0.9" />
     </ItemGroup>
 
     <ItemGroup>
       <ProjectReference Include="..\UpBlazor.Core\UpBlazor.Core.csproj" />
+      <ProjectReference Include="..\UpBlazor.Infrastructure\UpBlazor.Infrastructure.csproj" />
     </ItemGroup>
 
 </Project>

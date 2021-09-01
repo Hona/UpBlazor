@@ -11,16 +11,17 @@ namespace UpBlazor.Core.Services
 {
     public class CurrentUserService : ICurrentUserService
     {
-        private readonly HttpContext _httpContext;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+        private HttpContext HttpContext => _httpContextAccessor.HttpContext;
         private readonly IUpUserTokenRepository _upUserTokenRepository;
-        private IEnumerable<Claim> Claims => _httpContext?.User?.Claims;
+        private IEnumerable<Claim> Claims => HttpContext.User?.Claims;
 
         private UpApi _upApi;
 
         public CurrentUserService(IHttpContextAccessor httpContextAccessor, IUpUserTokenRepository upUserTokenRepository)
         {
+            _httpContextAccessor = httpContextAccessor;
             _upUserTokenRepository = upUserTokenRepository;
-            _httpContext = httpContextAccessor.HttpContext;
         }
 
         public async Task<UpApi> GetApiAsync(bool forceReload = false)

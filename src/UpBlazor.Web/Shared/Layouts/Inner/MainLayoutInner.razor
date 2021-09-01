@@ -2,10 +2,14 @@
 @inject NavigationManager _navigationManager
 
 <Layout Style="min-height: 100vh; min-width: 100vw">
-    <Sider Theme="SiderTheme.Dark">
+    <Sider Theme="SiderTheme.Dark"
+           Collapsible Collapsed="_siderCollapsed" OnCollapse="collapsed => _siderCollapsed = collapsed" Breakpoint="BreakpointType.Md" OnBreakpoint="collapsed => _siderCollapsed = collapsed">
         <a target="_blank" @onclick='() => _navigationManager.NavigateTo("/")' style="display: flex; justify-content: center; align-items: flex-end; padding: 0 0.75rem">
             <Image Preview="false" Src="/img/up-logo-light-transparent-bg.svg"/>
-            <Title Level="2" Style="padding-left: 0.75rem; color: #fff">Blazor</Title>
+            @if (!_siderCollapsed)
+            {
+                <Title Level="2" Style="padding-left: 0.75rem; color: #fff">Blazor</Title>
+            }
         </a>
     </Sider>
     <Layout>
@@ -22,7 +26,7 @@
                                     <MenuItem OnClick='() => _navigationManager.NavigateTo("/switch-user", true)'>
                                         Switch user
                                     </MenuItem>
-                                    <MenuDivider />
+                                    <MenuDivider/>
                                     <MenuItem OnClick='() => _navigationManager.NavigateTo("/settings/up-access-token", true)'>
                                         Settings
                                     </MenuItem>
@@ -54,4 +58,6 @@
 {
     [Parameter]
     public RenderFragment ChildContent { get; set; }
+
+    private bool _siderCollapsed;
 }

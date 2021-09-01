@@ -2,9 +2,9 @@
 
 <AuthorizeView Policy="@Constants.AllowedEmailAuthorizationPolicy">
     <Authorized>
-        <MainLayout>
+        <MainLayoutInner>
             @Body
-        </MainLayout>
+        </MainLayoutInner>
     </Authorized>
     <NotAuthorized>
         <RedirectToLogin/>

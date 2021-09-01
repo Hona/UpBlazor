@@ -1,0 +1,25 @@
+version: "3.8"
+services:
+  frontend:
+    build:
+      dockerfile: src/UpBlazor.Web/Dockerfile
+      context: .
+    image: upblazor-frontend
+    container_name: UpBlazorFrontend
+    restart: unless-stopped
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_ConnectionStrings__Marten=User ID = okr;Password=o32342134k4r%Y#%Y345yRasdf;Server=postgres;Port=5432;Database=okr_db;Integrated Security=true;Pooling=true
+    volumes:
+      - ./config/appsettings.json:/app/appsettings.json
+    ports:
+      - "9994:80"
+  postgres:
+    image: postgres
+    container_name: UpBlazorPostgres
+    environment:
+      - POSTGRES_USER=okr
+      - POSTGRES_PASSWORD=o32342134k4r%Y#%Y345yRasdf
+      - POSTGRES_DB=okr_db
+    volumes:
+      - ./data:/var/lib/postgresql/data

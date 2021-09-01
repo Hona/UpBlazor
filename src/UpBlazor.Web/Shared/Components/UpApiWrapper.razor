@@ -1,0 +1,65 @@
+﻿@inject ICurrentUserService _currentUserService
+@inject IUpUserTokenRepository _upUserTokenRepository
+
+@typeparam T
+
+@namespace UpBlazor.Web.Shared.Components
+
+@using UpBlazor.Core.Services
+@using Up.NET.Api
+@using Up.NET.Models
+@using UpBlazor.Core.Repositories
+
+@if (_loading)
+{
+    <Spin />
+}
+else if (_upApi == null)
+{
+    <Result Status="error" Title="No Access Token" SubTitle="You have not set your Up API access token, please add it in the settings" />
+}
+else if (!_response.Success)
+{
+    <Result Status="error" Title="API Error"></Result>
+}
+else
+{
+    <CascadingValue Name="context" Value="_response.Response" >
+        @ChildContent(_response.Response)
+    </CascadingValue>
+}
+
+@code 
+{
+    [Parameter]
+    public RenderFragment<T> ChildContent { get; set; }
+    
+    [Parameter]
+    public RenderFragment<UpResponse<T>> Content { get; set; }
+    
+    [Parameter]
+    public Func<UpApi, Task<UpResponse<T>>> Action { get; set; }
+
+    private UpApi _upApi;
+
+    private bool _loading;
+
+    private UpResponse<T> _response;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        _loading = true;
+
+        _upApi = await _currentUserService.GetApiAsync();
+        
+        if (_upApi == null)
+        {
+            _loading = false;
+            return;
+        }
+        
+        _response = await Action.Invoke(_upApi);
+        
+        _loading = false;
+    }
+}

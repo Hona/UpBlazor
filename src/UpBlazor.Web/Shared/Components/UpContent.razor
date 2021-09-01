@@ -1,0 +1,11 @@
+﻿@typeparam T
+
+@ChildContent(Context)
+
+@code {
+    [CascadingParameter]
+    public T Context { get; set; }
+    
+    [Parameter]
+    public RenderFragment<T> ChildContent { get; set; }
+}

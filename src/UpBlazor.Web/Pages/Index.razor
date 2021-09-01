@@ -1,35 +1,20 @@
 @page "/"
 @using Up.NET.Api.Accounts
+@using Up.NET.Api.Utilities
 @using Up.NET.Models
 @using UpBlazor.Core.Services
-@using Up.NET.Api
 
 @inject ICurrentUserService _currentUserService
 
-@if (_loadingApi)
-{
-    <Spin />
-}
-else if (_upApi == null)
-{
-    <Result Status="error" Title="No Access Token" SubTitle="You have not set your Up API access token, please add it in the settings"></Result>
-}
-else if (_accounts == null)
-{
-    <Spin />
-}
-else if (!_accounts.Success)
-{
-    <Result Status="error" Title="API Error"></Result>
-}
-else if (!_accounts.Response.Data.Any())
-{
-    <span>No data</span>
-}
-else
-{
+<UpApiWrapper Action="api => api.GetPingAsync()" T="PingResponse">
+    @context.Meta.StatusEmoji
+</UpApiWrapper>
+
+<Divider />
+
+<UpApiWrapper Action="api => api.GetAccountsAsync()" T="PaginatedDataResponse<AccountResource>">
     <div style="display: flex; justify-content: center; align-items: center">
-        @foreach (var transactionAccount in _accounts.Response.Data.Where(x => x.Attributes.AccountType == AccountType.Transactional))
+        @foreach (var transactionAccount in context.Data.Where(x => x.Attributes.AccountType == AccountType.Transactional))
         {
             <Card Title="@transactionAccount.Attributes.DisplayName"
                   Bordered="@true"
@@ -40,35 +25,14 @@ else
             </Card>
         }
     </div>
-    
-    
-    <Table TItem="AccountResource" DataSource="_accounts.Response.Data.Where(x => x.Attributes.AccountType == AccountType.Saver)">
-        <Column Title="Account" DataIndex="Attributes.DisplayName" TData="string" Sortable></Column>
-        <Column DataIndex="Attributes.CreatedAt" TData="DateTime" Format="dd/MM/yyyy"></Column>
-        <Column DataIndex="Attributes.Balance.Value" TData="string" Sortable>
-            <span>$@context.Attributes.Balance.Value</span>
-        </Column>
+
+    <Table TItem="AccountResource" DataSource="context.Data.Where(x => x.Attributes.AccountType == AccountType.Saver)">
+        <ChildContent Context="tableContext">
+            <Column Title="Account" DataIndex="Attributes.DisplayName" TData="string" Sortable></Column>
+            <Column DataIndex="Attributes.CreatedAt" TData="DateTime" Format="dd/MM/yyyy"></Column>
+            <Column DataIndex="Attributes.Balance.Value" TData="string" Sortable>
+                <span>$@tableContext.Attributes.Balance.Value</span>
+            </Column>
+        </ChildContent>
     </Table>
-}
-
-@code
-{
-    private UpResponse<PaginatedDataResponse<AccountResource>> _accounts = null;
-    private UpApi _upApi;
-    private bool _loadingApi;
-
-    protected override async Task OnInitializedAsync()
-    {
-        _loadingApi = true;
-        _upApi = await _currentUserService.GetApiAsync();
-        _loadingApi = false;
-        
-        if (_upApi == null)
-        {
-            // TODO: Make this check better
-            return;
-        }
-        
-        _accounts = await _upApi.GetAccountsAsync();
-    }
-}
+</UpApiWrapper>

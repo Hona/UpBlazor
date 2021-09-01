@@ -11,7 +11,10 @@
 }
 else if (_upApi == null)
 {
-    <Result Status="error" Title="No Access Token" SubTitle="You have not set your Up API access token, please add it in the settings" />
+    if (!HideOnNoAccessToken)
+    {
+        <Result Status="error" Title="No Access Token" SubTitle="You have not set your Up API access token, please add it in the settings" />
+    }
 }
 else if (!_response.Success)
 {
@@ -34,6 +37,9 @@ else
     
     [Parameter]
     public Func<UpApi, Task<UpResponse<T>>> Action { get; set; }
+
+    [Parameter]
+    public bool HideOnNoAccessToken { get; set; }
 
     private UpApi _upApi;
 

@@ -73,7 +73,10 @@ namespace UpBlazor.Web
 
                 options.AutoCreateSchemaObjects = AutoCreate.All;
 
-                options.Schema.For<UpUserToken>().Identity(x => x.UserId);
+                options.Schema.For<UpUserToken>()
+                    .Identity(x => x.UserId);
+                options.Schema.For<TwoUp>()
+                    .Identity(x => x.MartenId);
             });
 
             services.AddHttpContextAccessor();

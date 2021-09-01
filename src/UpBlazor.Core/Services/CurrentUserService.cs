@@ -13,7 +13,7 @@ namespace UpBlazor.Core.Services
     {
         private readonly HttpContext _httpContext;
         private readonly IUpUserTokenRepository _upUserTokenRepository;
-        private IEnumerable<Claim> Claims => _httpContext.User.Claims;
+        private IEnumerable<Claim> Claims => _httpContext?.User?.Claims;
 
         private UpApi _upApi;
 
@@ -43,6 +43,6 @@ namespace UpBlazor.Core.Services
             return _upApi;
         }
 
-        public string GetUserId() => Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value ?? throw new InvalidOperationException("Logged in user must have a ID claim");
+        public string GetUserId() => Claims?.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value ?? throw new InvalidOperationException("Logged in user must have a ID claim");
     }
 }

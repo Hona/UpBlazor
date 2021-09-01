@@ -1,16 +1,6 @@
 @page "/"
-@using Up.NET.Api.Accounts
-@using Up.NET.Api.Utilities
-@using Up.NET.Models
-@using UpBlazor.Core.Services
 
 @inject ICurrentUserService _currentUserService
-
-<UpApiWrapper Action="api => api.GetPingAsync()" T="PingResponse">
-    @context.Meta.StatusEmoji
-</UpApiWrapper>
-
-<Divider />
 
 <UpApiWrapper Action="api => api.GetAccountsAsync()" T="PaginatedDataResponse<AccountResource>">
     <div style="display: flex; justify-content: center; align-items: center">

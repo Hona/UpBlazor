@@ -5,6 +5,7 @@ namespace UpBlazor.Core.Services
 {
     public interface ICurrentUserService
     {
-        Task<UpApi> GetApiAsync();
+        Task<UpApi> GetApiAsync(bool forceReload = false);
+        string GetUserId();
     }
 }

@@ -9,6 +9,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Up.NET.Api;
+using UpBlazor.Core.Services;
 
 namespace UpBlazor.Web
 {
@@ -62,12 +63,16 @@ namespace UpBlazor.Web
                         });
                 });
             });
+
+            services.AddHttpContextAccessor();
+
+            services.AddScoped<ICurrentUserService, CurrentUserService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            app.UseForwardedHeaders(new ForwardedHeadersOptions()
+            app.UseForwardedHeaders(new ForwardedHeadersOptions
             {
                 ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
             });

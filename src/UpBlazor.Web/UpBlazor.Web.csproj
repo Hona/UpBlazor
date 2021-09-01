@@ -17,4 +17,8 @@
       <PackageReference Include="Microsoft.AspNetCore.Authentication.MicrosoftAccount" Version="5.0.9" />
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\UpBlazor.Core\UpBlazor.Core.csproj" />
+    </ItemGroup>
+
 </Project>

@@ -93,7 +93,7 @@ else
 
             await _upUserTokenRepository.AddOrUpdateAsync(new UpUserToken
             {
-                UserId = _currentUserService.GetUserId(),
+                UserId = await _currentUserService.GetUserIdAsync(),
                 AccessToken = _setAccessToken.Value
             });
             
@@ -119,7 +119,7 @@ else
     {
         _loading = true;
 
-        var userId = _currentUserService.GetUserId();
+        var userId = await _currentUserService.GetUserIdAsync();
         var existingToken = await _upUserTokenRepository.GetByUserIdAsync(userId);
 
         if (existingToken != null)

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Http;
 using Up.NET.Api;
 using UpBlazor.Core.Repositories;
@@ -11,16 +12,27 @@ namespace UpBlazor.Core.Services
 {
     public class CurrentUserService : ICurrentUserService
     {
-        private readonly IHttpContextAccessor _httpContextAccessor;
-        private HttpContext HttpContext => _httpContextAccessor.HttpContext;
+        private readonly AuthenticationStateProvider _authenticationStateProvider;
         private readonly IUpUserTokenRepository _upUserTokenRepository;
-        private IEnumerable<Claim> Claims => HttpContext.User?.Claims;
+        private async Task<IEnumerable<Claim>> GetClaimsAsync()
+        {
+            var authState = await _authenticationStateProvider.GetAuthenticationStateAsync();
+
+            var user = authState.User;
+
+            if (user?.Identity?.IsAuthenticated ?? false)
+            {
+                return user.Claims;
+            }
+
+            return null;
+        }
 
         private UpApi _upApi;
 
-        public CurrentUserService(IHttpContextAccessor httpContextAccessor, IUpUserTokenRepository upUserTokenRepository)
+        public CurrentUserService(AuthenticationStateProvider authenticationStateProvider, IUpUserTokenRepository upUserTokenRepository)
         {
-            _httpContextAccessor = httpContextAccessor;
+            _authenticationStateProvider = authenticationStateProvider;
             _upUserTokenRepository = upUserTokenRepository;
         }
 
@@ -31,7 +43,7 @@ namespace UpBlazor.Core.Services
                 return _upApi;
             }
             
-            var userId = GetUserId();
+            var userId = await GetUserIdAsync();
 
             var userToken = await _upUserTokenRepository.GetByUserIdAsync(userId);
 
@@ -44,6 +56,11 @@ namespace UpBlazor.Core.Services
             return _upApi;
         }
 
-        public string GetUserId() => Claims?.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value ?? throw new InvalidOperationException("Logged in user must have a ID claim");
+        public async Task<string> GetUserIdAsync()
+        {
+            var claims = await GetClaimsAsync();
+            return claims?.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value ??
+                   throw new InvalidOperationException("Logged in user must have a ID claim");
+        }
     }
 }

@@ -36,8 +36,8 @@ else
 <Divider />
 
 <Form Model="@_setAccessToken"
-      LabelColSpan="4"
-      WrapperColSpan="20"
+      LabelColSpan="8"
+      WrapperColSpan="16"
       OnFinish="OnFinishAsync"
       Style="width: 100%"
       ValidateMessages="_errorMessages"
@@ -45,7 +45,7 @@ else
     <FormItem>
         <Input @bind-Value="@context.Value" />
     </FormItem>
-    <FormItem WrapperColOffset="4" WrapperColSpan="20">
+    <FormItem WrapperColOffset="8" WrapperColSpan="16">
         <Button Type="@ButtonType.Primary" HtmlType="submit">
             Save
         </Button>

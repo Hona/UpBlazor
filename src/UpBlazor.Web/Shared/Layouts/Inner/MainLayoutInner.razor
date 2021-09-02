@@ -22,6 +22,10 @@
                               RouterMatch="NavLinkMatch.All" RouterLink="/settings/up-access-token">
                         <span>Access Token</span>
                     </MenuItem>
+                    <MenuItem OnClick='() => _navigationManager.NavigateTo("/settings/two-up")' 
+                              RouterMatch="NavLinkMatch.All" RouterLink="/settings/two-up">
+                        <span>2(or more)Up</span>
+                    </MenuItem>
                 </ChildContent>
             </SubMenu>
         </Menu>

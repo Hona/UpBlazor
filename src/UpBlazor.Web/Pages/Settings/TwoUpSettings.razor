@@ -32,7 +32,7 @@
                                     <Button Loading="_acceptRequestLoading" OnClick="async () => await AcceptRequestAsync(item)">Accept</Button>
                                 </SpaceItem>
                                 <SpaceItem>
-                                    <Button Danger>Ignore</Button>
+                                    <Button Loading="_acceptRequestLoading" OnClick="async () => await IgnoreRequestAsync(item)" Danger>Ignore</Button>
                                 </SpaceItem>
                             </Space>
                         </ListItem>
@@ -120,6 +120,17 @@
         var twoUp = new TwoUp(request.RequesteeId, request.RequesterId);
         await _twoUpRepository.AddOrUpdateAsync(twoUp);
         
+        _acceptRequestLoading = false;
+
+        await _repositoryWrapper.ReloadAsync();
+    }
+    
+    private async Task DeleteRequestAsync(TwoUpRequest request)
+    {
+        _acceptRequestLoading = true;
+        
+        await _twoUpRequestRepository.DeleteAsync(request);
+
         _acceptRequestLoading = false;
 
         await _repositoryWrapper.ReloadAsync();

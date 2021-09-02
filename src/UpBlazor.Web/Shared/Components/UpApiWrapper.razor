@@ -35,10 +35,7 @@ else
 {
     [Parameter]
     public RenderFragment<T> ChildContent { get; set; }
-    
-    [Parameter]
-    public RenderFragment<UpResponse<T>> Content { get; set; }
-    
+
     [Parameter]
     public Func<UpApi, Task<UpResponse<T>>> Action { get; set; }
 

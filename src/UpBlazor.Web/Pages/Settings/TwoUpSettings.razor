@@ -125,7 +125,7 @@
         await _repositoryWrapper.ReloadAsync();
     }
     
-    private async Task DeleteRequestAsync(TwoUpRequest request)
+    private async Task IgnoreRequestAsync(TwoUpRequest request)
     {
         _acceptRequestLoading = true;
         

@@ -77,9 +77,13 @@ namespace UpBlazor.Web
                     .Identity(x => x.UserId);
                 options.Schema.For<TwoUp>()
                     .Identity(x => x.MartenId);
+                options.Schema.For<TwoUpRequest>()
+                    .Identity(x => x.MartenId);
             });
             
             services.AddSingleton<IUpUserTokenRepository, UpUserTokenRepository>();
+            services.AddSingleton<ITwoUpRepository, TwoUpRepository>();
+            services.AddSingleton<ITwoUpRequestRepository, TwoUpRequestRepository>();
 
             services.AddScoped<ICurrentUserService, CurrentUserService>();
         }

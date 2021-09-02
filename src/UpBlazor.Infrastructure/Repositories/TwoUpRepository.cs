@@ -9,7 +9,7 @@ namespace UpBlazor.Infrastructure.Repositories
 {
     public class TwoUpRepository : GenericRepository<TwoUp>, ITwoUpRepository
     {
-        protected TwoUpRepository(IDocumentStore store) : base(store) { }
+        public TwoUpRepository(IDocumentStore store) : base(store) { }
         
         public async Task<IReadOnlyList<TwoUp>> GetAllByUserIdAsync(string userId)
         {

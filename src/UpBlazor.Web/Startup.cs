@@ -62,6 +62,11 @@ namespace UpBlazor.Web
                                 .Select(x => x.Value)
                                 .ToArray();
 
+                            if (!allowedEmails.Any())
+                            {
+                                return true;
+                            }
+
                             return allowedEmails.Any(x => x == emailAddress);
                         });
                 });

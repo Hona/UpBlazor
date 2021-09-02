@@ -11,6 +11,20 @@
                 <Title Level="2" Style="padding-left: 0.75rem; color: #fff">Blazor</Title>
             }
         </a>
+        <Menu Theme="MenuTheme.Dark" Mode="MenuMode.Inline">
+            <SubMenu >
+                <TitleTemplate>
+                    <Icon Type="setting" Theme="outline"/>
+                    <span>Settings</span>
+                </TitleTemplate>
+                <ChildContent>
+                    <MenuItem OnClick='() => _navigationManager.NavigateTo("/settings/up-access-token")' 
+                              RouterMatch="NavLinkMatch.All" RouterLink="/settings/up-access-token">
+                        <span>Access Token</span>
+                    </MenuItem>
+                </ChildContent>
+            </SubMenu>
+        </Menu>
     </Sider>
     <Layout>
         <Header Style="background: #fff">

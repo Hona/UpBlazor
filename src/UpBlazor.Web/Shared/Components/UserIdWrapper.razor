@@ -1,0 +1,30 @@
+﻿@inject ICurrentUserService _currentUserService
+
+@if (_loading)
+{
+    <Spin />
+}
+else
+{
+    <CascadingValue Name="userId" Value="_userId">
+        @ChildContent(_userId)
+    </CascadingValue>
+}
+
+@code {
+    [Parameter]
+    public RenderFragment<string> ChildContent { get; set; }
+    
+    private bool _loading;
+    private string _userId;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _loading = true;
+
+        _userId = await _currentUserService.GetUserIdAsync();
+
+        _loading = false;
+    }
+
+}

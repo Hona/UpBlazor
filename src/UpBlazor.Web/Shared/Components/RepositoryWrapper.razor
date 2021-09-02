@@ -20,6 +20,11 @@ else
     
     [Parameter]
     public Func<TRepository, Task<TResponse>> Action { get; set; }
+    
+    [Parameter]
+    public Action OnLoad { get; set; }
+
+    public bool Loading => _loading;
 
     private bool _loading;
     private TResponse _response;
@@ -31,5 +36,9 @@ else
         _response = await Action.Invoke(_repository);
         
         _loading = false;
+        
+        OnLoad?.Invoke();
     }
+
+    public async Task ReloadAsync() => await OnParametersSetAsync();
 }

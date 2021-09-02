@@ -4,6 +4,15 @@ namespace UpBlazor.Core.Models
 {
     public class TwoUp
     {
+        public TwoUp()
+        {
+            
+        }
+        public TwoUp(string userId1, string userId2)
+        {
+            UserId1 = userId1;
+            UserId2 = userId2;
+        }
         public string MartenId
         {
             get

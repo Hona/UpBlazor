@@ -1,0 +1,41 @@
+﻿@page "/notifications"
+
+@inject NavigationManager _navigationManager
+
+<Title Level="3">Notifications</Title>
+
+<Card Style="width: 100%">
+    <UserIdWrapper Context="userId">
+        <RepositoryWrapper Context="responses"
+                           TRepository="ITwoUpRequestRepository"
+                           Action="x => x.GetAllByRequesteeAsync(userId)"
+                           TResponse="IReadOnlyList<TwoUpRequest>">
+
+            @if (!responses.Any())
+            {
+                <Result Icon="smile-outline"
+                        Title="All clear!" />
+            }
+            else
+            {
+                @foreach (var response in responses)
+                {
+                    <Alert Type="@AlertType.Info"
+                           ShowIcon="@true">
+                        <MessageTemplate>
+                            <div style="display: flex; justify-content: space-between; align-items: center">
+                                <span>
+                                    2Up Requested from @response.RequesterName
+                                </span>
+                                <Button OnClick='() => _navigationManager.NavigateTo("/settings/two-up")'>Review</Button>
+                            </div>
+                        </MessageTemplate>
+                        <ChildContent>
+                            @response.RequesterMessage
+                        </ChildContent>
+                    </Alert>
+                }
+            }
+        </RepositoryWrapper>
+    </UserIdWrapper>
+</Card>

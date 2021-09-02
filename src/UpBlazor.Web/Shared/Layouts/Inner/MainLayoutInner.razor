@@ -35,6 +35,17 @@
             <div style="width: 100%; height: 100%; display: flex; justify-content: flex-end; align-items: center">
                 <AuthorizeView>
                     <Authorized>
+                        <UserIdWrapper Context="userId">
+                            <RepositoryWrapper Context="response" TRepository="ITwoUpRequestRepository" Action="x => x.GetAllByRequesteeAsync(userId)" TResponse="IReadOnlyList<TwoUpRequest>">
+                                <div style="margin: 0 1.75rem;">
+                                    <a href="/notifications">
+                                        <Badge Count="response.Count">
+                                            <Icon Style="font-size: 150%" Type="notification"/>
+                                        </Badge>
+                                    </a>
+                                </div>
+                            </RepositoryWrapper>
+                        </UserIdWrapper>
                         <Dropdown Placement="@PlacementType.BottomLeft">
                             <Overlay>
                                 <Menu>

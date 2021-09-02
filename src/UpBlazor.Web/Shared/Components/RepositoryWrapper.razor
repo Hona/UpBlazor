@@ -1,0 +1,35 @@
+﻿@typeparam TRepository
+@typeparam TResponse
+
+@inject TRepository _repository
+
+@if (_loading)
+{
+    <Spin />
+}
+else
+{
+    <CascadingValue Name="context" Value="_response" >
+        @ChildContent(_response)
+    </CascadingValue>
+}
+
+@code {
+    [Parameter]
+    public RenderFragment<TResponse> ChildContent { get; set; }
+    
+    [Parameter]
+    public Func<TRepository, Task<TResponse>> Action { get; set; }
+
+    private bool _loading;
+    private TResponse _response;
+    
+    protected override async Task OnParametersSetAsync()
+    {
+        _loading = true;
+
+        _response = await Action.Invoke(_repository);
+        
+        _loading = false;
+    }
+}

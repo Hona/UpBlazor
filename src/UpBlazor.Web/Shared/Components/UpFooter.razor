@@ -1,5 +1,12 @@
 ﻿<div style="display: flex; justify-content: center; align-items: center; width: 100%">
-    <UpApiWrapper Action="api => api.GetPingAsync()" T="PingResponse" HideOnNoAccessToken="@true">
-        @context.Meta.StatusEmoji
-    </UpApiWrapper>
+    <AuthorizeView>
+        <Authorized>
+            <UpApiWrapper Context="response" Action="api => api.GetPingAsync()" T="PingResponse" HideOnNoAccessToken="@true">
+                @response.Meta.StatusEmoji
+            </UpApiWrapper>
+        </Authorized>
+        <NotAuthorized>
+            
+        </NotAuthorized>
+    </AuthorizeView>
 </div>

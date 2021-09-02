@@ -1,0 +1,21 @@
+﻿@using System.Security.Claims
+
+@inject ICurrentUserService _currentUserService
+@inject IRegisteredUserRepository _registeredUserRepository
+
+@code
+{
+    protected override async Task OnInitializedAsync()
+    {
+        var claims = (await _currentUserService.GetClaimsAsync()).ToList();
+
+        var registeredUser = new RegisteredUser
+        {
+            Id = claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value ?? throw new InvalidOperationException("User must have an ID"),
+            Email = claims.FirstOrDefault(x => x.Type == ClaimTypes.Email)?.Value ?? throw new InvalidOperationException("User must have an email"),
+            GivenName = claims.FirstOrDefault(x => x.Type == ClaimTypes.GivenName)?.Value
+        };
+
+        await _registeredUserRepository.AddOrUpdateAsync(registeredUser);
+    }
+}

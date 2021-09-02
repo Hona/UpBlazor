@@ -89,6 +89,7 @@ namespace UpBlazor.Web
             services.AddSingleton<IUpUserTokenRepository, UpUserTokenRepository>();
             services.AddSingleton<ITwoUpRepository, TwoUpRepository>();
             services.AddSingleton<ITwoUpRequestRepository, TwoUpRequestRepository>();
+            services.AddSingleton<IRegisteredUserRepository, RegisteredUserRepository>();
 
             services.AddScoped<ICurrentUserService, CurrentUserService>();
         }

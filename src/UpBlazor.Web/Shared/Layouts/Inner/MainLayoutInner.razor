@@ -1,7 +1,7 @@
 ﻿@using System.Security.Claims
 @inject NavigationManager _navigationManager
 
-<Layout Style="min-height: 100vh; min-width: 100vw">
+<Layout Style="min-height: 100vh; width: 100vw; max-width: 100vw;">
     <Sider Theme="SiderTheme.Dark"
            Collapsible Collapsed="_siderCollapsed" OnCollapse="collapsed => _siderCollapsed = collapsed" Breakpoint="BreakpointType.Md" OnBreakpoint="collapsed => _siderCollapsed = collapsed">
         <a target="_blank" @onclick='() => _navigationManager.NavigateTo("/")' style="display: flex; justify-content: center; align-items: flex-end; padding: 0 0.75rem">

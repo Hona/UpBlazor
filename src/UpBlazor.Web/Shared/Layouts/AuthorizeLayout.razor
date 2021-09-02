@@ -2,6 +2,7 @@
 
 <AuthorizeView Policy="@Constants.AllowedEmailAuthorizationPolicy">
     <Authorized>
+        <RegisterUser />
         <MainLayoutInner>
             @Body
         </MainLayoutInner>

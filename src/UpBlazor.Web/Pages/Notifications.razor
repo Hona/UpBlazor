@@ -10,7 +10,6 @@
                            TRepository="ITwoUpRequestRepository"
                            Action="x => x.GetAllByRequesteeAsync(userId)"
                            TResponse="IReadOnlyList<TwoUpRequest>">
-
             @if (!responses.Any())
             {
                 <Result Icon="smile-outline"
@@ -31,7 +30,7 @@
                             </div>
                         </MessageTemplate>
                         <ChildContent>
-                            @response.RequesterMessage
+                            "@response.RequesterMessage"
                         </ChildContent>
                     </Alert>
                 }

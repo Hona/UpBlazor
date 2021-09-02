@@ -15,6 +15,7 @@
     <ItemGroup>
       <PackageReference Include="AntDesign" Version="0.9.3" />
       <PackageReference Include="AntDesign.Charts" Version="0.2.1" />
+      <PackageReference Include="Humanizer.Core" Version="2.11.10" />
       <PackageReference Include="HUp.NET" Version="1.0.0" />
       <PackageReference Include="Marten" Version="3.13.4" />
       <PackageReference Include="Microsoft.AspNetCore.Authentication.MicrosoftAccount" Version="5.0.9" />

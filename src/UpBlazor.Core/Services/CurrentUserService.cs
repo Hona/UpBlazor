@@ -14,7 +14,7 @@ namespace UpBlazor.Core.Services
     {
         private readonly AuthenticationStateProvider _authenticationStateProvider;
         private readonly IUpUserTokenRepository _upUserTokenRepository;
-        private async Task<IEnumerable<Claim>> GetClaimsAsync()
+        public async Task<IEnumerable<Claim>> GetClaimsAsync()
         {
             var authState = await _authenticationStateProvider.GetAuthenticationStateAsync();
 
@@ -26,6 +26,13 @@ namespace UpBlazor.Core.Services
             }
 
             return null;
+        }
+
+        public async Task<string> GetGivenNameAsync()
+        {
+            var claims = await GetClaimsAsync();
+
+            return claims.FirstOrDefault(x => x.Type == ClaimTypes.GivenName)?.Value;
         }
 
         private UpApi _upApi;

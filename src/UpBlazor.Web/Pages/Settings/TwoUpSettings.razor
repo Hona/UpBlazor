@@ -70,6 +70,7 @@
                        Action="x => x.GetAllByUserIdAsync(userId)" 
                        TResponse="IReadOnlyList<TwoUp>">
         @{
+            // We don't know if the other user is id1 or id2, so flatten them to one list and filter
             var allUserIds = context.SelectMany(x => new[]
             {
                 x.UserId1,

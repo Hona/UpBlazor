@@ -12,17 +12,37 @@
             }
         </a>
         <Menu Theme="MenuTheme.Dark" Mode="MenuMode.Inline">
+            <SubMenu>
+                <TitleTemplate>
+                    <Icon Type="dollar" Theme="outline"/>
+                    <span>Budget</span>
+                </TitleTemplate>
+                <ChildContent>
+                    <MenuItem OnClick='() => _navigationManager.NavigateTo("/budget/expenses")'
+                              RouterMatch="NavLinkMatch.All" RouterLink="/budget/expenses">
+                        <span>Expenses</span>
+                    </MenuItem>
+                    <MenuItem OnClick='() => _navigationManager.NavigateTo("/budget/income")'
+                              RouterMatch="NavLinkMatch.All" RouterLink="/budget/income">
+                        <span>Income</span>
+                    </MenuItem>
+                    <MenuItem OnClick='() => _navigationManager.NavigateTo("/budget/planner")'
+                              RouterMatch="NavLinkMatch.All" RouterLink="/budget/planner">
+                        <span>Planner</span>
+                    </MenuItem>
+                </ChildContent>
+            </SubMenu>
             <SubMenu >
                 <TitleTemplate>
                     <Icon Type="setting" Theme="outline"/>
                     <span>Settings</span>
                 </TitleTemplate>
                 <ChildContent>
-                    <MenuItem OnClick='() => _navigationManager.NavigateTo("/settings/up-access-token")' 
+                    <MenuItem OnClick='() => _navigationManager.NavigateTo("/settings/up-access-token")'
                               RouterMatch="NavLinkMatch.All" RouterLink="/settings/up-access-token">
                         <span>Access Token</span>
                     </MenuItem>
-                    <MenuItem OnClick='() => _navigationManager.NavigateTo("/settings/two-up")' 
+                    <MenuItem OnClick='() => _navigationManager.NavigateTo("/settings/two-up")'
                               RouterMatch="NavLinkMatch.All" RouterLink="/settings/two-up">
                         <span>2(or more)Up</span>
                     </MenuItem>
@@ -78,7 +98,7 @@
         </Header>
         <Content Style="padding: 24px; margin: 0; min-height: 280px;">@ChildContent</Content>
         <Footer>
-            <UpFooter />
+            <UpFooter/>
         </Footer>
     </Layout>
 </Layout>

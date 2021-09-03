@@ -10,6 +10,6 @@ namespace UpBlazor.Core.Repositories
         Task AddOrUpdateAsync(T model);
         Task DeleteAsync(T model);
 
-        Task<IReadOnlyList<T>> GetAllAsync(T model);
+        Task<IReadOnlyList<T>> GetAllAsync();
     }
 }

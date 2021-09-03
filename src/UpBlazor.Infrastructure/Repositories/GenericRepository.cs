@@ -51,7 +51,7 @@ namespace UpBlazor.Infrastructure.Repositories
             await session.SaveChangesAsync();
         }
 
-        public async Task<IReadOnlyList<T>> GetAllAsync(T model)
+        public async Task<IReadOnlyList<T>> GetAllAsync()
         {
             using var session = Store.QuerySession();
 

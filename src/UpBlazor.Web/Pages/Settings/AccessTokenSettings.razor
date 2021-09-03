@@ -43,7 +43,7 @@ else
       ValidateMessages="_errorMessages"
       Loading="_formLoading">
     <FormItem>
-        <Input @bind-Value="@context.Value" />
+        <Input DebounceMilliseconds="int.MaxValue" @bind-Value="@context.Value" />
     </FormItem>
     <FormItem WrapperColOffset="8" WrapperColSpan="16">
         <Button Type="@ButtonType.Primary" HtmlType="submit">

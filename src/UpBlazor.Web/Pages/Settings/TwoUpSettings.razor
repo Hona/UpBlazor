@@ -51,10 +51,10 @@
               OnFinish="async () => await OnFormFinishAsync(userId)"
               Context="formContext">
             <FormItem>
-                <Input @bind-Value="@formContext.Email" />
+                <Input DebounceMilliseconds="int.MaxValue" @bind-Value="@formContext.Email" />
             </FormItem>
             <FormItem>
-                <TextArea MinRows="2" @bind-Value="@formContext.Message" />
+                <TextArea DebounceMilliseconds="int.MaxValue" MinRows="2" @bind-Value="@formContext.Message" />
             </FormItem>
             <FormItem WrapperColOffset="4" WrapperColSpan="20">
                 <Button Type="primary" HtmlType="submit">

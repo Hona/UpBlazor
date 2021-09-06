@@ -1,0 +1,74 @@
+﻿@using Humanizer
+
+@inject ITwoUpRepository _twoUpRepository
+@inject ITwoUpRequestRepository _twoUpRequestRepository
+
+<RepositoryWrapper @ref="_repositoryWrapper" Context="requests" 
+                   TRepository="ITwoUpRequestRepository" 
+                   Action="x => x.GetAllByRequesteeAsync(UserId)" 
+                   TResponse="IReadOnlyList<TwoUpRequest>">
+    @if (requests.Any())
+    {
+        <Card>
+            <AntList Bordered DataSource="@requests" Size="large">
+                <Header>
+                    <Title Level="4">
+                        Pending Requests
+                    </Title>
+                </Header>
+                <ChildContent Context="item">
+                    <ListItem>
+                        <Text>@item.RequesterName</Text>
+                        @item.RequesterMessage
+                        @((DateTime.Now - item.CreatedDate).Humanize() + " ago")
+                        <Space>
+                            <SpaceItem>
+                                <Button Loading="_acceptRequestLoading" OnClick="async () => await AcceptRequestAsync(item)">Accept</Button>
+                            </SpaceItem>
+                            <SpaceItem>
+                                <Button Loading="_acceptRequestLoading" OnClick="async () => await IgnoreRequestAsync(item)" Danger>Ignore</Button>
+                            </SpaceItem>
+                        </Space>
+                    </ListItem>
+                </ChildContent>
+            </AntList>
+        </Card>
+            
+        <Divider />
+    }
+</RepositoryWrapper>
+
+@code
+{
+    [CascadingParameter]
+    public string UserId { get; set; }
+    
+    private bool _acceptRequestLoading;
+    
+    private RepositoryWrapper<ITwoUpRequestRepository, IReadOnlyList<TwoUpRequest>> _repositoryWrapper;
+
+    private async Task AcceptRequestAsync(TwoUpRequest request)
+    {
+        _acceptRequestLoading = true;
+        
+        await _twoUpRequestRepository.DeleteAsync(request);
+
+        var twoUp = new TwoUp(request.RequesteeId, request.RequesterId);
+        await _twoUpRepository.AddOrUpdateAsync(twoUp);
+        
+        _acceptRequestLoading = false;
+
+        await _repositoryWrapper.ReloadAsync();
+    }
+    
+    private async Task IgnoreRequestAsync(TwoUpRequest request)
+    {
+        _acceptRequestLoading = true;
+        
+        await _twoUpRequestRepository.DeleteAsync(request);
+
+        _acceptRequestLoading = false;
+
+        await _repositoryWrapper.ReloadAsync();
+    }
+}

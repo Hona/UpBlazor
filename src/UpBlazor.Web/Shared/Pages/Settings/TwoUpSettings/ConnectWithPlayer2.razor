@@ -1,0 +1,55 @@
+﻿@inject ICurrentUserService _currentUserService
+@inject ITwoUpRequestRepository _twoUpRequestRepository
+@inject IRegisteredUserRepository _registeredUserRepository
+
+<Card Title="Connect with your Player 2">
+    <Form Model="_connectRequest" 
+          LabelColSpan="4"
+          WrapperColSpan="20"
+          OnFinish="async () => await OnFormFinishAsync(UserId)"
+          Context="formContext">
+        <FormItem>
+            <Input DebounceMilliseconds="int.MaxValue" @bind-Value="@formContext.Email" />
+        </FormItem>
+        <FormItem>
+            <TextArea DebounceMilliseconds="int.MaxValue" MinRows="2" @bind-Value="@formContext.Message" />
+        </FormItem>
+        <FormItem WrapperColOffset="4" WrapperColSpan="20">
+            <Button Type="primary" HtmlType="submit">
+                Submit
+            </Button>
+        </FormItem>
+    </Form>
+</Card>
+
+@code
+{
+    [CascadingParameter]
+    public string UserId { get; set; }
+    
+    private ConnectRequest _connectRequest = new();
+    
+    private async Task OnFormFinishAsync(string currentUserId)
+    {
+        var user = await _registeredUserRepository.GetByEmailAsync(_connectRequest.Email);
+        
+        await _twoUpRequestRepository.AddOrUpdateAsync(new TwoUpRequest
+        {
+            CreatedDate = DateTime.Now,
+            RequesterId = currentUserId,
+            RequesterName = await _currentUserService.GetGivenNameAsync(),
+            RequesterMessage = _connectRequest.Message,
+            RequesteeId = user.Id,
+        });
+    }
+
+
+    private class ConnectRequest
+    {
+        [DisplayName("Email"), Required, EmailAddress, StringLength(128)]
+        public string Email { get; set; }
+
+        [DisplayName("Message"),StringLength(512)]
+        public string Message { get; set; }
+    }
+}

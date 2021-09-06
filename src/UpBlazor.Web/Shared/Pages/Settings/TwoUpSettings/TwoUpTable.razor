@@ -1,0 +1,54 @@
+﻿@inject ITwoUpRepository _twoUpRepository
+
+<RepositoryWrapper TRepository="ITwoUpRepository" 
+                   Action="x => x.GetAllByUserIdAsync(UserId)" 
+                   TResponse="IReadOnlyList<TwoUp>">
+    @{
+        // We don't know if the other user is id1 or id2, so flatten them to one list and filter
+        var allUserIds = context.SelectMany(x => new[]
+        {
+            x.UserId1,
+            x.UserId2
+        }).Where(x => x != UserId)
+            .Distinct()
+            .ToArray();
+    }
+    <RepositoryWrapper @ref="_registeredTwoUpsRef"
+                       TRepository="IRegisteredUserRepository"
+                       Action="x => x.GetAllByIds(allUserIds)"
+                       TResponse="IReadOnlyList<RegisteredUser>"
+                       Context="fullUsers">
+        <Title Level="3">2Up Players</Title>
+        <Table DataSource="fullUsers" Loading="_registeredTwoUpsLoading" Context="tableContext">
+            <Column Title="Given Name" @bind-Field="@tableContext.GivenName" Sortable/>
+            <Column @bind-Field="@tableContext.Email" Sortable/>
+            <ActionColumn>
+                <Space>
+                    <SpaceItem>
+                        <Button Danger OnClick="async () => await DeleteAsync(UserId, tableContext.Id)">Remove</Button>
+                    </SpaceItem>
+                </Space>
+            </ActionColumn>
+        </Table>
+    </RepositoryWrapper>
+</RepositoryWrapper>
+
+@code
+{
+    [CascadingParameter]
+    public string UserId { get; set; }
+    
+    private bool _registeredTwoUpsLoading;
+    private RepositoryWrapper<IRegisteredUserRepository, IReadOnlyList<RegisteredUser>> _registeredTwoUpsRef;
+
+    private async Task DeleteAsync(string userId1, string userId2)
+    {
+        _registeredTwoUpsLoading = true;
+
+        await _twoUpRepository.DeleteAsync(new TwoUp(userId1, userId2));
+
+        await _registeredTwoUpsRef.ReloadAsync();
+
+        _registeredTwoUpsLoading = false;
+    }
+}

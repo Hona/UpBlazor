@@ -21,7 +21,7 @@
         </FormItem>
         <FormItem Label="Cycle">
             <InputGroup>
-                <AntDesign.InputNumber Style="min-width: 7rem" @bind-Value="@formContext.IntervalUnits" Min="1" Step="1"/>
+                <AntDesign.InputNumber Style="min-width: 7rem" @bind-Value="@formContext.IntervalUnits" Min="1" Step="1" DefaultValue="1"/>
                 <EnumSelect TValue="Interval" Placeholder="Interval" Style="min-width: 9rem" @bind-Value="@formContext.Interval"/>
             </InputGroup>
         </FormItem>

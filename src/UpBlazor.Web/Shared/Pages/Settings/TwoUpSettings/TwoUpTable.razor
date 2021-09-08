@@ -9,8 +9,8 @@
         {
             x.UserId1,
             x.UserId2
-        }).Where(x => x != UserId)
-            .Distinct()
+        }).Distinct()
+            .Where(x => x != UserId)
             .ToArray();
     }
     <RepositoryWrapper @ref="_repoRef"

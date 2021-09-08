@@ -1,3 +1,16 @@
 ﻿@page "/budget/goals"
 
-Goals
+@using UpBlazor.Web.Shared.Pages.Budget.Goals
+
+<UserIdWrapper Context="userId">
+    <CreateGoal OnNewGoalAsync="async () => await _goalsTable.RepositoryWrapper.ReloadAsync()"/>
+    
+    <Divider />
+    
+    <GoalsTable @ref="_goalsTable"/>
+</UserIdWrapper>
+
+@code
+{
+    private GoalsTable _goalsTable;
+}

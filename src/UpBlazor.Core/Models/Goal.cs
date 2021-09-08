@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace UpBlazor.Core
+namespace UpBlazor.Core.Models
 {
     public class Goal
     {

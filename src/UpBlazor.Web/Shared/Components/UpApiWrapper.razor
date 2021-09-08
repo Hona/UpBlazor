@@ -5,7 +5,7 @@
 
 @namespace UpBlazor.Web.Shared.Components
 
-@if (_loading)
+@if (_loading && !ChildHandlesLoading)
 {
     <Spin />
 }
@@ -20,14 +20,14 @@ else if (_upApi == null)
         </Result>
     }
 }
-else if (!_response.Success)
+else if (_response != null && !_response.Success)
 {
     <Result Status="error" Title="API Error"></Result>
 }
-else
+else if (ChildContent != null)
 {
-    <CascadingValue Name="context" Value="_response.Response" >
-        @ChildContent(_response.Response)
+    <CascadingValue Name="UpApiContext" Value="_response?.Response" >
+        @ChildContent(_response?.Response)
     </CascadingValue>
 }
 
@@ -41,6 +41,11 @@ else
 
     [Parameter]
     public bool HideOnNoAccessToken { get; set; }
+
+    [Parameter]
+    public bool ChildHandlesLoading { get; set; }
+    
+    public bool Loading => _loading;
 
     private UpApi _upApi;
 
@@ -59,7 +64,7 @@ else
             _loading = false;
             return;
         }
-        
+
         _response = await Action.Invoke(_upApi);
         
         _loading = false;

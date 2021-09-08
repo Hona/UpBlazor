@@ -14,7 +14,7 @@
             <Input DebounceMilliseconds="int.MaxValue" @bind-Value="@formContext.Name" />
         </FormItem>
         <FormItem Label="Amount">
-            <AntDesign.InputNumber Style="min-width: 9rem" TValue="decimal" Formatter="MoneyFormat" Parser="MoneyParse" @bind-Value="@formContext.ExactMoney" DefaultValue="50M" Min="0" Step="0.01M"/>
+            <AntDesign.InputNumber Style="min-width: 9rem" Formatter="MoneyFormat" Parser="MoneyParse" @bind-Value="@formContext.ExactMoney" DefaultValue="50M" Min="0" Step="0.01M"/>
         </FormItem>
         <FormItem Label="Start Date">
             <DatePicker @bind-Value="@formContext.StartDate" DefaultValue="DateTime.Now"/>
@@ -54,10 +54,7 @@
             Name = _request.Name,
             Interval = _request.Interval,
             IntervalUnits = _request.IntervalUnits,
-            Money = new Money
-            {
-                Exact = _request.ExactMoney
-            },
+            ExactMoney =  _request.ExactMoney,
             StartDate = _request.StartDate,
             UserId = currentUserId
         });

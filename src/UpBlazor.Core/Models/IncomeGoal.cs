@@ -9,5 +9,6 @@ namespace UpBlazor.Core.Models
 
         public string Name { get; set; }
         public Money Amount { get; set; }
+        public string SaverId { get; set; }
     }
 }

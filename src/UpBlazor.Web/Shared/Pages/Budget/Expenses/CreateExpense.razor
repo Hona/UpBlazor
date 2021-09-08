@@ -58,7 +58,12 @@
     private async Task OnFormFinishAsync(string currentUserId)
     {
         _loading = true;
-        
+
+        if (_request.Amount.Percent.HasValue)
+        {
+            _request.Amount.Percent /= 100;
+        }
+
         if (_request.RegularPayments)
         {
             await _recurringExpenseRepository.AddAsync(new RecurringExpense

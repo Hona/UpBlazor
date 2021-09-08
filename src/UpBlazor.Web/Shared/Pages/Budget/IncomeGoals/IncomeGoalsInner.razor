@@ -1,0 +1,10 @@
+﻿<IncomeSelector @bind-SelectedIncome="_income"/>
+
+<Divider />
+
+<SingleIncomeGoals Income="@_income"/>
+
+@code
+{
+    private Income _income;
+}

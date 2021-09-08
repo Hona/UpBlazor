@@ -1,0 +1,60 @@
+﻿@inject IIncomeGoalRepository _incomeGoalRepository
+
+<RepositoryWrapper @ref="_repoRef"
+                   TRepository="IIncomeGoalRepository"
+                   Action="x => x.GetAllByIncomeIdAsync(Income.Id)"
+                   TResponse="IReadOnlyList<IncomeGoal>"
+                   Context="income"
+                   ChildHandlesLoading="true">
+     <Title Level="3">Income</Title>
+     <Table DataSource="income" Loading="LoadingAggregate" Context="tableContext">
+          <Column Title="Name" @bind-Field="@tableContext.Name" Sortable/>
+          <Column Title="Amount" TData="decimal?" DataIndex="Amount.Exact" Format="$0" Sortable/>
+          <Column Title="Amount" TData="decimal?" DataIndex="Amount.Percent" Format="0%" Sortable/>
+          <Column Title="Saver" @bind-Field="@tableContext.SaverId">
+               @{
+                    // TODO: Refactor (2 places)
+                    var saver = Accounts.Data.FirstOrDefault(x => x.Id == tableContext.SaverId);
+               }
+               <span>@(saver?.Attributes.DisplayName ?? "N/A") ($@(saver?.Attributes.Balance.Value ?? "N/A"))</span>
+          </Column>
+          <ActionColumn>
+               <Space>
+                    <SpaceItem>
+                         <Button Danger OnClick="async () => await DeleteAsync(tableContext)">Remove</Button>
+                    </SpaceItem>
+               </Space>
+          </ActionColumn>
+     </Table>
+</RepositoryWrapper>
+
+@code
+{
+     [CascadingParameter(Name = "UserId")]
+     public string UserId { get; set; }
+     
+     [CascadingParameter(Name = "UpApiContext")]
+     public PaginatedDataResponse<AccountResource> Accounts { get; set; }
+     
+     [Parameter]
+     public Income Income { get; set; }
+
+     public RepositoryWrapper<IIncomeGoalRepository, IReadOnlyList<IncomeGoal>> RepositoryWrapper => _repoRef;
+    
+     private bool _loading;
+
+     private bool LoadingAggregate => _loading || _repoRef.Loading;
+    
+     private RepositoryWrapper<IIncomeGoalRepository, IReadOnlyList<IncomeGoal>> _repoRef;
+    
+     private async Task DeleteAsync(IncomeGoal incomeGoal)
+     {
+          _loading = true;
+
+          await _incomeGoalRepository.DeleteAsync(incomeGoal);
+        
+          _loading = false;
+
+          await _repoRef.ReloadAsync();
+     }
+}

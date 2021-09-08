@@ -1,0 +1,100 @@
+﻿@using UpBlazor.Core.Models.Enums
+@using System.Text.RegularExpressions
+
+@inject IIncomeGoalRepository _incomeGoalRepository
+
+<Card Title="New Income Goal">
+    <Form Model="_request"
+          LabelColSpan="4"
+          WrapperColSpan="20"
+          OnFinish="async () => await OnFormFinishAsync(UserId)"
+          Loading="_loading"
+          Context="formContext">
+        <FormItem Label="Name">
+            <Input DebounceMilliseconds="int.MaxValue" @bind-Value="@formContext.Name"/>
+        </FormItem>
+        <FormItem Label="Amount">
+            <InputGroup>
+                <AntDesign.InputNumber Style="min-width: 9rem" TValue="decimal?" Formatter="MoneyFormat" Parser="MoneyParse" @bind-Value="@formContext.Amount.Exact" DefaultValue="50M" Min="0" Step="0.01M" OnChange="x => formContext.Amount.Percent = null"/>
+                <AntDesign.InputNumber Style="min-width: 7rem" TValue="decimal?" Formatter="PercentFormat" Parser="PercentParse" @bind-Value="@formContext.Amount.Percent" Min="0" Step="1" OnChange="x => formContext.Amount.Exact = null"/>
+            </InputGroup>
+        </FormItem>
+        <FormItem Label="Saver">
+            <Select DataSource="Accounts?.Data" TItem="AccountResource" TItemValue="string"
+                    LabelName="@($"{nameof(AccountResource.Attributes)}.{nameof(AccountResource.Attributes.DisplayName)}")"
+                    ValueName="@nameof(AccountResource.Id)"
+                    @bind-Value="_request.SaverId">
+            </Select>
+        </FormItem>
+        <FormItem WrapperColOffset="4" WrapperColSpan="20">
+            <Button Type="primary" HtmlType="submit">
+                Submit
+            </Button>
+        </FormItem>
+    </Form>
+</Card>
+
+@code
+{
+    [CascadingParameter(Name = "UserId")]
+    public string UserId { get; set; }
+    
+    [CascadingParameter(Name = "UpApiContext")]
+    public PaginatedDataResponse<AccountResource> Accounts { get; set; }
+    
+    [Parameter]
+    public Income Income { get; set; }
+    
+    [Parameter]
+    public Func<Task> OnNewIncomeGoalAsync { get; set; }
+    
+    private IncomeGoalRequest _request = new();
+
+    private bool _loading;
+    
+    private async Task OnFormFinishAsync(string currentUserId)
+    {
+        _loading = true;
+        
+        if (_request.Amount.Percent.HasValue)
+        {
+            _request.Amount.Percent /= 100;
+        }
+
+        await _incomeGoalRepository.AddAsync(new IncomeGoal
+        {
+            Name = _request.Name,
+            IncomeId = Income.Id,
+            SaverId = _request.SaverId,
+            Amount = _request.Amount
+        });
+        
+        _request = new();
+        _loading = false;
+
+        if (OnNewIncomeGoalAsync != null)
+        {
+            await OnNewIncomeGoalAsync.Invoke();
+        }
+    }
+
+    private string MoneyFormat(decimal? value) => value != null ? $"${value:N2}" : "Exact ($)";
+
+    private string MoneyParse(string value) => Regex.Replace(value, @"\$\s?|(,*)", "");
+    
+    private string PercentFormat(decimal? value) => value != null ? value + "%" : "Relative (%)";
+
+    private string PercentParse(string value) => value.Replace("%", "");
+
+    private class IncomeGoalRequest
+    {
+        [Required]
+        public string Name { get; set; }
+
+        [Required]
+        public Money Amount { get; set; } = new();
+        
+        [Required]
+        public string SaverId { get; set; }
+    }
+}

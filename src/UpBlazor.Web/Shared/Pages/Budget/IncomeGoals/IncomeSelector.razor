@@ -1,0 +1,24 @@
+﻿<Select @bind-Value="SelectedIncome"
+        DataSource="Incomes"
+        Placeholder="Select an income..."
+        OnSelectedItemChanged="SelectedIncomeChangedInternal">
+</Select>
+
+@code
+{
+    [CascadingParameter(Name = "RepoContext")]
+    public IReadOnlyList<Income> Incomes { get; set; }
+    
+    [Parameter]
+    public Income SelectedIncome { get; set; }
+    
+    [Parameter]
+    public EventCallback<Income> SelectedIncomeChanged { get; set; }
+
+    private void SelectedIncomeChangedInternal(Income selectedItem)
+    {
+        SelectedIncome = selectedItem;
+
+        SelectedIncomeChanged.InvokeAsync(SelectedIncome);
+    }
+}

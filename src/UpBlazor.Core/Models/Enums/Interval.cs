@@ -6,8 +6,6 @@ namespace UpBlazor.Core.Models.Enums
     {
         Days,
         Weeks,
-        Fortnights,
-        Months,
-        Years
+        Fortnights
     }
 }

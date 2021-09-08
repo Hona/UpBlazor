@@ -93,6 +93,7 @@ namespace UpBlazor.Web
             services.AddSingleton<IExpenseRepository, ExpenseRepository>();
             services.AddSingleton<IRecurringExpenseRepository, RecurringExpenseRepository>();
             services.AddSingleton<IIncomeRepository, IncomeRepository>();
+            services.AddSingleton<IGoalRepository, GoalRepository>();
 
             services.AddScoped<ICurrentUserService, CurrentUserService>();
         }

@@ -26,6 +26,10 @@
                               RouterMatch="NavLinkMatch.All" RouterLink="/budget/income">
                         <span>Income</span>
                     </MenuItem>
+                    <MenuItem OnClick='() => _navigationManager.NavigateTo("/budget/goals")'
+                              RouterMatch="NavLinkMatch.All" RouterLink="/budget/goals">
+                        <span>Goals</span>
+                    </MenuItem>
                     <MenuItem OnClick='() => _navigationManager.NavigateTo("/budget/planner")'
                               RouterMatch="NavLinkMatch.All" RouterLink="/budget/planner">
                         <span>Planner</span>
@@ -44,7 +48,7 @@
                     </MenuItem>
                     <MenuItem OnClick='() => _navigationManager.NavigateTo("/settings/two-up")'
                               RouterMatch="NavLinkMatch.All" RouterLink="/settings/two-up">
-                        <span>2(or more)Up</span>
+                        <span>2Up</span>
                     </MenuItem>
                 </ChildContent>
             </SubMenu>

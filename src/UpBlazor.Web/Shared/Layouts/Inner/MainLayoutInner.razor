@@ -30,6 +30,10 @@
                               RouterMatch="NavLinkMatch.All" RouterLink="/budget/goals">
                         <span>Goals</span>
                     </MenuItem>
+                    <MenuItem OnClick='() => _navigationManager.NavigateTo("/budget/income-goals")'
+                              RouterMatch="NavLinkMatch.All" RouterLink="/budget/income-goals">
+                        <span>Income Goals</span>
+                    </MenuItem>
                     <MenuItem OnClick='() => _navigationManager.NavigateTo("/budget/planner")'
                               RouterMatch="NavLinkMatch.All" RouterLink="/budget/planner">
                         <span>Planner</span>

@@ -16,24 +16,24 @@
     <Divider />
     
     @{
-        var remainingMoney = Income.ExactMoney;
+        var unbudgetedMoney = Income.ExactMoney;
 
         _exactSubTotals = new List<IncomeGoalRunningTotal>();
 
         foreach (var incomeGoal in incomeGoals.Where(x => x.Amount.Exact.HasValue))
         {
-            remainingMoney -= incomeGoal.Amount.Exact.Value;
+            unbudgetedMoney -= incomeGoal.Amount.Exact.Value;
 
-            _exactSubTotals.Add(new IncomeGoalRunningTotal(incomeGoal, remainingMoney));
+            _exactSubTotals.Add(new IncomeGoalRunningTotal(incomeGoal, unbudgetedMoney));
         }
 
         _percentSubTotals = new List<IncomeGoalRunningTotal>();
 
         foreach (var incomeGoal in incomeGoals.Where(x => x.Amount.Percent.HasValue))
         {
-            remainingMoney -= Income.ExactMoney * incomeGoal.Amount.Percent.Value;
+            unbudgetedMoney -= Income.ExactMoney * incomeGoal.Amount.Percent.Value;
 
-            _percentSubTotals.Add(new IncomeGoalRunningTotal(incomeGoal, remainingMoney));
+            _percentSubTotals.Add(new IncomeGoalRunningTotal(incomeGoal, unbudgetedMoney));
         }
     }
 
@@ -68,7 +68,7 @@
     <Divider />
 
     <Card>
-        <Statistic Title="Remaining Money" Value="@remainingMoney">
+        <Statistic Title="Unbudgeted  Money" Value="@unbudgetedMoney">
             <PrefixTemplate>
                 $
             </PrefixTemplate>
@@ -83,7 +83,7 @@
 
                 if (account.Attributes.AccountType == AccountType.Transactional)
                 {
-                    total += remainingMoney;
+                    total += unbudgetedMoney;
                 }
                 
                 foreach (var exactSaving in _exactSubTotals.Where(x => x.SaverId == account.Id))

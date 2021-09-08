@@ -1,4 +1,5 @@
 ﻿@using Humanizer
+@using UpBlazor.Core.Helpers
 @using UpBlazor.Web.ViewModels
 
 <RepositoryWrapper TRepository="IIncomeGoalRepository"
@@ -77,6 +78,9 @@
         <Divider />
         
         <Space Size=@(("8", "8")) Direction="DirectionVHType.Horizontal" Wrap>
+            @{
+                _savingsAmount = new Dictionary<AccountResource, decimal>();
+            }
             @foreach (var account in Accounts.Data)
             {
                 var total = 0M;
@@ -85,7 +89,7 @@
                 {
                     total += unbudgetedMoney;
                 }
-                
+
                 foreach (var exactSaving in _exactSubTotals.Where(x => x.SaverId == account.Id))
                 {
                     total += exactSaving.Amount.Exact.Value;
@@ -95,7 +99,9 @@
                 {
                     total += Income.ExactMoney * percentSaving.Amount.Percent.Value;
                 }
-                
+
+                _savingsAmount[account] = total;
+
                 <SpaceItem>
                     <Card Style="min-width: 300px" Title="@account.Attributes.DisplayName">
                         <Progress Percent="@((double)(total / Income.ExactMoney * 100))" Format='x => x.ToString("F1") + "%"' Status="@ProgressStatus.Normal"/>
@@ -106,6 +112,33 @@
                 </SpaceItem>
             }
         </Space>
+    </Card>
+    <Divider />
+    <Card>
+        @if (_savingsAmount != null)
+        {
+            var forecastData = Enumerable.Range(0, 60).SelectMany(x =>
+            {
+                var forecastOutput = new List<ForecastViewModel>();
+
+                foreach (var (account, cycleSavings) in _savingsAmount)
+                {
+                    var cycleTimeSpan = Income.Interval.ToTimeSpan(Income.IntervalUnits);
+                    
+                    forecastOutput.Add(new ForecastViewModel
+                    {
+                        balance = "$" + (decimal)account.Attributes.Balance.ValueInBaseUnits / 100 + cycleSavings * x,
+                        cycle = /*x*/ Income.StartDate.FindLastCycleStart(Income.Interval, Income.IntervalUnits).Add(cycleTimeSpan * x),
+                        accountName = account.Attributes.DisplayName
+                    });
+                }
+
+                return forecastOutput;
+            }).ToArray();
+            
+        <Title Level="4">Balance Forecast</Title>
+        <AntDesign.Charts.StackedArea Config="_forecastConfig" Data="@forecastData" ></AntDesign.Charts.StackedArea>
+        }
     </Card>
 </RepositoryWrapper>
 
@@ -120,4 +153,19 @@
     private List<IncomeGoalRunningTotal> _exactSubTotals;
     private List<IncomeGoalRunningTotal> _percentSubTotals;
 
+    private Dictionary<AccountResource, decimal> _savingsAmount;
+
+    private class ForecastViewModel
+    {
+        public DateTime cycle { get; set; }
+        public string balance { get; set; }
+        public string accountName { get; set; }
+    }
+    
+    private AntDesign.Charts.StackedAreaConfig _forecastConfig = new()
+    {
+        XField = "cycle",
+        YField = "balance",
+        StackField = "accountName"
+    };
 }

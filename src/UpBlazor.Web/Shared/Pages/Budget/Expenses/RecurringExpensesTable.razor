@@ -26,7 +26,7 @@
 
 @code
 {
-    [CascadingParameter]
+    [CascadingParameter(Name = "UserId")]
     public string UserId { get; set; }
 
     public RepositoryWrapper<IRecurringExpenseRepository, IReadOnlyList<RecurringExpense>> RepositoryWrapper => _repoRef;

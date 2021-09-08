@@ -32,7 +32,7 @@
 
 @code
 {
-    [CascadingParameter]
+    [CascadingParameter(Name = "UserId")]
     public string UserId { get; set; }
 
     public RepositoryWrapper<IGoalRepository, IReadOnlyList<Goal>> RepositoryWrapper => _repoRef;

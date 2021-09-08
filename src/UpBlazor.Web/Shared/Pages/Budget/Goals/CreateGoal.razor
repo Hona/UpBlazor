@@ -37,10 +37,10 @@
 
 @code
 {
-    [CascadingParameter]
+    [CascadingParameter(Name = "UserId")]
     public string UserId { get; set; }
 
-    [Parameter]
+    [CascadingParameter(Name = "accounts")]
     public PaginatedDataResponse<AccountResource> Accounts { get; set; }
     
     [Parameter]

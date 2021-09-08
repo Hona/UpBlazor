@@ -1,7 +1,9 @@
 ﻿@page "/budget/planner"
 
-<UserIdWrapper Context="userId">
-    <UpApiWrapper Context="accounts" Action="api => api.GetAccountsAsync()" T="PaginatedDataResponse<AccountResource>">
+<UserIdWrapper>
+    <UpApiWrapper Context="accounts" 
+                  Action="api => api.GetAccountsAsync()" 
+                  T="PaginatedDataResponse<AccountResource>">
         
     </UpApiWrapper>
 </UserIdWrapper>

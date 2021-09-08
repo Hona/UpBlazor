@@ -1,26 +1,34 @@
 ﻿@using Microsoft.AspNetCore.Components
 @inject IGoalRepository _goalRepository
 
-<RepositoryWrapper @ref="_repoRef"
-                   TRepository="IGoalRepository"
-                   Action="x => x.GetAllByUserIdAsync(UserId)"
-                   TResponse="IReadOnlyList<Goal>"
-                   Context="goals"
-                   ChildHandlesLoading="true">
-    <Title Level="3">Goals</Title>
-    <Table DataSource="goals" Loading="LoadingAggregate" Context="tableContext">
-        <Column Title="Name" @bind-Field="@tableContext.Name" Sortable/>
-        <Column Title="Amount"  @bind-Field="@tableContext.Amount" Format="$0" Sortable/>
-        <Column Title="Date" @bind-Field="@tableContext.Date" Format="dd/MM/yyyy" Sortable/>
-        <ActionColumn>
-            <Space>
-                <SpaceItem>
-                    <Button Danger OnClick="async () => await DeleteAsync(tableContext)">Remove</Button>
-                </SpaceItem>
-            </Space>
-        </ActionColumn>
-    </Table>
-</RepositoryWrapper>
+<UpApiWrapper Context="accounts" Action="api => api.GetAccountsAsync()" T="PaginatedDataResponse<AccountResource>">
+    <RepositoryWrapper @ref="_repoRef"
+                       TRepository="IGoalRepository"
+                       Action="x => x.GetAllByUserIdAsync(UserId)"
+                       TResponse="IReadOnlyList<Goal>"
+                       Context="goals"
+                       ChildHandlesLoading="true">
+        <Title Level="3">Goals</Title>
+        <Table DataSource="goals" Loading="LoadingAggregate" Context="tableContext">
+            <Column Title="Name" @bind-Field="@tableContext.Name" Sortable/>
+            <Column Title="Amount"  @bind-Field="@tableContext.Amount" Format="$0" Sortable/>
+            <Column Title="Date" @bind-Field="@tableContext.Date" Format="dd/MM/yyyy" Sortable/>
+            <Column Title="Saver" @bind-Field="@tableContext.SaverId">
+                @{
+                    var saver = accounts.Data.FirstOrDefault(x => x.Id == tableContext.SaverId);
+                }
+                <span>@(saver?.Attributes.DisplayName ?? "N/A") ($@(saver?.Attributes.Balance.Value ?? "N/A"))</span>
+            </Column>
+            <ActionColumn>
+                <Space>
+                    <SpaceItem>
+                        <Button Danger OnClick="async () => await DeleteAsync(tableContext)">Remove</Button>
+                    </SpaceItem>
+                </Space>
+            </ActionColumn>
+        </Table>
+    </RepositoryWrapper>
+</UpApiWrapper>
 
 @code
 {

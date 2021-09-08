@@ -2,11 +2,13 @@
 
 @using UpBlazor.Web.Shared.Pages.Budget.Goals
 
-<UserIdWrapper Context="userId">
-    <CreateGoal OnNewGoalAsync="async () => await _goalsTable.RepositoryWrapper.ReloadAsync()"/>
+<UserIdWrapper Context="UserId">
+    <UpApiWrapper Context="Accounts" Action="api => api.GetAccountsAsync()" T="PaginatedDataResponse<AccountResource>">
+        <CreateGoal Accounts="Accounts" OnNewGoalAsync="async () => await _goalsTable.RepositoryWrapper.ReloadAsync()"/>
+    </UpApiWrapper>
     
-    <Divider />
-    
+    <Divider/>
+
     <GoalsTable @ref="_goalsTable"/>
 </UserIdWrapper>
 

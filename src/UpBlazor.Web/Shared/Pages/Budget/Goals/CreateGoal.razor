@@ -5,33 +5,43 @@
 @inject IGoalRepository _goalRepository
 
 <Card Title="New Goal">
-    <Form Model="_request" 
-          LabelColSpan="4"
-          WrapperColSpan="20"
-          OnFinish="async () => await OnFormFinishAsync(UserId)"
-          Loading="_loading"
-          Context="formContext">
-        <FormItem Label="Name">
-            <Input DebounceMilliseconds="int.MaxValue" @bind-Value="@formContext.Name" />
-        </FormItem>
-        <FormItem Label="Amount">
-            <AntDesign.InputNumber Style="min-width: 9rem" TValue="decimal" Formatter="MoneyFormat" Parser="MoneyParse" @bind-Value="@formContext.Amount" DefaultValue="50M" Min="0" Step="0.01M"/>
-        </FormItem>
-        <FormItem Label="Date">
-            <DatePicker @bind-Value="@formContext.Date" DefaultValue="DateTime.Now"/>
-        </FormItem>
-        <FormItem WrapperColOffset="4" WrapperColSpan="20">
-            <Button Type="primary" HtmlType="submit" >
-                Submit
-            </Button>
-        </FormItem>
-    </Form>
+        <Form Model="_request"
+              LabelColSpan="4"
+              WrapperColSpan="20"
+              OnFinish="async () => await OnFormFinishAsync(UserId)"
+              Loading="_loading"
+              Context="formContext">
+            <FormItem Label="Name">
+                <Input DebounceMilliseconds="int.MaxValue" @bind-Value="@formContext.Name"/>
+            </FormItem>
+            <FormItem Label="Amount">
+                <AntDesign.InputNumber Style="min-width: 9rem" TValue="decimal" Formatter="MoneyFormat" Parser="MoneyParse" @bind-Value="@formContext.Amount" DefaultValue="50M" Min="0" Step="0.01M"/>
+            </FormItem>
+            <FormItem Label="Saver">
+                <Select DataSource="Accounts.Data" TItem="AccountResource" TItemValue="string"
+                        LabelName="@($"{nameof(AccountResource.Attributes)}.{nameof(AccountResource.Attributes.DisplayName)}")"
+                        ValueName="@nameof(AccountResource.Id)"
+                        @bind-Value="_request.SaverId">
+                </Select>
+            </FormItem>
+            <FormItem Label="Date">
+                <DatePicker @bind-Value="@formContext.Date" DefaultValue="DateTime.Now"/>
+            </FormItem>
+            <FormItem WrapperColOffset="4" WrapperColSpan="20">
+                <Button Type="primary" HtmlType="submit">
+                    Submit
+                </Button>
+            </FormItem>
+        </Form>
 </Card>
 
 @code
 {
     [CascadingParameter]
     public string UserId { get; set; }
+
+    [Parameter]
+    public PaginatedDataResponse<AccountResource> Accounts { get; set; }
     
     [Parameter]
     public Func<Task> OnNewGoalAsync { get; set; }
@@ -49,7 +59,8 @@
             Name = _request.Name,
             Amount = _request.Amount,
             Date = _request.Date,
-            UserId = currentUserId
+            UserId = currentUserId,
+            SaverId = _request.SaverId
         });
         
         _request = new();
@@ -65,7 +76,6 @@
 
     private string MoneyParse(string value) => Regex.Replace(value, @"\$\s?|(,*)", "");
 
-
     private class GoalRequest
     {
         [Required]
@@ -74,5 +84,7 @@
         public DateTime Date { get; set; }
         [Required]
         public decimal Amount { get; set; }
+        [Required]
+        public string SaverId { get; set; }
     }
 }

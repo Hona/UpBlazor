@@ -1,0 +1,123 @@
+﻿@using Humanizer
+@using UpBlazor.Web.ViewModels
+
+<RepositoryWrapper TRepository="IIncomeGoalRepository"
+                   Action="x => x.GetAllByIncomeIdAsync(Income.Id)"
+                   TResponse="IReadOnlyList<IncomeGoal>"
+                   Context="incomeGoals">
+    <Card>
+        <Statistic Title="Starting Total" Value="@Income.ExactMoney">
+            <PrefixTemplate>
+                $
+            </PrefixTemplate>
+        </Statistic>
+    </Card>
+    
+    <Divider />
+    
+    @{
+        var remainingMoney = Income.ExactMoney;
+
+        _exactSubTotals = new List<IncomeGoalRunningTotal>();
+
+        foreach (var incomeGoal in incomeGoals.Where(x => x.Amount.Exact.HasValue))
+        {
+            remainingMoney -= incomeGoal.Amount.Exact.Value;
+
+            _exactSubTotals.Add(new IncomeGoalRunningTotal(incomeGoal, remainingMoney));
+        }
+
+        _percentSubTotals = new List<IncomeGoalRunningTotal>();
+
+        foreach (var incomeGoal in incomeGoals.Where(x => x.Amount.Percent.HasValue))
+        {
+            remainingMoney -= Income.ExactMoney * incomeGoal.Amount.Percent.Value;
+
+            _percentSubTotals.Add(new IncomeGoalRunningTotal(incomeGoal, remainingMoney));
+        }
+    }
+
+    <Title Level="4">Exact Income Goal</Title>
+    <Table DataSource="_exactSubTotals" Context="tableContext">
+        <Column Title="Name" @bind-Field="@tableContext.Name" Sortable/>
+        <Column Title="Amount" TData="decimal?" DataIndex="Amount.Exact" Format="$0" Sortable/>
+        <Column Title="Saver" @bind-Field="@tableContext.SaverId">
+            @{
+                // TODO: Refactor (3 places)
+                var saver = Accounts.Data.FirstOrDefault(x => x.Id == tableContext.SaverId);
+            }
+            <span>@(saver?.Attributes.DisplayName ?? "N/A") ($@(saver?.Attributes.Balance.Value ?? "N/A"))</span>
+        </Column>
+        <Column Title="Running Total" Format="$0 remaining" @bind-Field="@tableContext.RunningTotal"/>
+    </Table>
+    
+    <Title Level="4">Relative Income Goal</Title>
+    <Table DataSource="_percentSubTotals" Context="tableContext">
+        <Column Title="Name" @bind-Field="@tableContext.Name" Sortable/>
+        <Column Title="Amount" TData="decimal?" DataIndex="Amount.Percent" Format="0%" Sortable/>
+        <Column Title="Saver" @bind-Field="@tableContext.SaverId">
+            @{
+                // TODO: Refactor (3 places)
+                var saver = Accounts.Data.FirstOrDefault(x => x.Id == tableContext.SaverId);
+            }
+            <span>@(saver?.Attributes.DisplayName ?? "N/A") ($@(saver?.Attributes.Balance.Value ?? "N/A"))</span>
+        </Column>
+        <Column Title="Running Total" Format="$0 remaining" @bind-Field="@tableContext.RunningTotal"/>
+    </Table>
+    
+    <Divider />
+
+    <Card>
+        <Statistic Title="Remaining Money" Value="@remainingMoney">
+            <PrefixTemplate>
+                $
+            </PrefixTemplate>
+        </Statistic>
+        
+        <Divider />
+        
+        <Space Size=@(("8", "8")) Direction="DirectionVHType.Horizontal" Wrap>
+            @foreach (var account in Accounts.Data)
+            {
+                var total = 0M;
+
+                if (account.Attributes.AccountType == AccountType.Transactional)
+                {
+                    total += remainingMoney;
+                }
+                
+                foreach (var exactSaving in _exactSubTotals.Where(x => x.SaverId == account.Id))
+                {
+                    total += exactSaving.Amount.Exact.Value;
+                }
+
+                foreach (var percentSaving in _percentSubTotals.Where(x => x.SaverId == account.Id))
+                {
+                    total += Income.ExactMoney * percentSaving.Amount.Percent.Value;
+                }
+                
+                <SpaceItem>
+                    <Card Style="min-width: 300px" Title="@account.Attributes.DisplayName">
+                        <Progress Percent="@((double)(total / Income.ExactMoney * 100))" Format='x => x.ToString("F1") + "%"' Status="@ProgressStatus.Normal"/>
+                        <span>
+                            $@total
+                        </span>
+                    </Card>
+                </SpaceItem>
+            }
+        </Space>
+    </Card>
+</RepositoryWrapper>
+
+@code 
+{
+    [CascadingParameter(Name = "UpApiContext")]
+    public PaginatedDataResponse<AccountResource> Accounts { get; set; }
+    
+    [Parameter]
+    public Income Income { get; set; }
+
+    private List<IncomeGoalRunningTotal> _exactSubTotals;
+    private List<IncomeGoalRunningTotal> _percentSubTotals;
+
+}

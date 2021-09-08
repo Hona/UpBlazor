@@ -1,0 +1,13 @@
+﻿<IncomeSelector @bind-SelectedIncome="_income"/>
+
+<Divider />
+
+@if (_income != null)
+{
+    <IncomePlanner Income="@_income"/>
+}
+
+@code
+{
+    private Income _income;
+}

@@ -1,1 +1,30 @@
 ﻿@page "/budget/expenses"
+
+@using UpBlazor.Web.Shared.Pages.Budget.Expenses
+
+<UserIdWrapper Context="userId">
+    <CreateExpense OnNewExpenseAsync="OnNewExpenseAsync"/>
+    
+    <Divider />
+    
+    <ExpensesTable @ref="_expensesTable"/>
+    
+    <Divider />
+    
+    <RecurringExpensesTable @ref="_recurringExpensesTable"/>
+</UserIdWrapper>
+
+@code
+{
+    private ExpensesTable _expensesTable;
+    private RecurringExpensesTable _recurringExpensesTable;
+
+    private async Task OnNewExpenseAsync()
+    {
+        var reloadExpenses = _expensesTable.RepositoryWrapper.ReloadAsync();
+        var reloadRecurringExpenses = _recurringExpensesTable.RepositoryWrapper.ReloadAsync();
+
+        await reloadExpenses;
+        await reloadRecurringExpenses;
+    }
+}

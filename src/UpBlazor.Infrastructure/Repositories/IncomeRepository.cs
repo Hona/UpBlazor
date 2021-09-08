@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Marten;
 using UpBlazor.Core.Models;
@@ -16,6 +18,15 @@ namespace UpBlazor.Infrastructure.Repositories
 
             return await session.Query<Income>()
                 .SingleOrDefaultAsync(x => x.Id == id);
+        }
+
+        public async Task<IReadOnlyList<Income>> GetAllByUserIdAsync(string userId)
+        {
+            using var session = Store.QuerySession();
+
+            return await session.Query<Income>()
+                .Where(x => x.UserId == userId)
+                .ToListAsync();
         }
     }
 }

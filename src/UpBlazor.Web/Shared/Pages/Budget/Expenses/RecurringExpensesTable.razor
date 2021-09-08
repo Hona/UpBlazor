@@ -1,0 +1,50 @@
+﻿@inject IRecurringExpenseRepository _expenseRepository
+
+<RepositoryWrapper @ref="_repoRef"
+                   TRepository="IRecurringExpenseRepository"
+                   Action="x => x.GetAllByUserIdAsync(UserId)"
+                   TResponse="IReadOnlyList<RecurringExpense>"
+                   Context="expenses"
+                   ChildHandlesLoading="true">
+    <Title Level="3">Recurring Expenses</Title>
+    <Table DataSource="expenses" Loading="LoadingAggregate" Context="tableContext">
+        <Column Title="Name" @bind-Field="@tableContext.Name" Sortable/>
+        <Column Title="Exact" TData="decimal?" DataIndex="Money.Exact" Format="$0" Sortable/>
+        <Column Title="Relative" TData="decimal?" DataIndex="Money.Percent" Format="0%" Sortable/>
+        <Column Title="Start Date" @bind-Field="@tableContext.StartDate" Format="dd/MM/yyyy" Sortable/>
+        <Column Title="Interval Units" @bind-Field="@tableContext.IntervalUnits" Sortable/>
+        <Column Title="Interval" @bind-Field="@tableContext.Interval" Sortable/>
+        <ActionColumn>
+            <Space>
+                <SpaceItem>
+                    <Button Danger OnClick="async () => await DeleteAsync(tableContext)">Remove</Button>
+                </SpaceItem>
+            </Space>
+        </ActionColumn>
+    </Table>
+</RepositoryWrapper>
+
+@code
+{
+    [CascadingParameter]
+    public string UserId { get; set; }
+
+    public RepositoryWrapper<IRecurringExpenseRepository, IReadOnlyList<RecurringExpense>> RepositoryWrapper => _repoRef;
+    
+    private bool _loading;
+
+    private bool LoadingAggregate => _loading ? _loading : _repoRef.Loading;
+    
+    private RepositoryWrapper<IRecurringExpenseRepository, IReadOnlyList<RecurringExpense>> _repoRef;
+    
+    private async Task DeleteAsync(RecurringExpense expense)
+    {
+        _loading = true;
+
+        await _expenseRepository.DeleteAsync(expense);
+        
+        _loading = false;
+
+        await _repoRef.ReloadAsync();
+    }
+}

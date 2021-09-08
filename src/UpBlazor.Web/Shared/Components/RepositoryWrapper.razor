@@ -3,7 +3,7 @@
 
 @inject TRepository _repository
 
-@if (_loading)
+@if (_loading && !ChildHandlesLoading)
 {
     @*<Spin />*@
 }
@@ -23,6 +23,9 @@ else
     
     [Parameter]
     public Action OnLoad { get; set; }
+    
+    [Parameter]
+    public bool ChildHandlesLoading { get; set; }
 
     public bool Loading => _loading;
 
@@ -38,6 +41,7 @@ else
         _loading = false;
         
         OnLoad?.Invoke();
+        StateHasChanged();
     }
 
     public async Task ReloadAsync() => await OnParametersSetAsync();

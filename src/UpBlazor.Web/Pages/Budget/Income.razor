@@ -1,1 +1,16 @@
 ﻿@page "/budget/income"
+
+@using UpBlazor.Web.Shared.Pages.Budget.Income
+
+<UserIdWrapper Context="userId">
+    <CreateIncome OnNewIncomeAsync="async () => await _incomeTable.RepositoryWrapper.ReloadAsync()"/>
+    
+    <Divider />
+    
+    <IncomeTable @ref="_incomeTable"/>
+</UserIdWrapper>
+
+@code
+{
+    private IncomeTable _incomeTable;
+}

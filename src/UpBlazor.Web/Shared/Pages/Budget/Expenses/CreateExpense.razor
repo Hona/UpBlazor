@@ -28,7 +28,7 @@
                 <AntDesign.Checkbox Style="padding-right: 1rem" @bind-Value="formContext.RegularPayments" OnChange="OnRegularPaymentEnabledChange" /> 
                 @if (formContext.RegularPayments)
                 {
-                    <AntDesign.InputNumber Disabled="!_request.RegularPayments" Style="min-width: 7rem" TValue="int?" @bind-Value="@formContext.IntervalUnits" Min="0" Step="1"/>
+                    <AntDesign.InputNumber Disabled="!_request.RegularPayments" Style="min-width: 7rem" TValue="int?" @bind-Value="@formContext.IntervalUnits" Min="1" Step="1"/>
                     <EnumSelect TValue="Interval" Placeholder="Interval" Disabled="!_request.RegularPayments" Style="min-width: 9rem" @bind-Value="formContext.Interval"/>
                 }
             </InputGroup>

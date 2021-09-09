@@ -18,11 +18,7 @@
                 <AntDesign.InputNumber Style="min-width: 9rem" TValue="decimal" Formatter="MoneyFormat" Parser="MoneyParse" @bind-Value="@formContext.Amount" DefaultValue="50M" Min="0" Step="0.01M"/>
             </FormItem>
             <FormItem Label="Saver">
-                <Select DataSource="Accounts.Data" TItem="AccountResource" TItemValue="string"
-                        LabelName="@($"{nameof(AccountResource.Attributes)}.{nameof(AccountResource.Attributes.DisplayName)}")"
-                        ValueName="@nameof(AccountResource.Id)"
-                        @bind-Value="_request.SaverId">
-                </Select>
+                <SaverSelector SelectedSaverChanged="x => _request.SaverId = x.Id"/>
             </FormItem>
             <FormItem Label="Date">
                 <DatePicker @bind-Value="@formContext.Date" DefaultValue="DateTime.Now"/>
@@ -40,9 +36,6 @@
     [CascadingParameter(Name = "UserId")]
     public string UserId { get; set; }
 
-    [CascadingParameter(Name = "UpApiContext")]
-    public PaginatedDataResponse<AccountResource> Accounts { get; set; }
-    
     [Parameter]
     public Func<Task> OnNewGoalAsync { get; set; }
     

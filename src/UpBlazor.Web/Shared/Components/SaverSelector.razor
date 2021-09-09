@@ -1,0 +1,34 @@
+﻿@if (CascadedAccounts == null)
+{
+    <UpApiWrapper Context="accounts" 
+                  Action="api => api.GetAccountsAsync()" 
+                  T="PaginatedDataResponse<AccountResource>">
+        @{
+            CascadedAccounts = accounts;
+        }
+    </UpApiWrapper>
+}
+
+<Select DataSource="CascadedAccounts?.Data" TItem="AccountResource" TItemValue="AccountResource"
+        LabelName="@($"{nameof(AccountResource.Attributes)}.{nameof(AccountResource.Attributes.DisplayName)}")"
+        @bind-Value="SelectedSaver"
+        OnSelectedItemChanged="SelectedSaverChangedInternal"/>
+
+@code
+{
+    [CascadingParameter(Name = "UpApiContext")]
+    public PaginatedDataResponse<AccountResource> CascadedAccounts { get; set; }
+    
+    [Parameter]
+    public EventCallback<AccountResource> SelectedSaverChanged { get; set; }
+    
+    [Parameter]
+    public AccountResource SelectedSaver { get; set; }
+
+    private void SelectedSaverChangedInternal(AccountResource selectedItem)
+    {
+        SelectedSaver = selectedItem;
+
+        SelectedSaverChanged.InvokeAsync(SelectedSaver);
+    }
+}

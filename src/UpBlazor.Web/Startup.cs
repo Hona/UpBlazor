@@ -84,6 +84,8 @@ namespace UpBlazor.Web
                     .Identity(x => x.MartenId);
                 options.Schema.For<TwoUpRequest>()
                     .Identity(x => x.MartenId);
+                options.Schema.For<NormalizedAggregate>()
+                    .Identity(x => x.UserId);
             });
             
             services.AddSingleton<IUpUserTokenRepository, UpUserTokenRepository>();
@@ -95,8 +97,10 @@ namespace UpBlazor.Web
             services.AddSingleton<IIncomeRepository, IncomeRepository>();
             services.AddSingleton<IGoalRepository, GoalRepository>();
             services.AddSingleton<IIncomeGoalRepository, IncomeGoalRepository>();
+            services.AddSingleton<INormalizedAggregateRepository, NormalizedAggregateRepository>();
 
             services.AddScoped<ICurrentUserService, CurrentUserService>();
+            services.AddSingleton<INormalizerService, NormalizerService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

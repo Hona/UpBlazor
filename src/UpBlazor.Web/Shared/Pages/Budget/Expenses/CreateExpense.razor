@@ -20,6 +20,12 @@
                 <AntDesign.InputNumber Style="min-width: 7rem" TValue="decimal?" Formatter="PercentFormat" Parser="PercentParse" @bind-Value="@formContext.Amount.Percent" Min="0" Step="1" OnChange="x => formContext.Amount.Exact = null"/>
             </InputGroup>
         </FormItem>
+        <FormItem Label="Cost">
+            <InputGroup>
+                <IncomeSelector @bind-SelectedIncome="SelectedIncome" />
+                <SaverSelector @bind-SelectedSaver="SelectedSaver" />
+            </InputGroup>
+        </FormItem>
         <FormItem Label="@DateLabel">
             <DatePicker @bind-Value="@formContext.PaidByDate" DefaultValue="DateTime.Now"/>
         </FormItem>
@@ -73,7 +79,9 @@
                 IntervalUnits = _request.IntervalUnits.Value,
                 Money = _request.Amount,
                 StartDate = _request.PaidByDate,
-                UserId = currentUserId
+                UserId = currentUserId,
+                FromIncomeId = _request.FromIncomeId,
+                FromSaverId = _request.FromSaverId
             });
         }
         else
@@ -83,11 +91,16 @@
                 Name = _request.Name,
                 UserId = currentUserId,
                 Money = _request.Amount,
-                PaidByDate = _request.PaidByDate
+                PaidByDate = _request.PaidByDate,
+                FromIncomeId = _request.FromIncomeId,
+                FromSaverId = _request.FromSaverId
             });
         }
 
         _request = new();
+        SelectedIncome = null;
+        SelectedSaver = null;
+        
         _loading = false;
 
         if (OnNewExpenseAsync != null)
@@ -112,20 +125,64 @@
             _request.IntervalUnits = null;
         }
     }
+    
+    private AccountResource _selectedSaver;
+    private Income _selectedIncome;
+
+    private AccountResource SelectedSaver
+    {
+        get => _selectedSaver;
+        set
+        {
+            _selectedSaver = value;
+            _request.FromSaverId = value?.Id;
+            
+            if (value == null)
+            {
+                return;
+            }
+            
+            _selectedIncome = null;
+            _request.FromIncomeId = null;
+        }
+    }
+
+    private Income SelectedIncome
+    {
+        get => _selectedIncome;
+        set
+        {
+            _selectedIncome = value;
+            _request.FromIncomeId = value?.Id;
+
+            if (value == null)
+            {
+                return;
+            }
+            
+            _selectedSaver = null;
+            _request.FromSaverId = null;
+        }
+    }
 
     private class ExpenseRequest
     {
+
         [DisplayName("Name"), Required]
         public string Name { get; set; }
         [Required]
         public Money Amount { get; set; } = new();
         
+        [Required]
         public DateTime PaidByDate { get; set; }
         
         [DisplayName("Regular Payment")]
         public Interval? Interval { get; set; }
         public int? IntervalUnits { get; set; }
-
+        
         public bool RegularPayments { get; set; }
+
+        public string FromSaverId { get; set; }
+        public Guid? FromIncomeId { get; set; }
     }
 }

@@ -12,5 +12,7 @@ namespace UpBlazor.Core.Models
         public Interval Interval { get; set; }
         public int IntervalUnits { get; set; }
         public Money Money { get; set; }
+        public string FromSaverId { get; set; }
+        public Guid? FromIncomeId { get; set; }
     }
 }

@@ -14,6 +14,23 @@
         <Column Title="Start Date" @bind-Field="@tableContext.StartDate" Format="dd/MM/yyyy" Sortable/>
         <Column Title="Interval Units" @bind-Field="@tableContext.IntervalUnits" Sortable/>
         <Column Title="Interval" @bind-Field="@tableContext.Interval" Sortable/>
+        <Column Title="From Saver" @bind-Field="@tableContext.FromSaverId">
+            @{      
+                // TODO: Refactor (3 places) && SOURCE FROM HERE
+                var saver = Accounts.Data.FirstOrDefault(x => x.Id == tableContext.FromSaverId);
+            }
+            @if (saver != null)
+            {
+                <span>@(saver.Attributes.DisplayName) ($@(saver.Attributes.Balance.Value))</span>
+            }
+        </Column>
+        <Column Title="From Income" @bind-Field="@tableContext.FromIncomeId">
+            @{
+                // TODO: Refactor
+                var income = Incomes.FirstOrDefault(x => x.Id == tableContext.FromIncomeId);
+            }
+            @(income?.ToString() ?? string.Empty)
+        </Column>
         <ActionColumn>
             <Space>
                 <SpaceItem>
@@ -28,6 +45,12 @@
 {
     [CascadingParameter(Name = "UserId")]
     public string UserId { get; set; }
+    
+    [CascadingParameter(Name = "UpApiContext")]
+    public PaginatedDataResponse<AccountResource> Accounts { get; set; }
+    
+    [CascadingParameter(Name = "RepoContext")]
+    public IReadOnlyList<Income> Incomes { get; set; }
 
     public RepositoryWrapper<IRecurringExpenseRepository, IReadOnlyList<RecurringExpense>> RepositoryWrapper => _repoRef;
     

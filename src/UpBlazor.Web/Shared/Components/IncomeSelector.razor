@@ -1,4 +1,16 @@
-﻿<Select @bind-Value="SelectedIncome"
+﻿@if (Incomes == null)
+{
+    <RepositoryWrapper TRepository="IIncomeRepository"
+                       Action="x => x.GetAllByUserIdAsync(UserId)"
+                       TResponse="IReadOnlyList<Core.Models.Income>"
+                       Context="incomes">
+    @{
+        Incomes = incomes;
+    }
+    </RepositoryWrapper>
+}
+
+<Select @bind-Value="SelectedIncome"
         DataSource="Incomes"
         Placeholder="Select an income..."
         OnSelectedItemChanged="SelectedIncomeChangedInternal">
@@ -6,6 +18,9 @@
 
 @code
 {
+    [CascadingParameter(Name = "UserId")]
+    public string UserId { get; set; }
+    
     [CascadingParameter(Name = "RepoContext")]
     public IReadOnlyList<Income> Incomes { get; set; }
     

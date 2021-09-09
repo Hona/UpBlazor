@@ -1,0 +1,34 @@
+﻿@inject INormalizerService _normalizerService
+@inject ICurrentUserService _currentUserService
+
+<UserIdWrapper Context="userId">
+    @if (!_loading)
+    {
+        <RepositoryWrapper TRepository="INormalizedAggregateRepository"
+                           Action="x => x.GetByUserIdAsync(userId)"
+                           TResponse="NormalizedAggregate"
+                           Context="aggregate">
+            <CascadingValue Name="NormalizedAggregate" Value="aggregate">
+                @ChildContent(aggregate)
+            </CascadingValue>
+        </RepositoryWrapper>
+    }
+</UserIdWrapper>
+
+@code
+{
+    [Parameter]
+    public RenderFragment<NormalizedAggregate> ChildContent { get; set; }
+
+    private bool _loading;
+    
+    protected override async Task OnInitializedAsync()
+    {
+        _loading = true;
+        
+        var userId = await _currentUserService.GetUserIdAsync();
+        await _normalizerService.UpdateUserAsync(userId);
+
+        _loading = false;
+    }
+}

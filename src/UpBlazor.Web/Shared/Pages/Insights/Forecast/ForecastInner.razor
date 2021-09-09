@@ -1,0 +1,62 @@
+﻿<RepositoryWrapper TRepository="IIncomeRepository"
+                   Action="x => x.GetAllByUserIdAsync(NormalizedAggregate.UserId)"
+                   TResponse="IReadOnlyList<Income>"
+                   Context="incomes">
+    @{
+        _incomes = incomes;
+
+        var now = DateTime.Now;
+
+        var duplicateIncomes = incomes.GroupBy(x => x.Name);
+
+        foreach (var duplicateIncomeGrouping in duplicateIncomes)
+        {
+            var duplicateIncomeGroupingList = duplicateIncomeGrouping.ToList();
+            for (var i = 0; i < duplicateIncomeGroupingList.Count; i++)
+            {
+                if (i == 0)
+                {
+                    continue;
+                }
+                
+                var duplicateIncome = duplicateIncomeGroupingList[i];
+
+                duplicateIncome.Name += " #" + i;
+            }
+        }
+        
+        _forecastData = Enumerable.Range(0, 365).SelectMany(x => NormalizedAggregate.Incomes.Select(normalizedIncome => new ForecastViewModel
+        {
+            balance = x * normalizedIncome.Amount,
+            cycle = now.AddDays(x),
+            accountName = _incomes.First(x => x.Id == normalizedIncome.IncomeId).Name
+        }).ToList()).ToList();
+    }
+    <Card>
+        <AntDesign.Charts.StackedArea Config="_forecastConfig" Data="@_forecastData"/>
+    </Card>
+</RepositoryWrapper>
+
+@code
+{
+    [CascadingParameter(Name = "NormalizedAggregate")]
+    public NormalizedAggregate NormalizedAggregate { get; set; }
+
+    private List<ForecastViewModel> _forecastData;
+    
+    private IReadOnlyList<Income> _incomes;
+
+    private class ForecastViewModel
+    {
+        public DateTime cycle { get; set; }
+        public decimal balance { get; set; }
+        public string accountName { get; set; }
+    }
+    
+    private AntDesign.Charts.StackedAreaConfig _forecastConfig = new()
+    {
+        XField = "cycle",
+        YField = "balance",
+        StackField = "accountName"
+    };
+}

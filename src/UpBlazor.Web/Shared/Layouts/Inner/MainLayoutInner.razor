@@ -40,7 +40,23 @@
                     </MenuItem>
                 </ChildContent>
             </SubMenu>
-            <SubMenu >
+            <SubMenu>
+                <TitleTemplate>
+                    <Icon Type="fund" Theme="outline"/>
+                    <span>Insights</span>
+                </TitleTemplate>
+                <ChildContent>
+                    <MenuItem OnClick='() => _navigationManager.NavigateTo("/insights/analytics")'
+                              RouterMatch="NavLinkMatch.All" RouterLink="/insights/analytics">
+                        <span>Analytics</span>
+                    </MenuItem>
+                    <MenuItem OnClick='() => _navigationManager.NavigateTo("/insights/forecast")'
+                              RouterMatch="NavLinkMatch.All" RouterLink="/insights/forecast">
+                        <span>Forecast</span>
+                    </MenuItem>
+                </ChildContent>
+            </SubMenu>
+            <SubMenu>
                 <TitleTemplate>
                     <Icon Type="setting" Theme="outline"/>
                     <span>Settings</span>

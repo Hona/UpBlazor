@@ -10,6 +10,7 @@ namespace UpBlazor.Core.Models
             Incomes = new();
             RecurringExpenses = new();
             IncomeGoals = new();
+            UserId = userId;
         }
         
         public string UserId { get; set; }

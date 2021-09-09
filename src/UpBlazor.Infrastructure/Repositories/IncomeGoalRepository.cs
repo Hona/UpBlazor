@@ -33,13 +33,13 @@ namespace UpBlazor.Infrastructure.Repositories
         {
             using var session = Store.QuerySession();
 
-            var userIncomeIds = await session.Query<Income>()
+            var userIncomeIds = (await session.Query<Income>()
                 .Where(x => x.UserId == userId)
                 .Select(x => x.Id)
-                .ToListAsync();
+                .ToListAsync()).ToArray();
 
             return await session.Query<IncomeGoal>()
-                .Where(x => userIncomeIds.Contains(x.IncomeId))
+                .Where(x => x.IncomeId.IsOneOf(userIncomeIds))
                 .ToListAsync();        
         }
     }

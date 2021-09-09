@@ -31,18 +31,9 @@ namespace UpBlazor.Infrastructure.Repositories
         {
             using var session = Store.QuerySession();
 
-            var output = new List<RegisteredUser>();
-
-            // TODO: Revisit this query .Where(x => ids.Contains(x.Id)) errors.
-            foreach (var id in ids)
-            {
-                var foundUser = await session.Query<RegisteredUser>()
-                    .SingleOrDefaultAsync(x => x.Id == id);
-
-                output.Add(foundUser);
-            }
-
-            return output.AsReadOnly();
+            return await session.Query<RegisteredUser>()
+                .Where(x => x.Id.IsOneOf(ids))
+                .ToListAsync();
         }
     }
 }

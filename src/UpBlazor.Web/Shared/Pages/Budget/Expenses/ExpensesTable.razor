@@ -12,8 +12,8 @@
         <Column Title="Exact" TData="decimal?" DataIndex="Money.Exact" Format="$0" Sortable/>
         <Column Title="Relative" TData="decimal?" DataIndex="Money.Percent" Format="0%" Sortable/>
         <Column Title="Paid By" @bind-Field="@tableContext.PaidByDate" Format="dd/MM/yyyy" Sortable/>
-        <SaverIdColumn Title="From Saver" TableContext="tableContext"/>
-        <IncomeIdColumn Title="From Income" TableContext="tableContext"/>
+        <SaverIdColumn Title="From Saver" TableContext="tableContext" TTableContext="Expense"/>
+        <IncomeIdColumn Title="From Income" TableContext="tableContext" TTableContext="Expense"/>
         <ActionColumn>
             <Space>
                 <SpaceItem>

@@ -14,8 +14,8 @@
         <Column Title="Start Date" @bind-Field="@tableContext.StartDate" Format="dd/MM/yyyy" Sortable/>
         <Column Title="Interval Units" @bind-Field="@tableContext.IntervalUnits" Sortable/>
         <Column Title="Interval" @bind-Field="@tableContext.Interval" Sortable/>
-        <SaverIdColumn Title="From Saver" TableContext="tableContext"/>
-        <IncomeIdColumn Title="From Income" TableContext="tableContext"/>
+        <SaverIdColumn Title="From Saver" TableContext="tableContext" TTableContext="RecurringExpense"/>
+        <IncomeIdColumn Title="From Income" TableContext="tableContext" TTableContext="RecurringExpense"/>
         <ActionColumn>
             <Space>
                 <SpaceItem>

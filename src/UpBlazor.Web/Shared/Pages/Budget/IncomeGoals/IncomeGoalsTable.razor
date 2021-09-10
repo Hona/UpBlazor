@@ -11,7 +11,7 @@
           <Column Title="Name" @bind-Field="@tableContext.Name" Sortable/>
           <Column Title="Amount" TData="decimal?" DataIndex="Amount.Exact" Format="$0" Sortable/>
           <Column Title="Amount" TData="decimal?" DataIndex="Amount.Percent" Format="0%" Sortable/>
-          <SaverIdColumn Title="Saver" TableContext="tableContext"/>
+          <SaverIdColumn Title="Saver" TableContext="tableContext" TTableContext="IncomeGoal"/>
           <ActionColumn>
                <Space>
                     <SpaceItem>

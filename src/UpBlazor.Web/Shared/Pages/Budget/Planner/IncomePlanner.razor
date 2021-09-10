@@ -42,7 +42,7 @@
     <Table DataSource="_exactSubTotals" Context="tableContext">
         <Column Title="Name" @bind-Field="@tableContext.Name" Sortable/>
         <Column Title="Amount" TData="decimal?" DataIndex="Amount.Exact" Format="$0" Sortable/>
-        <SaverIdColumn Title="Saver" TableContext="tableContext"/>
+        <SaverIdColumn Title="Saver" TableContext="tableContext" TTableContext="IncomeGoalRunningTotal"/>
         <Column Title="Running Total" Format="$0 remaining" @bind-Field="@tableContext.RunningTotal"/>
     </Table>
     
@@ -50,7 +50,7 @@
     <Table DataSource="_percentSubTotals" Context="tableContext">
         <Column Title="Name" @bind-Field="@tableContext.Name" Sortable/>
         <Column Title="Amount" TData="decimal?" DataIndex="Amount.Percent" Format="0%" Sortable/>
-        <SaverIdColumn Title="Saver" TableContext="tableContext"/>
+        <SaverIdColumn Title="Saver" TableContext="tableContext" TTableContext="IncomeGoalRunningTotal"/>
         <Column Title="Running Total" Format="$0 remaining" @bind-Field="@tableContext.RunningTotal"/>
     </Table>
     

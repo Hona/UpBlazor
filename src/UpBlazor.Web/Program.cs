@@ -5,7 +5,6 @@ namespace UpBlazor.Web
 {
     public class Program
     {
-        // TODO: Refactor URLs to a constants class and remove magic strings
         public static void Main(string[] args)
         {
             CreateHostBuilder(args).Build().Run();

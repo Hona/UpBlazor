@@ -11,13 +11,7 @@
           <Column Title="Name" @bind-Field="@tableContext.Name" Sortable/>
           <Column Title="Amount" TData="decimal?" DataIndex="Amount.Exact" Format="$0" Sortable/>
           <Column Title="Amount" TData="decimal?" DataIndex="Amount.Percent" Format="0%" Sortable/>
-          <Column Title="Saver" @bind-Field="@tableContext.SaverId">
-               @{
-                    // TODO: Refactor (2 places)
-                    var saver = Accounts.Data.FirstOrDefault(x => x.Id == tableContext.SaverId);
-               }
-               <span>@(saver?.Attributes.DisplayName ?? "N/A") ($@(saver?.Attributes.Balance.Value ?? "N/A"))</span>
-          </Column>
+          <SaverIdColumn Title="Saver" TableContext="tableContext"/>
           <ActionColumn>
                <Space>
                     <SpaceItem>

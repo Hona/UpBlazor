@@ -1,0 +1,20 @@
+﻿@typeparam TTableContext
+
+<Column Title="@Title" @bind-Field="@TableContext.InterfaceIncomeId">
+    @{
+        var income = Incomes.FirstOrDefault(x => x.Id == TableContext.InterfaceIncomeId);
+    }
+    @(income?.ToString() ?? string.Empty)
+</Column>
+
+@code
+{
+    [CascadingParameter(Name = CascadingConstants.RepositoryWrapper)]
+    public IReadOnlyList<Income> Incomes { get; set; }
+
+    [Parameter]
+    public TTableContext TableContext { get; set; }
+
+    [Parameter]
+    public string Title { get; set; }
+}

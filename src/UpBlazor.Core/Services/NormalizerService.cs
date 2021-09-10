@@ -12,15 +12,15 @@ namespace UpBlazor.Core.Services
     public class NormalizerService : INormalizerService
     {
         private readonly IIncomeRepository _incomeRepository;
-        private readonly IIncomeGoalRepository _incomeGoalRepository;
+        private readonly ISavingsPlanRepository _savingsPlanRepository;
         private readonly IRecurringExpenseRepository _recurringExpenseRepository;
 
         private readonly INormalizedAggregateRepository _normalizedAggregateRepository;
 
-        public NormalizerService(IIncomeRepository incomeRepository, IIncomeGoalRepository incomeGoalRepository, IRecurringExpenseRepository recurringExpenseRepository, INormalizedAggregateRepository normalizedAggregateRepository)
+        public NormalizerService(IIncomeRepository incomeRepository, ISavingsPlanRepository savingsPlanRepository, IRecurringExpenseRepository recurringExpenseRepository, INormalizedAggregateRepository normalizedAggregateRepository)
         {
             _incomeRepository = incomeRepository;
-            _incomeGoalRepository = incomeGoalRepository;
+            _savingsPlanRepository = savingsPlanRepository;
             _recurringExpenseRepository = recurringExpenseRepository;
             _normalizedAggregateRepository = normalizedAggregateRepository;
         }
@@ -28,17 +28,17 @@ namespace UpBlazor.Core.Services
         public async Task UpdateUserAsync(string userId)
         {
             var incomesTask = _incomeRepository.GetAllByUserIdAsync(userId);
-            var incomeGoalsTask = _incomeGoalRepository.GetAllByUserIdAsync(userId);
+            var savingsPlansTask = _savingsPlanRepository.GetAllByUserIdAsync(userId);
             var recurringExpensesTask = _recurringExpenseRepository.GetAllByUserIdAsync(userId);
 
             var incomes = await incomesTask;
-            var incomeGoals = await incomeGoalsTask;
+            var savingsPlans = await savingsPlansTask;
             var recurringExpenses = await recurringExpensesTask;
 
             var aggregate = new NormalizedAggregate(userId);
             
             NormalizeIncomes(aggregate, incomes);
-            NormalizeIncomeGoals(aggregate, incomeGoals, incomes);
+            NormalizeSavingsPlans(aggregate, savingsPlans, incomes);
             NormalizeRecurringExpenses(aggregate, recurringExpenses, incomes);
 
             await _normalizedAggregateRepository.AddOrUpdateAsync(aggregate);
@@ -82,19 +82,19 @@ namespace UpBlazor.Core.Services
             }
         }
 
-        private static void NormalizeIncomeGoals(NormalizedAggregate output, IEnumerable<IncomeGoal> incomeGoals, IReadOnlyList<Income> incomes)
+        private static void NormalizeSavingsPlans(NormalizedAggregate output, IEnumerable<SavingsPlan> savingsPlans, IReadOnlyList<Income> incomes)
         {
-            foreach (var incomeGoal in incomeGoals)
+            foreach (var savingsPlan in savingsPlans)
             {
-                var income = incomes.First(x => x.Id == incomeGoal.IncomeId);
+                var income = incomes.First(x => x.Id == savingsPlan.IncomeId);
                 
                 var interval = income.Interval.ToTimeSpan(income.IntervalUnits);
 
                 var totalDays = (decimal)interval.TotalDays;
                 
-                output.IncomeGoals.Add(new NormalizedIncomeGoal
+                output.SavingsPlans.Add(new NormalizedSavingsPlan
                 {
-                    IncomeGoalId = incomeGoal.Id,
+                    SavingsPlanId = savingsPlan.Id,
                     Amount = income.ExactMoney / totalDays
                 });
             }

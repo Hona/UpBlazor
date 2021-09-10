@@ -1,17 +1,17 @@
-﻿@inject IIncomeGoalRepository _incomeGoalRepository
+﻿@inject ISavingsPlanRepository _savingsPlanRepository
 
 <RepositoryWrapper @ref="_repoRef"
-                   TRepository="IIncomeGoalRepository"
+                   TRepository="ISavingsPlanRepository"
                    Action="x => x.GetAllByIncomeIdAsync(Income.Id)"
-                   TResponse="IReadOnlyList<IncomeGoal>"
+                   TResponse="IReadOnlyList<SavingsPlan>"
                    Context="income"
                    ChildHandlesLoading="true">
      <Title Level="3">Income</Title>
      <Table DataSource="income" Loading="LoadingAggregate" Context="tableContext">
           <Column Title="Name" @bind-Field="@tableContext.Name" Sortable/>
-          <Column Title="Amount" TData="decimal?" DataIndex="Amount.Exact" Format="$0" Sortable/>
-          <Column Title="Amount" TData="decimal?" DataIndex="Amount.Percent" Format="0%" Sortable/>
-          <SaverIdColumn Title="Saver" TableContext="tableContext" TTableContext="IncomeGoal"/>
+          <Column Title="Exact" TData="decimal?" DataIndex="Amount.Exact" Format="$0" Sortable/>
+          <Column Title="Relative" TData="decimal?" DataIndex="Amount.Percent" Format="0%" Sortable/>
+          <SaverIdColumn Title="Saver" TableContext="tableContext" TTableContext="SavingsPlan"/>
           <ActionColumn>
                <Space>
                     <SpaceItem>
@@ -33,19 +33,19 @@
      [Parameter]
      public Income Income { get; set; }
 
-     public RepositoryWrapper<IIncomeGoalRepository, IReadOnlyList<IncomeGoal>> RepositoryWrapper => _repoRef;
+     public RepositoryWrapper<ISavingsPlanRepository, IReadOnlyList<SavingsPlan>> RepositoryWrapper => _repoRef;
     
      private bool _loading;
 
      private bool LoadingAggregate => _loading || _repoRef.Loading;
     
-     private RepositoryWrapper<IIncomeGoalRepository, IReadOnlyList<IncomeGoal>> _repoRef;
+     private RepositoryWrapper<ISavingsPlanRepository, IReadOnlyList<SavingsPlan>> _repoRef;
     
-     private async Task DeleteAsync(IncomeGoal incomeGoal)
+     private async Task DeleteAsync(SavingsPlan savingsPlan)
      {
           _loading = true;
 
-          await _incomeGoalRepository.DeleteAsync(incomeGoal);
+          await _savingsPlanRepository.DeleteAsync(savingsPlan);
         
           _loading = false;
 

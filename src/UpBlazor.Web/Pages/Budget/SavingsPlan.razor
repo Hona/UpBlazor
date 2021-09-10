@@ -1,8 +1,8 @@
-﻿@page "/budget/income-goals"
+﻿@page "/budget/savings-plan"
 
-@using UpBlazor.Web.Shared.Pages.Budget.IncomeGoals
+@using UpBlazor.Web.Shared.Pages.Budget.SavingsPlan
 
-<Title Level="3">Income Goals</Title>
+<Title Level="3">Savings Plan</Title>
 
 <UserIdWrapper Context="userId">
     <UpApiWrapper Context="accounts" Action="api => api.GetAccountsAsync()" 
@@ -10,7 +10,7 @@
         <RepositoryWrapper TRepository="IIncomeRepository"
                            Action="x => x.GetAllByUserIdAsync(userId)"
                            TResponse="IReadOnlyList<Core.Models.Income>">
-            <IncomeGoalsInner/>
+            <SavingsPlanInner/>
         </RepositoryWrapper>
     </UpApiWrapper>
 </UserIdWrapper>

@@ -2,39 +2,84 @@
                    Action="x => x.GetAllByUserIdAsync(NormalizedAggregate.UserId)"
                    TResponse="IReadOnlyList<Income>"
                    Context="incomes">
-    @{
-        _incomes = incomes;
+    <RepositoryWrapper TRepository="IRecurringExpenseRepository"
+                       Action="x => x.GetAllByUserIdAsync(NormalizedAggregate.UserId)"
+                       TResponse="IReadOnlyList<RecurringExpense>"
+                       Context="recurringExpenses">
+        <RepositoryWrapper TRepository="IExpenseRepository"
+                           Action="x => x.GetAllByUserIdAsync(NormalizedAggregate.UserId)"
+                           TResponse="IReadOnlyList<Expense>"
+                           Context="expenses">
+        @{
+            var now = DateTime.Now;
 
-        var now = DateTime.Now;
+            var duplicateIncomes = incomes.GroupBy(x => x.Name);
 
-        var duplicateIncomes = incomes.GroupBy(x => x.Name);
-
-        foreach (var duplicateIncomeGrouping in duplicateIncomes)
-        {
-            var duplicateIncomeGroupingList = duplicateIncomeGrouping.ToList();
-            for (var i = 0; i < duplicateIncomeGroupingList.Count; i++)
+            foreach (var duplicateIncomeGrouping in duplicateIncomes)
             {
-                if (i == 0)
+                var duplicateIncomeGroupingList = duplicateIncomeGrouping.ToList();
+                for (var i = 0; i < duplicateIncomeGroupingList.Count; i++)
                 {
-                    continue;
-                }
-                
-                var duplicateIncome = duplicateIncomeGroupingList[i];
+                    if (i == 0)
+                    {
+                        continue;
+                    }
 
-                duplicateIncome.Name += " #" + i;
+                    var duplicateIncome = duplicateIncomeGroupingList[i];
+
+                    duplicateIncome.Name += " #" + i;
+                }
             }
+
+            var startDay = 0;
+            var endDay = 365;
+
+            _incomeForecastData = Enumerable.Range(startDay, endDay).SelectMany(x => NormalizedAggregate.Incomes.Select(normalizedIncome => new ForecastViewModel
+            {
+                balance = Math.Round(x * normalizedIncome.Amount, 2),
+                cycle = now.AddDays(x).ToShortDateString(),
+                accountName = incomes.First(x => x.Id == normalizedIncome.IncomeId).Name
+            })).ToList();
+
+            _expensesForecastData = Enumerable.Range(startDay, endDay).SelectMany(x =>
+            {
+                var output = new List<ForecastViewModel>(2 * (endDay - startDay));
+                
+                output.AddRange(NormalizedAggregate.RecurringExpenses.Select(normalizedRecurringExpense => new ForecastViewModel
+                {
+                    balance = Math.Round(x * normalizedRecurringExpense.Amount, 2),
+                    cycle = now.AddDays(x).ToShortDateString(),
+                    accountName = recurringExpenses.First(x => x.Id == normalizedRecurringExpense.RecurringExpenseId).Name
+                }));
+                
+                output.AddRange(expenses.Where(x => x.Money.Exact.HasValue).Select(expense => new ForecastViewModel
+                {
+                    balance = expense.PaidByDate < now.AddDays(x) ? Math.Round(expense.Money.Exact.Value, 2) : 0,
+                    cycle = now.AddDays(x).ToShortDateString(),
+                    accountName = expense.Name
+                }));
+
+                return output;
+            }).ToList();
+
+            Console.WriteLine();
         }
-        
-        _forecastData = Enumerable.Range(0, 365).SelectMany(x => NormalizedAggregate.Incomes.Select(normalizedIncome => new ForecastViewModel
-        {
-            balance = x * normalizedIncome.Amount,
-            cycle = now.AddDays(x),
-            accountName = _incomes.First(x => x.Id == normalizedIncome.IncomeId).Name
-        }).ToList()).ToList();
-    }
-    <Card>
-        <AntDesign.Charts.StackedArea Config="_forecastConfig" Data="@_forecastData"/>
-    </Card>
+
+            <Space Direction="DirectionVHType.Vertical" Style="width: 100%">
+                <SpaceItem>
+                    <Card Title="Total Income">
+                        <AntDesign.Charts.StackedArea Config="_forecastConfig" Data="@_incomeForecastData"/>
+                    </Card>
+                </SpaceItem>
+
+                <SpaceItem>
+                    <Card Title="Total Expenses">
+                        <AntDesign.Charts.StackedArea Config="_forecastConfig" Data="@_expensesForecastData"/>
+                    </Card>
+                </SpaceItem>
+            </Space>
+        </RepositoryWrapper>
+    </RepositoryWrapper>
 </RepositoryWrapper>
 
 @code
@@ -42,13 +87,12 @@
     [CascadingParameter(Name = CascadingConstants.NormalizedAggregateWrapper)]
     public NormalizedAggregate NormalizedAggregate { get; set; }
 
-    private List<ForecastViewModel> _forecastData;
+    private List<ForecastViewModel> _incomeForecastData;
+    private List<ForecastViewModel> _expensesForecastData;
     
-    private IReadOnlyList<Income> _incomes;
-
     private class ForecastViewModel
     {
-        public DateTime cycle { get; set; }
+        public string cycle { get; set; }
         public decimal balance { get; set; }
         public string accountName { get; set; }
     }
@@ -59,4 +103,5 @@
         YField = "balance",
         StackField = "accountName"
     };
+    
 }

@@ -1,9 +1,9 @@
 ﻿@using UpBlazor.Core.Models.Enums
 @using System.Text.RegularExpressions
 
-@inject IIncomeGoalRepository _incomeGoalRepository
+@inject ISavingsPlanRepository _savingsPlanRepository
 
-<Card Title="New Income Goal">
+<Card Title="New Savings Plan">
     <Form Model="_request"
           LabelColSpan="4"
           WrapperColSpan="20"
@@ -39,9 +39,9 @@
     public Income Income { get; set; }
     
     [Parameter]
-    public Func<Task> OnNewIncomeGoalAsync { get; set; }
+    public Func<Task> OnNewSavingsPlanAsync { get; set; }
     
-    private IncomeGoalRequest _request = new();
+    private SavingsPlanRequest _request = new();
 
     private bool _loading;
     
@@ -54,7 +54,7 @@
             _request.Amount.Percent /= 100;
         }
 
-        await _incomeGoalRepository.AddAsync(new IncomeGoal
+        await _savingsPlanRepository.AddAsync(new SavingsPlan
         {
             Name = _request.Name,
             IncomeId = Income.Id,
@@ -65,9 +65,9 @@
         _request = new();
         _loading = false;
 
-        if (OnNewIncomeGoalAsync != null)
+        if (OnNewSavingsPlanAsync != null)
         {
-            await OnNewIncomeGoalAsync.Invoke();
+            await OnNewSavingsPlanAsync.Invoke();
         }
     }
 
@@ -79,7 +79,7 @@
 
     private string PercentParse(string value) => value.Replace("%", "");
 
-    private class IncomeGoalRequest
+    private class SavingsPlanRequest
     {
         [Required]
         public string Name { get; set; }

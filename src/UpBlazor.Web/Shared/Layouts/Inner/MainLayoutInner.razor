@@ -3,7 +3,11 @@
 
 <Layout Style="min-height: 100vh; width: 100vw; max-width: 100vw;">
     <Sider Theme="SiderTheme.Dark"
-           Collapsible Collapsed="_siderCollapsed" OnCollapse="collapsed => _siderCollapsed = collapsed" Breakpoint="BreakpointType.Md" OnBreakpoint="collapsed => _siderCollapsed = collapsed">
+           Collapsible 
+           Collapsed="_siderCollapsed" OnCollapse="collapsed => _siderCollapsed = collapsed" 
+           Breakpoint="BreakpointType.Md" 
+           OnBreakpoint="collapsed => _siderCollapsed = collapsed"
+    >
         <a target="_blank" @onclick='() => _navigationManager.NavigateTo("/")' style="display: flex; justify-content: center; align-items: flex-end; padding: 0 0.75rem">
             <Image Preview="false" Src="/img/up-logo-light-transparent-bg.svg"/>
             @if (!_siderCollapsed)
@@ -18,21 +22,21 @@
                     <span>Budget</span>
                 </TitleTemplate>
                 <ChildContent>
-                    <MenuItem OnClick='() => _navigationManager.NavigateTo("/budget/expenses")'
-                              RouterMatch="NavLinkMatch.All" RouterLink="/budget/expenses">
-                        <span>Expenses</span>
-                    </MenuItem>
                     <MenuItem OnClick='() => _navigationManager.NavigateTo("/budget/income")'
                               RouterMatch="NavLinkMatch.All" RouterLink="/budget/income">
                         <span>Income</span>
                     </MenuItem>
+                    <MenuItem OnClick='() => _navigationManager.NavigateTo("/budget/expenses")'
+                              RouterMatch="NavLinkMatch.All" RouterLink="/budget/expenses">
+                        <span>Expenses</span>
+                    </MenuItem>
+                    <MenuItem OnClick='() => _navigationManager.NavigateTo("/budget/savings-plan")'
+                              RouterMatch="NavLinkMatch.All" RouterLink="/budget/savings-plan">
+                        <span>Savings Plan</span>
+                    </MenuItem>
                     <MenuItem OnClick='() => _navigationManager.NavigateTo("/budget/goals")'
                               RouterMatch="NavLinkMatch.All" RouterLink="/budget/goals">
                         <span>Goals</span>
-                    </MenuItem>
-                    <MenuItem OnClick='() => _navigationManager.NavigateTo("/budget/income-goals")'
-                              RouterMatch="NavLinkMatch.All" RouterLink="/budget/income-goals">
-                        <span>Income Goals</span>
                     </MenuItem>
                     <MenuItem OnClick='() => _navigationManager.NavigateTo("/budget/planner")'
                               RouterMatch="NavLinkMatch.All" RouterLink="/budget/planner">
@@ -124,6 +128,7 @@
         <Footer>
             <UpFooter/>
         </Footer>
+        <BackTop />
     </Layout>
 </Layout>
 

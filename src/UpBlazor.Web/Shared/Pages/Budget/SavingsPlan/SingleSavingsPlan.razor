@@ -1,0 +1,20 @@
+﻿@if (Income == null)
+{
+        
+}
+else
+{
+    <CreateSavingsPlan Income="Income" OnNewSavingsPlanAsync="() => _savingsPlanTable.RepositoryWrapper.ReloadAsync()"/>
+    
+    <Divider />
+    
+    <SavingsPlanTable Income="Income" @ref="_savingsPlanTable"/>
+}
+
+@code 
+{
+    [Parameter]
+    public Income Income { get; set; }
+
+    private SavingsPlanTable _savingsPlanTable;
+}

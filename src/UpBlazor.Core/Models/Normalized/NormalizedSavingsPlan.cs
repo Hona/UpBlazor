@@ -2,9 +2,9 @@
 
 namespace UpBlazor.Core.Models.Normalized
 {
-    public class NormalizedIncomeGoal
+    public class NormalizedSavingsPlan
     {
-        public Guid IncomeGoalId { get; set; }
+        public Guid SavingsPlanId { get; set; }
         public decimal Amount { get; set; }
     }
 }

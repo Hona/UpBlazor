@@ -12,7 +12,8 @@
 <Select DataSource="CascadedAccounts?.Data" TItem="AccountResource" TItemValue="AccountResource"
         LabelName="@($"{nameof(AccountResource.Attributes)}.{nameof(AccountResource.Attributes.DisplayName)}")"
         @bind-Value="SelectedSaver"
-        OnSelectedItemChanged="SelectedSaverChangedInternal"/>
+        OnSelectedItemChanged="SelectedSaverChangedInternal"
+        Placeholder="Select a saver..."/>
 
 @code
 {

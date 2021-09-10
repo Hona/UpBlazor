@@ -20,7 +20,7 @@
                 <AntDesign.InputNumber Style="min-width: 7rem" TValue="decimal?" Formatter="PercentFormat" Parser="PercentParse" @bind-Value="@formContext.Amount.Percent" Min="0" Step="1" OnChange="x => formContext.Amount.Exact = null"/>
             </InputGroup>
         </FormItem>
-        <FormItem Label="Cost">
+        <FormItem Label="Source">
             <InputGroup>
                 <IncomeSelector @bind-SelectedIncome="SelectedIncome" />
                 <SaverSelector @bind-SelectedSaver="SelectedSaver" />
@@ -40,7 +40,8 @@
             </InputGroup>
         </FormItem>
         <FormItem WrapperColOffset="4" WrapperColSpan="20">
-            <Button Type="primary" HtmlType="submit" Disabled="@(_request.RegularPayments && (!_request.Interval.HasValue || !_request.IntervalUnits.HasValue))">
+            @* TODO: Implement expenses with relative cost on a saver *@
+            <Button Type="primary" HtmlType="submit" Disabled="@(_request.RegularPayments && (!_request.Interval.HasValue || !_request.IntervalUnits.HasValue) || _request.Amount.Percent.HasValue && _request.FromSaverId != null)">
                 Submit
             </Button>
         </FormItem>

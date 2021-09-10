@@ -8,28 +8,28 @@ using UpBlazor.Core.Repositories;
 
 namespace UpBlazor.Infrastructure.Repositories
 {
-    public class IncomeGoalRepository : GenericRepository<IncomeGoal>, IIncomeGoalRepository
+    public class SavingsPlanRepository : GenericRepository<SavingsPlan>, ISavingsPlanRepository
     {
-        public IncomeGoalRepository(IDocumentStore store) : base(store) { }
+        public SavingsPlanRepository(IDocumentStore store) : base(store) { }
 
-        public async Task<IncomeGoal> GetByIdAsync(Guid id)
+        public async Task<SavingsPlan> GetByIdAsync(Guid id)
         {
             using var session = Store.QuerySession();
 
-            return await session.Query<IncomeGoal>()
+            return await session.Query<SavingsPlan>()
                 .SingleOrDefaultAsync(x => x.Id == id);
         }
 
-        public async Task<IReadOnlyList<IncomeGoal>> GetAllByIncomeIdAsync(Guid incomeId)
+        public async Task<IReadOnlyList<SavingsPlan>> GetAllByIncomeIdAsync(Guid incomeId)
         {
             using var session = Store.QuerySession();
 
-            return await session.Query<IncomeGoal>()
+            return await session.Query<SavingsPlan>()
                 .Where(x => x.IncomeId == incomeId)
                 .ToListAsync();
         }
 
-        public async Task<IReadOnlyList<IncomeGoal>> GetAllByUserIdAsync(string userId)
+        public async Task<IReadOnlyList<SavingsPlan>> GetAllByUserIdAsync(string userId)
         {
             using var session = Store.QuerySession();
 
@@ -38,7 +38,7 @@ namespace UpBlazor.Infrastructure.Repositories
                 .Select(x => x.Id)
                 .ToListAsync()).ToArray();
 
-            return await session.Query<IncomeGoal>()
+            return await session.Query<SavingsPlan>()
                 .Where(x => x.IncomeId.IsOneOf(userIncomeIds))
                 .ToListAsync();        
         }

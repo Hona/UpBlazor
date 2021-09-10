@@ -3,7 +3,7 @@ using UpBlazor.Core.Interfaces;
 
 namespace UpBlazor.Core.Models
 {
-    public class IncomeGoal : ISaverId, IIncomeId
+    public class SavingsPlan : ISaverId, IIncomeId
     {
         public Guid Id { get; set; }
         public Guid IncomeId { get; set; }

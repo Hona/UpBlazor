@@ -16,7 +16,7 @@
 
 @code
 {
-    [CascadingParameter(Name = "UpApiContext")]
+    [CascadingParameter(Name = CascadingConstants.UpApiWrapper)]
     public PaginatedDataResponse<AccountResource> CascadedAccounts { get; set; }
     
     [Parameter]

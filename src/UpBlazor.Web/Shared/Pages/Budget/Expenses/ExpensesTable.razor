@@ -41,13 +41,13 @@
 
 @code
 {
-    [CascadingParameter(Name = "UserId")]
+    [CascadingParameter(Name = CascadingConstants.UserIdWrapper)]
     public string UserId { get; set; }
     
-    [CascadingParameter(Name = "UpApiContext")]
+    [CascadingParameter(Name = CascadingConstants.UpApiWrapper)]
     public PaginatedDataResponse<AccountResource> Accounts { get; set; }
     
-    [CascadingParameter(Name = "RepoContext")]
+    [CascadingParameter(Name = CascadingConstants.RepositoryWrapper)]
     public IReadOnlyList<Income> Incomes { get; set; }
 
     public RepositoryWrapper<IExpenseRepository, IReadOnlyList<Expense>> RepositoryWrapper => _repoRef;

@@ -26,7 +26,7 @@ else if (_response != null && !_response.Success)
 }
 else if (ChildContent != null)
 {
-    <CascadingValue Name="UpApiContext" Value="_response?.Response" >
+    <CascadingValue Name="@CascadingConstants.UpApiWrapper" Value="_response?.Response" >
         @ChildContent(_response?.Response)
     </CascadingValue>
 }

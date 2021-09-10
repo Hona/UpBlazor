@@ -18,10 +18,10 @@
 
 @code
 {
-    [CascadingParameter(Name = "UserId")]
+    [CascadingParameter(Name = CascadingConstants.UserIdWrapper)]
     public string UserId { get; set; }
     
-    [CascadingParameter(Name = "RepoContext")]
+    [CascadingParameter(Name = CascadingConstants.RepositoryWrapper)]
     public IReadOnlyList<Income> Incomes { get; set; }
     
     [Parameter]

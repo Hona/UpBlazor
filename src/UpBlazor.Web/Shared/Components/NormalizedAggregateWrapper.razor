@@ -8,7 +8,7 @@
                            Action="x => x.GetByUserIdAsync(userId)"
                            TResponse="NormalizedAggregate"
                            Context="aggregate">
-            <CascadingValue Name="NormalizedAggregate" Value="aggregate">
+            <CascadingValue Name="@CascadingConstants.NormalizedAggregateWrapper" Value="aggregate">
                 @ChildContent(aggregate)
             </CascadingValue>
         </RepositoryWrapper>

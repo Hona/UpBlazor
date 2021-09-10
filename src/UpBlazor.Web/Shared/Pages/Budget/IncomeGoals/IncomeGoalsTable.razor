@@ -30,10 +30,10 @@
 
 @code
 {
-     [CascadingParameter(Name = "UserId")]
+     [CascadingParameter(Name = CascadingConstants.UserIdWrapper)]
      public string UserId { get; set; }
      
-     [CascadingParameter(Name = "UpApiContext")]
+     [CascadingParameter(Name = CascadingConstants.UpApiWrapper)]
      public PaginatedDataResponse<AccountResource> Accounts { get; set; }
      
      [Parameter]

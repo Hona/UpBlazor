@@ -6,12 +6,13 @@
 }
 else
 {
-    <CascadingValue Name="UserId" Value="_userId">
+    <CascadingValue Name="@CascadingConstants.UserIdWrapper" Value="_userId">
         @ChildContent(_userId)
     </CascadingValue>
 }
 
-@code {
+@code 
+{
     [Parameter]
     public RenderFragment<string> ChildContent { get; set; }
     

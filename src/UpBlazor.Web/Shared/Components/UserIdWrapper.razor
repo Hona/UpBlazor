@@ -1,20 +1,32 @@
 ﻿@inject ICurrentUserService _currentUserService
 
-@if (_loading)
+@if (CascadedUserId != null)
 {
-    <Spin />
+    <CascadingValue Name="@CascadingConstants.UserIdWrapper" Value="CascadedUserId">
+        @ChildContent(CascadedUserId)
+    </CascadingValue>
 }
 else
 {
-    <CascadingValue Name="@CascadingConstants.UserIdWrapper" Value="_userId">
-        @ChildContent(_userId)
-    </CascadingValue>
+    if (_loading)
+    {
+        <Spin/>
+    }
+    else
+    {
+        <CascadingValue Name="@CascadingConstants.UserIdWrapper" Value="_userId">
+            @ChildContent(_userId)
+        </CascadingValue>
+    }
 }
 
 @code 
 {
     [Parameter]
     public RenderFragment<string> ChildContent { get; set; }
+    
+    [CascadingParameter(Name = CascadingConstants.UserIdWrapper)]
+    public string CascadedUserId { get; set; }
     
     private bool _loading;
     private string _userId;

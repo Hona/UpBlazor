@@ -5,30 +5,40 @@
 
 @namespace UpBlazor.Web.Shared.Components
 
-@if (_loading && !ChildHandlesLoading)
+@if (CascadedResponse != null)
 {
-    <Spin />
-}
-else if (_upApi == null)
-{
-    if (!HideOnNoAccessToken)
-    {
-        <Result Status="error" Title="No Access Token" SubTitle="You have not set your Up API access token, please add it in the settings">
-            <Extra>
-                <Button Type="primary"><a href="/settings/up-access-token">Settings</a></Button>
-            </Extra>
-        </Result>
-    }
-}
-else if (_response != null && !_response.Success)
-{
-    <Result Status="error" Title="API Error"></Result>
-}
-else if (ChildContent != null)
-{
-    <CascadingValue Name="@CascadingConstants.UpApiWrapper" Value="_response?.Response" >
-        @ChildContent(_response?.Response)
+    <CascadingValue Name="@CascadingConstants.UpApiWrapper" Value="CascadedResponse">
+        @ChildContent(CascadedResponse)
     </CascadingValue>
+}
+else
+{
+
+    if (_loading && !ChildHandlesLoading)
+    {
+        <Spin/>
+    }
+    else if (_upApi == null)
+    {
+        if (!HideOnNoAccessToken)
+        {
+            <Result Status="error" Title="No Access Token" SubTitle="You have not set your Up API access token, please add it in the settings">
+                <Extra>
+                    <Button Type="primary"><a href="/settings/up-access-token">Settings</a></Button>
+                </Extra>
+            </Result>
+        }
+    }
+    else if (_response != null && !_response.Success)
+    {
+        <Result Status="error" Title="API Error"></Result>
+    }
+    else if (ChildContent != null)
+    {
+        <CascadingValue Name="@CascadingConstants.UpApiWrapper" Value="_response?.Response">
+            @ChildContent(_response?.Response)
+        </CascadingValue>
+    }
 }
 
 @code 
@@ -44,6 +54,9 @@ else if (ChildContent != null)
 
     [Parameter]
     public bool ChildHandlesLoading { get; set; }
+    
+    [CascadingParameter(Name = CascadingConstants.UpApiWrapper)]
+    public T CascadedResponse { get; set; }
     
     public bool Loading => _loading;
 

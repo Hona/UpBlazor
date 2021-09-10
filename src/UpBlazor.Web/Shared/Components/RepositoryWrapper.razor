@@ -3,15 +3,24 @@
 
 @inject TRepository _repository
 
-@if (_loading && !ChildHandlesLoading)
+@if (CascadedResponse != null)
 {
-    @*<Spin />*@
+    <CascadingValue Name="@CascadingConstants.RepositoryWrapper" Value="CascadedResponse" >
+        @ChildContent(CascadedResponse)
+    </CascadingValue>
 }
 else
 {
-    <CascadingValue Name="@CascadingConstants.RepositoryWrapper" Value="_response" >
-        @ChildContent(_response)
-    </CascadingValue>
+    if (_loading && !ChildHandlesLoading)
+    {
+        @*<Spin />*@
+    }
+    else
+    {
+        <CascadingValue Name="@CascadingConstants.RepositoryWrapper" Value="_response" >
+            @ChildContent(_response)
+        </CascadingValue>
+    }
 }
 
 @code {
@@ -26,6 +35,9 @@ else
     
     [Parameter]
     public bool ChildHandlesLoading { get; set; }
+    
+    [CascadingParameter(Name = CascadingConstants.RepositoryWrapper)]
+    public TResponse CascadedResponse { get; set; }
 
     public bool Loading => _loading;
 

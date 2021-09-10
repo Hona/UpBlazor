@@ -21,7 +21,11 @@ else if (IsSet)
     }
     else
     {
-        <Result Status="success" Title="Valid account access!" SubTitle="@($"Ping Status: {_pingResponse.Response.Meta.StatusEmoji}")"/>
+        <Result Status="success" Title="Valid account access!" SubTitle="@($"Ping Status: {_pingResponse.Response.Meta.StatusEmoji}")">
+            <SubTitleTemplate>
+                Ping Status: @_pingResponse.Response.Meta.StatusEmoji
+            </SubTitleTemplate>
+        </Result>
     }
 }
 else
@@ -36,8 +40,8 @@ else
 <Divider />
 
 <Form Model="@_setAccessToken"
-      LabelColSpan="8"
-      WrapperColSpan="16"
+      LabelColSpan="4"
+      WrapperColSpan="20"
       OnFinish="OnFinishAsync"
       Style="width: 100%"
       ValidateMessages="_errorMessages"
@@ -45,16 +49,15 @@ else
     <FormItem>
         <Input DebounceMilliseconds="int.MaxValue" @bind-Value="@context.Value" />
     </FormItem>
-    <FormItem WrapperColOffset="8" WrapperColSpan="16">
+    <FormItem WrapperColOffset="4" WrapperColSpan="20">
         <Button Type="@ButtonType.Primary" HtmlType="submit">
             Save
         </Button>
+        <AntDesign.Button Danger Type="text" OnClick="OnClearAccessTokenClickAsync">
+            Clear Token
+        </AntDesign.Button>
     </FormItem>
 </Form>
-
-<Divider />
-
-<AntDesign.Button Danger OnClick="OnClearAccessTokenClickAsync">Clear Token</AntDesign.Button>
 
 @code
 {

@@ -2,11 +2,6 @@ body {
     font-family: Circular, Roboto, Helvetica, Arial, sans-serif;
 }
 
-html, body {
-    max-width: 100%;
-    overflow-x: hidden;
-}
-
 #blazor-error-ui {
     background: lightyellow;
     bottom: 0;

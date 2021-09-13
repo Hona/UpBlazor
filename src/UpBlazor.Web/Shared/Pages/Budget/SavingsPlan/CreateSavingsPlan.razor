@@ -1,5 +1,4 @@
 ﻿@using UpBlazor.Core.Models.Enums
-@using System.Text.RegularExpressions
 
 @inject ISavingsPlanRepository _savingsPlanRepository
 
@@ -15,8 +14,7 @@
         </FormItem>
         <FormItem Label="Amount">
             <InputGroup>
-                <AntDesign.InputNumber Style="min-width: 9rem" TValue="decimal?" Formatter="MoneyFormat" Parser="MoneyParse" @bind-Value="@formContext.Amount.Exact" DefaultValue="50M" Min="0" Step="0.01M" OnChange="x => formContext.Amount.Percent = null"/>
-                <AntDesign.InputNumber Style="min-width: 7rem" TValue="decimal?" Formatter="PercentFormat" Parser="PercentParse" @bind-Value="@formContext.Amount.Percent" Min="0" Step="1" OnChange="x => formContext.Amount.Exact = null"/>
+                <MoneyInput @bind-Amount="@formContext.Amount"/>
             </InputGroup>
         </FormItem>
         <FormItem Label="Saver">
@@ -70,14 +68,6 @@
             await OnNewSavingsPlanAsync.Invoke();
         }
     }
-
-    private string MoneyFormat(decimal? value) => value != null ? $"${value:N2}" : "Exact ($)";
-
-    private string MoneyParse(string value) => Regex.Replace(value, @"\$\s?|(,*)", "");
-    
-    private string PercentFormat(decimal? value) => value != null ? value + "%" : "Relative (%)";
-
-    private string PercentParse(string value) => value.Replace("%", "");
 
     private class SavingsPlanRequest
     {

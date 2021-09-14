@@ -18,10 +18,18 @@
                 </Header>
                 <ChildContent Context="item">
                     <ListItem>
-                        <Text>@item.RequesterName</Text>
-                        @item.RequesterMessage
-                        @((DateTime.Now - item.CreatedDate).Humanize() + " ago")
+                        <Space Style="padding-right: 1rem">
+                            <SpaceItem>
+                                <Text>@item.RequesterName</Text>
+                            </SpaceItem>
+                            <SpaceItem>
+                                @item.RequesterMessage
+                            </SpaceItem>
+                        </Space>
                         <Space>
+                            <SpaceItem>
+                                @((DateTime.Now - item.CreatedDate).Humanize() + " ago")
+                            </SpaceItem>
                             <SpaceItem>
                                 <Button Loading="_acceptRequestLoading" OnClick="async () => await AcceptRequestAsync(item)">Accept</Button>
                             </SpaceItem>

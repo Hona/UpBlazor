@@ -2,6 +2,8 @@
 
   ![UpBlazor](./_docs/img/logo.png)
 
+  ![.NET Build + Test](https://github.com/Hona/UpBlazor/actions/workflows/.NET/badge.svg)
+  
 </div>
 
 ## What is this?

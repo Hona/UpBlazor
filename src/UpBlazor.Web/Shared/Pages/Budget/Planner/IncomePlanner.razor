@@ -118,7 +118,8 @@
                         balance = (decimal)account.Attributes.Balance.ValueInBaseUnits / 100 + cycleSavings * x,
                         cycle = Income.StartDate
                             .FindLastCycleStart(Income.Interval, Income.IntervalUnits)
-                            .Add(cycleTimeSpan * x),
+                            .Add(cycleTimeSpan * x)
+                            .ToString("dd/MM/yyyy"),
                         accountName = account.Attributes.DisplayName
                     });
                 }
@@ -147,7 +148,7 @@
 
     private class ForecastViewModel
     {
-        public DateTime cycle { get; set; }
+        public string cycle { get; set; }
         public decimal balance { get; set; }
         public string accountName { get; set; }
     }

@@ -88,7 +88,7 @@ namespace UpBlazor.Web
 
                             if (!adminEmails.Any())
                             {
-                                return true;
+                                return false;
                             }
 
                             return adminEmails.Any(x => x == emailAddress);

@@ -41,17 +41,23 @@
     <Title Level="4">Exact Savings Plan</Title>
     <Table DataSource="_exactSubTotals" Context="tableContext">
         <Column Title="Name" @bind-Field="@tableContext.Name" Sortable/>
-        <Column Title="Amount" TData="decimal?" DataIndex="Amount.Exact" Format="$0" Sortable/>
+        <Column Title="Amount" TData="decimal?" DataIndex="Amount.Exact" Format="$0.00" Sortable/>
         <SaverIdColumn Title="Saver" TableContext="tableContext" TTableContext="SavingsPlanRunningTotal"/>
-        <Column Title="Running Total" Format="$0 remaining" @bind-Field="@tableContext.RunningTotal"/>
+        <Column Title="Remaining Balance" Format="$0.00" @bind-Field="@tableContext.RunningTotal"/>
     </Table>
     
     <Title Level="4">Relative Savings Plan</Title>
     <Table DataSource="_percentSubTotals" Context="tableContext">
         <Column Title="Name" @bind-Field="@tableContext.Name" Sortable/>
-        <Column Title="Amount" TData="decimal?" DataIndex="Amount.Percent" Format="0%" Sortable/>
+        <Column Title="Amount (%)" TData="decimal?" DataIndex="Amount.Percent" Format="0%" Sortable/>
+        <Column Title="Amount ($)" TData="decimal?" DataIndex="Amount.Percent" Sortable >
+            @{
+                var exactAmount = Income.ExactMoney * tableContext.Amount.Percent.Value;
+            }
+            $@exactAmount.ToString("F2")
+        </Column>
         <SaverIdColumn Title="Saver" TableContext="tableContext" TTableContext="SavingsPlanRunningTotal"/>
-        <Column Title="Running Total" Format="$0 remaining" @bind-Field="@tableContext.RunningTotal"/>
+        <Column Title="Remaining Balance" Format="$0.00" @bind-Field="@tableContext.RunningTotal"/>
     </Table>
     
     <Divider />

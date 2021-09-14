@@ -13,7 +13,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="AntDesign" Version="0.9.4" />
+      <PackageReference Include="AntDesign" Version="0.9.3" />
       <PackageReference Include="AntDesign.Charts" Version="0.2.1" />
       <PackageReference Include="Humanizer.Core" Version="2.11.10" />
       <PackageReference Include="HUp.NET" Version="1.0.0" />

@@ -18,8 +18,8 @@
         <Column @bind-Field="@tableContext.Id"/>
         <Column @bind-Field="@tableContext.Email"/>
         <Column @bind-Field="@tableContext.GivenName"/>
-        <Column Title="Created At" @bind-Field="@tableContext.CreatedAt" Format="dd/MM/yyyy"/>
-        <Column Title="Updated At" @bind-Field="@tableContext.UpdatedAt" Format="dd/MM/yyyy"/>
+        <Column Title="Created At" @bind-Field="@tableContext.CreatedAt" Format="dd/MM/yyyy hh:mm tt"/>
+        <Column Title="Updated At" @bind-Field="@tableContext.UpdatedAt" Format="dd/MM/yyyy hh:mm tt"/>
     </Table>
 </RepositoryWrapper>
 

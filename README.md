@@ -62,7 +62,7 @@
 
 #### Responsive Sider
 
-![Responsive Sider](./_docs/img/responsive-sider.png)
+<img src="./_docs/img/responsive-sider.png" width="50%" />
 
 #### Form
 

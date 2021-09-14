@@ -1,0 +1,13 @@
+﻿@inherits LayoutComponentBase
+
+<AuthorizeView Policy="@Constants.AdminAuthorizationPolicy">
+    <Authorized>
+        <RegisterUser />
+        <MainLayoutInner>
+            @Body
+        </MainLayoutInner>
+    </Authorized>
+    <NotAuthorized>
+        <RedirectToLogin/>
+    </NotAuthorized>
+</AuthorizeView>

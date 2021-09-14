@@ -15,7 +15,7 @@
     }
     <RepositoryWrapper @ref="_repoRef"
                        TRepository="IRegisteredUserRepository"
-                       Action="x => x.GetAllByIds(allUserIds)"
+                       Action="x => x.GetAllByIdsAsync(allUserIds)"
                        TResponse="IReadOnlyList<RegisteredUser>"
                        Context="fullUsers">
         <Title Level="3">2Up Players</Title>

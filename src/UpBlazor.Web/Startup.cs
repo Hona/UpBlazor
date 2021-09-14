@@ -70,6 +70,30 @@ namespace UpBlazor.Web
                             return allowedEmails.Any(x => x == emailAddress);
                         });
                 });
+                
+                options.AddPolicy(Constants.AdminAuthorizationPolicy, policy =>
+                {
+                    policy.RequireAuthenticatedUser()
+                        .RequireClaim(ClaimTypes.Email)
+                        .RequireAssertion(context =>
+                        {
+                            var emailAddress = context.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Email)
+                                ?.Value;
+                            
+                            var adminEmails = Configuration
+                                .GetSection(Constants.AdminAuthorizationPolicy)
+                                .GetChildren()
+                                .Select(x => x.Value)
+                                .ToArray();
+
+                            if (!adminEmails.Any())
+                            {
+                                return true;
+                            }
+
+                            return adminEmails.Any(x => x == emailAddress);
+                        });
+                });
             });
 
             services.AddMarten(options =>

@@ -8,6 +8,6 @@ namespace UpBlazor.Core.Repositories
     {
         Task<RegisteredUser> GetByIdAsync(string id);
         Task<RegisteredUser> GetByEmailAsync(string email);
-        Task<IReadOnlyList<RegisteredUser>> GetAllByIds(params string[] ids);
+        Task<IReadOnlyList<RegisteredUser>> GetAllByIdsAsync(params string[] ids);
     }
 }

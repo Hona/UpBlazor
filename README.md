@@ -3,6 +3,7 @@
   ![UpBlazor](./_docs/img/logo.png)
 
   ![.NET Build + Test](https://github.com/Hona/UpBlazor/actions/workflows/dotnet.yml/badge.svg)
+  [![UpBlazor](https://img.shields.io/badge/License-MIT-blue?style=flat-square)](https://github.com/Hona/UpBlazor/blob/master/LICENSE)
   
 </div>
 

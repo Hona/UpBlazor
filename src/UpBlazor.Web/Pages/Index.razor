@@ -1,28 +1,44 @@
 @page "/"
 
+@layout MainLayout
+
 @inject ICurrentUserService _currentUserService
 
-<UpApiWrapper Action="api => api.GetAccountsAsync()" T="PaginatedDataResponse<AccountResource>">
-    <div style="display: flex; justify-content: center; align-items: center">
-        @foreach (var transactionAccount in context.Data.Where(x => x.Attributes.AccountType == AccountType.Transactional))
-        {
-            <Card Title="@transactionAccount.Attributes.DisplayName"
-                  Bordered="@true"
-                  Hoverable="@true"
-                  Style="margin: 1rem">
-                @transactionAccount.Attributes.CreatedAt
-                $@transactionAccount.Attributes.Balance.Value
-            </Card>
-        }
-    </div>
+<div style="display: flex; 
+            width: 100%;
+            justify-content: center;
+            margin-bottom: 4rem;
+            align-items: center">
+    <Image Src="https://raw.githubusercontent.com/Hona/UpBlazor/main/_docs/img/logo.png"
+         alt="UpBlazor logo"/>
+</div>
 
-    <Table TItem="AccountResource" DataSource="context.Data.Where(x => x.Attributes.AccountType == AccountType.Saver)">
-        <ChildContent Context="tableContext">
-            <Column Title="Account" DataIndex="Attributes.DisplayName" TData="string" Sortable></Column>
-            <Column DataIndex="Attributes.CreatedAt" TData="DateTime" Format="dd/MM/yyyy"></Column>
-            <Column DataIndex="Attributes.Balance.Value" TData="string" Sortable>
-                <span>$@tableContext.Attributes.Balance.Value</span>
-            </Column>
-        </ChildContent>
-    </Table>
-</UpApiWrapper>
+
+<Row Gutter="16">
+    <Col Lg="8" Md="12">
+        <Card Title="Track expenses"
+              Bordered Cover="coverTemplate"
+              Hoverable="true">
+            Track expenses and discover ways to save.
+        </Card>
+    </Col>
+    <Col Lg="8" Md="12">
+        <Card Title="Budgets"
+              Bordered Cover="coverTemplate"
+              Hoverable="true">
+            Create budgets to keep track of your spending
+        </Card>
+    </Col>
+    <Col Lg="8" Md="12">
+        <Card Title="View Helpful Insights"
+              Bordered Cover="coverTemplate"
+              Hoverable="true">
+            Learn about where your money is going and identify where you can save
+        </Card>
+    </Col>
+</Row>
+
+@code
+{
+    RenderFragment coverTemplate = @<img alt="example" src="https://raw.githubusercontent.com/Hona/UpBlazor/main/_docs/img/logo.png"/>;
+}

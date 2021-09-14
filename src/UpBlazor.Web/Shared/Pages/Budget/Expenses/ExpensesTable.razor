@@ -9,7 +9,7 @@
     <Title Level="3">Expenses</Title>
     <Table DataSource="expenses" Loading="LoadingAggregate" Context="tableContext">
         <Column Title="Name" @bind-Field="@tableContext.Name" Sortable/>
-        <Column Title="Exact" TData="decimal?" DataIndex="Money.Exact" Format="$0" Sortable/>
+        <Column Title="Exact" TData="decimal?" DataIndex="Money.Exact" Format="$0.00" Sortable/>
         <Column Title="Relative" TData="decimal?" DataIndex="Money.Percent" Format="0%" Sortable/>
         <Column Title="Paid By" @bind-Field="@tableContext.PaidByDate" Format="dd/MM/yyyy" Sortable/>
         <SaverIdColumn Title="From Saver" TableContext="tableContext" TTableContext="Expense"/>

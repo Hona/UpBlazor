@@ -9,7 +9,7 @@
     <Title Level="3">Income</Title>
     <Table DataSource="income" Loading="LoadingAggregate" Context="tableContext">
         <Column Title="Name" @bind-Field="@tableContext.Name" Sortable/>
-        <Column Title="Amount" @bind-Field="tableContext.ExactMoney" Format="$0" Sortable/>
+        <Column Title="Amount" @bind-Field="tableContext.ExactMoney" Format="$0.00" Sortable/>
         <Column Title="Start Date" @bind-Field="@tableContext.StartDate" Format="dd/MM/yyyy" Sortable/>
         <Column Title="Interval Units" @bind-Field="@tableContext.IntervalUnits" Sortable/>
         <Column Title="Interval" @bind-Field="@tableContext.Interval" Sortable/>

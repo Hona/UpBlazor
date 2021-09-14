@@ -1,6 +1,5 @@
 ﻿using System.Threading.Tasks;
 using Marten;
-using Marten.Linq.SoftDeletes;
 using UpBlazor.Core.Models;
 using UpBlazor.Core.Repositories;
 

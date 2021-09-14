@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace UpBlazor.Core.Models.Enums
+﻿namespace UpBlazor.Core.Models.Enums
 {
     public enum Interval
     {

@@ -9,7 +9,7 @@
     <Title Level="3">Recurring Expenses</Title>
     <Table DataSource="expenses" Loading="LoadingAggregate" Context="tableContext">
         <Column Title="Name" @bind-Field="@tableContext.Name" Sortable/>
-        <Column Title="Exact" TData="decimal?" DataIndex="Money.Exact" Format="$0" Sortable/>
+        <Column Title="Exact" TData="decimal?" DataIndex="Money.Exact" Format="$0.00" Sortable/>
         <Column Title="Relative" TData="decimal?" DataIndex="Money.Percent" Format="0%" Sortable/>
         <Column Title="Start Date" @bind-Field="@tableContext.StartDate" Format="dd/MM/yyyy" Sortable/>
         <Column Title="Interval Units" @bind-Field="@tableContext.IntervalUnits" Sortable/>

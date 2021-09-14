@@ -4,8 +4,8 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components.Authorization;
-using Microsoft.AspNetCore.Http;
 using Up.NET.Api;
+using UpBlazor.Core.Models.Mock;
 using UpBlazor.Core.Repositories;
 
 namespace UpBlazor.Core.Services
@@ -35,7 +35,7 @@ namespace UpBlazor.Core.Services
             return claims.FirstOrDefault(x => x.Type == ClaimTypes.GivenName)?.Value;
         }
 
-        private UpApi _upApi;
+        private IUpApi _upApi;
 
         public CurrentUserService(AuthenticationStateProvider authenticationStateProvider, IUpUserTokenRepository upUserTokenRepository)
         {
@@ -43,9 +43,9 @@ namespace UpBlazor.Core.Services
             _upUserTokenRepository = upUserTokenRepository;
         }
 
-        public async Task<UpApi> GetApiAsync(bool forceReload = false)
+        public async Task<IUpApi> GetApiAsync(string overrideToken = null, bool forceReload = false)
         {
-            if (!forceReload && _upApi != null)
+            if (!forceReload && string.IsNullOrWhiteSpace(overrideToken) && _upApi != null)
             {
                 return _upApi;
             }
@@ -54,12 +54,27 @@ namespace UpBlazor.Core.Services
 
             var userToken = await _upUserTokenRepository.GetByUserIdAsync(userId);
 
-            if (userToken == null)
+            if (userToken == null && overrideToken != MockUpApi.MockUpToken)
             {
                 return null;
             }
 
-            _upApi = new UpApi(userToken.AccessToken);
+            if (!string.IsNullOrWhiteSpace(overrideToken) && userToken != null)
+            {
+                userToken.AccessToken = overrideToken;
+            }
+
+            var accessToken = userToken?.AccessToken ?? overrideToken;
+
+            if (accessToken == MockUpApi.MockUpToken)
+            {
+                _upApi = new MockUpApi();
+            }
+            else
+            {
+                _upApi = new UpApi(accessToken);
+            }
+
             return _upApi;
         }
 

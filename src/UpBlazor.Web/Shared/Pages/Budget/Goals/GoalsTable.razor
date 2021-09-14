@@ -10,7 +10,7 @@
     <Title Level="3">Goals</Title>
     <Table DataSource="goals" Loading="LoadingAggregate" Context="tableContext">
         <Column Title="Name" @bind-Field="@tableContext.Name" Sortable/>
-        <Column Title="Amount"  @bind-Field="@tableContext.Amount" Format="$0" Sortable/>
+        <Column Title="Amount"  @bind-Field="@tableContext.Amount" Format="$0.00" Sortable/>
         <Column Title="Date" @bind-Field="@tableContext.Date" Format="dd/MM/yyyy" Sortable/>
         <Column Title="Saver" @bind-Field="@tableContext.SaverId">
             @{

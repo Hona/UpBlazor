@@ -1,5 +1,4 @@
 ﻿@inject ICurrentUserService _currentUserService
-@inject IUpUserTokenRepository _upUserTokenRepository
 
 @typeparam T
 
@@ -47,7 +46,7 @@ else
     public RenderFragment<T> ChildContent { get; set; }
 
     [Parameter]
-    public Func<UpApi, Task<UpResponse<T>>> Action { get; set; }
+    public Func<IUpApi, Task<UpResponse<T>>> Action { get; set; }
 
     [Parameter]
     public bool HideOnNoAccessToken { get; set; }
@@ -60,7 +59,7 @@ else
     
     public bool Loading => _loading;
 
-    private UpApi _upApi;
+    private IUpApi _upApi;
 
     private bool _loading;
 

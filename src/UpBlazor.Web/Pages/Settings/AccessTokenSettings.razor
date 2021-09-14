@@ -48,6 +48,7 @@ else
       Loading="_formLoading">
     <FormItem>
         <Input DebounceMilliseconds="int.MaxValue" @bind-Value="@context.Value" />
+        <Text>Want to try it out? Use 'up:demo'</Text>
     </FormItem>
     <FormItem WrapperColOffset="4" WrapperColSpan="20">
         <Button Type="@ButtonType.Primary" HtmlType="submit">
@@ -61,7 +62,7 @@ else
 
 @code
 {
-    private UpApi _upApi;
+    private IUpApi _upApi;
     private bool IsSet => _upApi != null;
     private bool _loading;
     private bool _formLoading;
@@ -75,7 +76,7 @@ else
     {
         _loading = true;
         
-        _upApi = await _currentUserService.GetApiAsync(true);
+        _upApi = await _currentUserService.GetApiAsync(forceReload: true);
 
         _loading = false;
 
@@ -89,7 +90,7 @@ else
     {
         _formLoading = true;
         
-        var temporaryApi = new UpApi(_setAccessToken.Value);
+        var temporaryApi = await _currentUserService.GetApiAsync(_setAccessToken.Value);
 
         var pingResponse = await temporaryApi.GetPingAsync();
 

@@ -39,7 +39,7 @@
 
     private string MoneyFormat(decimal? value) => value != null ? $"${value:N2}" : "Exact ($)";
 
-    private string MoneyParse(string value) => Regex.Replace(value, @"\$\s?|(,*)", "");
+    private string MoneyParse(string value) => Regex.Replace(value, @"\$\s?|(,*)", "", RegexOptions.Compiled);
 
     private string PercentFormat(decimal? value) => value != null ? value + "%" : "Relative (%)";
 

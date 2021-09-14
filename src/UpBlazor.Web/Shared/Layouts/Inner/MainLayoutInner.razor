@@ -76,6 +76,20 @@
                     </MenuItem>
                 </ChildContent>
             </SubMenu>
+            <RequireAdmin>
+                <SubMenu>
+                    <TitleTemplate>
+                        <Icon Type="warning" Theme="outline"/>
+                        <span>Admin</span>
+                    </TitleTemplate>
+                    <ChildContent>
+                        <MenuItem OnClick='() => _navigationManager.NavigateTo("/admin/users")'
+                                  RouterMatch="NavLinkMatch.All" RouterLink="/admin/users">
+                            <span>Users</span>
+                        </MenuItem>
+                    </ChildContent>
+                </SubMenu>            
+                </RequireAdmin>
         </Menu>
     </Sider>
     <Layout>

@@ -1,0 +1,28 @@
+﻿@page "/admin/users"
+
+@layout AdminAuthorizeLayout
+
+<Title Level="3">Users</Title>
+
+<RepositoryWrapper TRepository="IRegisteredUserRepository"
+                   Action="x => x.GetAllAsync()"
+                   TResponse="IReadOnlyList<RegisteredUser>"
+                   Context="repoContext">
+    <Card>
+        <Statistic Value="repoContext.Count" Title="Total Users" />
+    </Card>
+    
+    <Divider />
+    <Table DataSource="repoContext"
+           Context="tableContext">
+        <Column @bind-Field="@tableContext.Id"/>
+        <Column @bind-Field="@tableContext.Email"/>
+        <Column @bind-Field="@tableContext.GivenName"/>
+        <Column Title="Created At" @bind-Field="@tableContext.CreatedAt" Format="dd/MM/yyyy"/>
+        <Column Title="Updated At" @bind-Field="@tableContext.UpdatedAt" Format="dd/MM/yyyy"/>
+    </Table>
+</RepositoryWrapper>
+
+@code {
+    
+}

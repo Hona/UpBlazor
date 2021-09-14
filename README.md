@@ -8,7 +8,7 @@
 
 ## What is this?
 
-🏦 I built this site to integrate with [Up bank](https://up.com.au) (an Australian digital bank), to assist users with **budgetting** and to gain **powerful future insights**.
+🏦 I built this site to integrate with [Up bank](https://up.com.au) (an Australian digital bank), to assist users with **budgeting** and to gain **powerful future insights**.
 
 ### Epics
 

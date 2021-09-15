@@ -23,6 +23,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\UpBlazor.Application\UpBlazor.Application.csproj" />
       <ProjectReference Include="..\UpBlazor.Core\UpBlazor.Core.csproj" />
       <ProjectReference Include="..\UpBlazor.Infrastructure\UpBlazor.Infrastructure.csproj" />
     </ItemGroup>

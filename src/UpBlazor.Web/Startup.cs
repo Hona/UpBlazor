@@ -11,7 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using UpBlazor.Core.Models;
 using UpBlazor.Core.Repositories;
-using UpBlazor.Core.Services;
+using UpBlazor.Application.Services;
 using UpBlazor.Infrastructure.Repositories;
 
 namespace UpBlazor.Web

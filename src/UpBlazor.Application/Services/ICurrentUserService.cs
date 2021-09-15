@@ -3,7 +3,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Up.NET.Api;
 
-namespace UpBlazor.Core.Services
+namespace UpBlazor.Application.Services
 {
     public interface ICurrentUserService
     {

@@ -8,7 +8,7 @@ using Up.NET.Api;
 using UpBlazor.Core.Models.Mock;
 using UpBlazor.Core.Repositories;
 
-namespace UpBlazor.Core.Services
+namespace UpBlazor.Application.Services
 {
     public class CurrentUserService : ICurrentUserService
     {

@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 
-namespace UpBlazor.Core.Services
+namespace UpBlazor.Application.Services
 {
     public interface INormalizerService
     {

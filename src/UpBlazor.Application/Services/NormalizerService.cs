@@ -7,7 +7,7 @@ using UpBlazor.Core.Models;
 using UpBlazor.Core.Models.Normalized;
 using UpBlazor.Core.Repositories;
 
-namespace UpBlazor.Core.Services
+namespace UpBlazor.Application.Services
 {
     public class NormalizerService : INormalizerService
     {

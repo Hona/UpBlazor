@@ -54,9 +54,16 @@ else
         <Button Type="@ButtonType.Primary" HtmlType="submit">
             Save
         </Button>
-        <AntDesign.Button Danger Type="text" OnClick="OnClearAccessTokenClickAsync">
-            Clear Token
-        </AntDesign.Button>
+        <Popover Title="Title" Trigger="@(new AntDesign.Trigger[] { AntDesign.Trigger.Click})">
+            <ContentTemplate>
+                Are you sure? <Button Danger Size="small" OnClick="OnClearAccessTokenClickAsync">Yes</Button>
+            </ContentTemplate>
+            <ChildContent>
+                <AntDesign.Button Danger Type="text">
+                    Clear Token
+                </AntDesign.Button>
+            </ChildContent>
+        </Popover>
     </FormItem>
 </Form>
 

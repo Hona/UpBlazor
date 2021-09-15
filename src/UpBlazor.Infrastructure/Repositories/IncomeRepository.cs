@@ -12,21 +12,13 @@ namespace UpBlazor.Infrastructure.Repositories
     {
         public IncomeRepository(IDocumentStore store) : base(store) { }
 
-        public async Task<Income> GetByIdAsync(Guid id)
-        {
-            using var session = Store.QuerySession();
-
-            return await session.Query<Income>()
+        public async Task<Income> GetByIdAsync(Guid id) =>
+            await Queryable
                 .SingleOrDefaultAsync(x => x.Id == id);
-        }
 
-        public async Task<IReadOnlyList<Income>> GetAllByUserIdAsync(string userId)
-        {
-            using var session = Store.QuerySession();
-
-            return await session.Query<Income>()
+        public async Task<IReadOnlyList<Income>> GetAllByUserIdAsync(string userId) =>
+            await Queryable
                 .Where(x => x.UserId == userId)
                 .ToListAsync();
-        }
     }
 }

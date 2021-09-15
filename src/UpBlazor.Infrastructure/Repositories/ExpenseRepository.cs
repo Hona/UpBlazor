@@ -12,21 +12,13 @@ namespace UpBlazor.Infrastructure.Repositories
     {
         public ExpenseRepository(IDocumentStore store) : base(store) { }
 
-        public async Task<Expense> GetByIdAsync(Guid id)
-        {
-            using var session = Store.QuerySession();
-
-            return await session.Query<Expense>()
+        public async Task<Expense> GetByIdAsync(Guid id) => 
+            await Queryable
                 .SingleOrDefaultAsync(x => x.Id == id);
-        }
 
-        public async Task<IReadOnlyList<Expense>> GetAllByUserIdAsync(string userId)
-        {
-            using var session = Store.QuerySession();
-
-            return await session.Query<Expense>()
+        public async Task<IReadOnlyList<Expense>> GetAllByUserIdAsync(string userId) =>
+            await Queryable
                 .Where(x => x.UserId == userId)
                 .ToListAsync();
-        }
     }
 }

@@ -1,6 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Marten;
+using Marten.Linq;
 using UpBlazor.Core.Repositories;
 
 namespace UpBlazor.Infrastructure.Repositories
@@ -8,54 +11,44 @@ namespace UpBlazor.Infrastructure.Repositories
     public class GenericRepository<T> : IGenericRepository<T> where T : class
     {
         protected readonly IDocumentStore Store;
+        protected readonly IDocumentSession Session;
+
+        protected IMartenQueryable<T> Queryable => Session.Query<T>();
 
         protected GenericRepository(IDocumentStore store)
         {
             Store = store;
+            Session = Store.LightweightSession();
         }
 
         public async Task AddAsync(T model)
         {
-            using var session = Store.LightweightSession();
-            
-            session.Insert(model);
+            Session.Insert(model);
 
-            await session.SaveChangesAsync();
+            await Session.SaveChangesAsync();
         }
 
         public async Task UpdateAsync(T model)
         {
-            using var session = Store.LightweightSession();
-            
-            session.Update(model);
+            Session.Update(model);
 
-            await session.SaveChangesAsync();
-            
+            await Session.SaveChangesAsync();
         }
 
         public async Task AddOrUpdateAsync(T model)
         {
-            using var session = Store.LightweightSession();
-            
-            session.Store(model);
+            Session.Store(model);
 
-            await session.SaveChangesAsync();
+            await Session.SaveChangesAsync();
         }
 
         public async Task DeleteAsync(T model)
         {
-            using var session = Store.LightweightSession();
-            
-            session.Delete(model);
+            Session.Delete(model);
 
-            await session.SaveChangesAsync();
+            await Session.SaveChangesAsync();
         }
 
-        public async Task<IReadOnlyList<T>> GetAllAsync()
-        {
-            using var session = Store.QuerySession();
-
-            return await session.Query<T>().ToListAsync();
-        }
+        public async Task<IReadOnlyList<T>> GetAllAsync() => await Session.Query<T>().ToListAsync();
     }
 }

@@ -13,20 +13,14 @@ namespace UpBlazor.Infrastructure.Repositories
         
         public async Task<IReadOnlyList<TwoUp>> GetAllByUserIdAsync(string userId)
         {
-            using var session = Store.QuerySession();
-
-            return await session.Query<TwoUp>()
+            return await Queryable
                 .Where(x => x.UserId1 == userId || x.UserId2 == userId)
                 .ToListAsync();
         }
 
-        public async Task<TwoUp> GetByBothUserIdsAsync(string userId1, string userId2)
-        {
-            using var session = Store.QuerySession();
-
-            return await session.Query<TwoUp>()
+        public async Task<TwoUp> GetByBothUserIdsAsync(string userId1, string userId2) =>
+            await Queryable
                 .SingleOrDefaultAsync(x => x.UserId1 == userId1 && x.UserId2 == userId2 ||
                                            x.UserId1 == userId2 && x.UserId2 == userId1);
-        }
     }
 }

@@ -14,9 +14,7 @@ namespace UpBlazor.Infrastructure.Repositories
 
         public new async Task AddOrUpdateAsync(RegisteredUser model)
         {
-            using var session = Store.LightweightSession();
-
-            var existingModel = await session.Query<RegisteredUser>()
+            var existingModel = await Queryable
                 .SingleOrDefaultAsync(x => x.Id == model.Id);
 
             if (existingModel == null)
@@ -29,34 +27,22 @@ namespace UpBlazor.Infrastructure.Repositories
                 model.UpdatedAt = DateTime.Now;
             }
 
-            session.Store(model);
+            Session.Store(model);
 
-            await session.SaveChangesAsync();
+            await Session.SaveChangesAsync();
         }
 
-        public async Task<RegisteredUser> GetByIdAsync(string id)
-        {
-            using var session = Store.QuerySession();
-
-            return await session.Query<RegisteredUser>()
+        public async Task<RegisteredUser> GetByIdAsync(string id) =>
+            await Queryable
                 .SingleOrDefaultAsync(x => x.Id == id);
-        }
 
-        public async Task<RegisteredUser> GetByEmailAsync(string email)
-        {
-            using var session = Store.QuerySession();
-
-            return await session.Query<RegisteredUser>()
+        public async Task<RegisteredUser> GetByEmailAsync(string email) =>
+            await Queryable
                 .SingleOrDefaultAsync(x => x.Email == email);
-        }
 
-        public async Task<IReadOnlyList<RegisteredUser>> GetAllByIdsAsync(params string[] ids)
-        {
-            using var session = Store.QuerySession();
-
-            return await session.Query<RegisteredUser>()
+        public async Task<IReadOnlyList<RegisteredUser>> GetAllByIdsAsync(params string[] ids) =>
+            await Queryable
                 .Where(x => x.Id.IsOneOf(ids))
                 .ToListAsync();
-        }
     }
 }

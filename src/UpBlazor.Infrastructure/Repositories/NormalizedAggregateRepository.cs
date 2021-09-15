@@ -9,12 +9,8 @@ namespace UpBlazor.Infrastructure.Repositories
     {
         public NormalizedAggregateRepository(IDocumentStore store) : base(store) { }
 
-        public async Task<NormalizedAggregate> GetByUserIdAsync(string userId)
-        {
-            using var session = Store.QuerySession();
-
-            return await session.Query<NormalizedAggregate>()
+        public async Task<NormalizedAggregate> GetByUserIdAsync(string userId) =>
+            await Session.Query<NormalizedAggregate>()
                 .SingleOrDefaultAsync(x => x.UserId == userId);
-        }
     }
 }

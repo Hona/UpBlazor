@@ -12,21 +12,13 @@ namespace UpBlazor.Infrastructure.Repositories
     {
         public RecurringExpenseRepository(IDocumentStore store) : base(store) { }
 
-        public async Task<RecurringExpense> GetByIdAsync(Guid id)
-        {
-            using var session = Store.QuerySession();
-
-            return await session.Query<RecurringExpense>()
+        public async Task<RecurringExpense> GetByIdAsync(Guid id) =>
+            await Queryable
                 .SingleOrDefaultAsync(x => x.Id == id);
-        }
 
-        public async Task<IReadOnlyList<RecurringExpense>> GetAllByUserIdAsync(string userId)
-        {
-            using var session = Store.QuerySession();
-
-            return await session.Query<RecurringExpense>()
+        public async Task<IReadOnlyList<RecurringExpense>> GetAllByUserIdAsync(string userId) =>
+            await Queryable
                 .Where(x => x.UserId == userId)
                 .ToListAsync();
-        }
     }
 }

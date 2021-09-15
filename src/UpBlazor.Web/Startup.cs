@@ -12,6 +12,7 @@ using Microsoft.Extensions.Hosting;
 using UpBlazor.Core.Models;
 using UpBlazor.Core.Repositories;
 using UpBlazor.Application.Services;
+using UpBlazor.Infrastructure;
 using UpBlazor.Infrastructure.Repositories;
 
 namespace UpBlazor.Web
@@ -96,35 +97,11 @@ namespace UpBlazor.Web
                 });
             });
 
-            services.AddMarten(options =>
-            {
-                options.Connection(Configuration.GetConnectionString("Marten"));
-
-                options.AutoCreateSchemaObjects = AutoCreate.All;
-
-                options.Schema.For<UpUserToken>()
-                    .Identity(x => x.UserId);
-                options.Schema.For<TwoUp>()
-                    .Identity(x => x.MartenId);
-                options.Schema.For<TwoUpRequest>()
-                    .Identity(x => x.MartenId);
-                options.Schema.For<NormalizedAggregate>()
-                    .Identity(x => x.UserId);
-            });
-            
-            services.AddSingleton<IUpUserTokenRepository, UpUserTokenRepository>();
-            services.AddSingleton<ITwoUpRepository, TwoUpRepository>();
-            services.AddSingleton<ITwoUpRequestRepository, TwoUpRequestRepository>();
-            services.AddSingleton<IRegisteredUserRepository, RegisteredUserRepository>();
-            services.AddSingleton<IExpenseRepository, ExpenseRepository>();
-            services.AddSingleton<IRecurringExpenseRepository, RecurringExpenseRepository>();
-            services.AddSingleton<IIncomeRepository, IncomeRepository>();
-            services.AddSingleton<IGoalRepository, GoalRepository>();
-            services.AddSingleton<ISavingsPlanRepository, SavingsPlanRepository>();
-            services.AddSingleton<INormalizedAggregateRepository, NormalizedAggregateRepository>();
+            services.AddUpBlazorMarten(Configuration.GetConnectionString("Marten"));
+            services.AddRepositories();
 
             services.AddScoped<ICurrentUserService, CurrentUserService>();
-            services.AddSingleton<INormalizerService, NormalizerService>();
+            services.AddScoped<INormalizerService, NormalizerService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

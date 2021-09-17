@@ -5,7 +5,7 @@
                    Action="x => x.GetAllByUserIdAsync(UserId)"
                    TResponse="IReadOnlyList<Income>"
                    Context="income"
-                   ChildHandlesLoading="true">
+                   ChildHandlesLoading="false">
     <Title Level="3">Income</Title>
     <Table DataSource="income" Loading="LoadingAggregate" Context="tableContext">
         <Column Title="Name" @bind-Field="@tableContext.Name" Sortable/>

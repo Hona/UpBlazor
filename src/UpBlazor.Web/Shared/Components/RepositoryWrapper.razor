@@ -49,6 +49,7 @@ else
         _loading = true;
 
         _response = await Action.Invoke(_repository);
+        CascadedResponse = default;
         
         _loading = false;
         

@@ -5,7 +5,7 @@
                    Action="x => x.GetAllByUserIdAsync(UserId)"
                    TResponse="IReadOnlyList<Expense>"
                    Context="expenses"
-                   ChildHandlesLoading="true">
+                   ChildHandlesLoading="false">
     <Title Level="3">Expenses</Title>
     <Table DataSource="expenses" Loading="LoadingAggregate" Context="tableContext">
         <Column Title="Name" @bind-Field="@tableContext.Name" Sortable/>
@@ -28,7 +28,6 @@
 {
     [CascadingParameter(Name = CascadingConstants.UserIdWrapper)]
     public string UserId { get; set; }
-    
 
     public RepositoryWrapper<IExpenseRepository, IReadOnlyList<Expense>> RepositoryWrapper => _repoRef;
     

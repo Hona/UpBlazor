@@ -78,7 +78,8 @@ else
         }
 
         _response = await Action.Invoke(_upApi);
-        
+        CascadedResponse = default;
+
         _loading = false;
     }
 }

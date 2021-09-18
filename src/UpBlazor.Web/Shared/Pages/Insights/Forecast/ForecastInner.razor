@@ -10,72 +10,106 @@
                            Action="x => x.GetAllByUserIdAsync(NormalizedAggregate.UserId)"
                            TResponse="IReadOnlyList<Expense>"
                            Context="expenses">
-        @{
-            var now = DateTime.Now;
+           <RepositoryWrapper TRepository="ISavingsPlanRepository"
+                              Action="x => x.GetAllByUserIdAsync(NormalizedAggregate.UserId)"
+                              TResponse="IReadOnlyList<SavingsPlan>"
+                              Context="savingsPlans">
+                <UpApiWrapper Context="accounts" Action="api => api.GetAccountsAsync()" T="PaginatedDataResponse<AccountResource>">
+                    @{
+                        var now = DateTime.Now;
 
-            var duplicateIncomes = incomes.GroupBy(x => x.Name);
+                        var duplicateIncomes = incomes.GroupBy(x => x.Name);
 
-            foreach (var duplicateIncomeGrouping in duplicateIncomes)
-            {
-                var duplicateIncomeGroupingList = duplicateIncomeGrouping.ToList();
-                for (var i = 0; i < duplicateIncomeGroupingList.Count; i++)
-                {
-                    if (i == 0)
-                    {
-                        continue;
+                        foreach (var duplicateIncomeGrouping in duplicateIncomes)
+                        {
+                            var duplicateIncomeGroupingList = duplicateIncomeGrouping.ToList();
+                            for (var i = 0; i < duplicateIncomeGroupingList.Count; i++)
+                            {
+                                if (i == 0)
+                                {
+                                    continue;
+                                }
+
+                                var duplicateIncome = duplicateIncomeGroupingList[i];
+
+                                duplicateIncome.Name += " #" + i;
+                            }
+                        }
+
+                        var startDay = 0;
+                        var endDay = 365;
+
+                        _incomeForecastData = Enumerable.Range(startDay, endDay).SelectMany(x => NormalizedAggregate.Incomes.Select(normalizedIncome => new ForecastViewModel
+                        {
+                            balance = Math.Round(x * normalizedIncome.Amount, 2),
+                            cycle = now.AddDays(x).ToShortDateString(),
+                            accountName = incomes.First(x => x.Id == normalizedIncome.IncomeId).Name
+                        })).ToList();
+
+                        _expensesForecastData = Enumerable.Range(startDay, endDay).SelectMany(x =>
+                        {
+                            var output = new List<ForecastViewModel>(2 * (endDay - startDay));
+
+                            output.AddRange(NormalizedAggregate.RecurringExpenses.Select(normalizedRecurringExpense => new ForecastViewModel
+                            {
+                                balance = Math.Round(x * normalizedRecurringExpense.Amount, 2),
+                                cycle = now.AddDays(x).ToShortDateString(),
+                                accountName = recurringExpenses.First(x => x.Id == normalizedRecurringExpense.RecurringExpenseId).Name
+                            }));
+
+                            output.AddRange(expenses.Where(x => x.Money.Exact.HasValue).Select(expense => new ForecastViewModel
+                            {
+                                balance = expense.PaidByDate < now.AddDays(x) ? Math.Round(expense.Money.Exact.Value, 2) : 0,
+                                cycle = now.AddDays(x).ToShortDateString(),
+                                accountName = expense.Name
+                            }));
+
+                            return output;
+                        }).ToList();
+
+                        _totalForecastData = Enumerable.Range(startDay, endDay).SelectMany(x => accounts.Data.Select(account =>
+                        {
+                            var savingsPlanIdsFiltered = savingsPlans
+                                .Where(x => x.SaverId == account.Id)
+                                .Select(x => x.Id)
+                                .ToList();
+
+                            var totalNormalizedAccountAggregate = NormalizedAggregate.SavingsPlans
+                                .Where(x => savingsPlanIdsFiltered.Contains(x.SavingsPlanId))
+                                .Sum(x => x.Amount);
+
+                            var predictedBalance = totalNormalizedAccountAggregate * x;
+
+                            return new ForecastViewModel()
+                            {
+                                balance = Math.Round(predictedBalance, 2),
+                                cycle = now.AddDays(x).ToShortDateString(),
+                                accountName = account.Attributes.DisplayName
+                            };
+                        })).ToList();
                     }
 
-                    var duplicateIncome = duplicateIncomeGroupingList[i];
+                    <Space Direction="DirectionVHType.Vertical" Style="width: 100%">
+                        <SpaceItem>
+                            <Card Title="Total Income">
+                                <AntDesign.Charts.StackedArea Config="_forecastConfig" Data="@_incomeForecastData"/>
+                            </Card>
+                        </SpaceItem>
 
-                    duplicateIncome.Name += " #" + i;
-                }
-            }
+                        <SpaceItem>
+                            <Card Title="Total Expenses">
+                                <AntDesign.Charts.StackedArea Config="_forecastConfig" Data="@_expensesForecastData"/>
+                            </Card>
+                        </SpaceItem>
 
-            var startDay = 0;
-            var endDay = 365;
-
-            _incomeForecastData = Enumerable.Range(startDay, endDay).SelectMany(x => NormalizedAggregate.Incomes.Select(normalizedIncome => new ForecastViewModel
-            {
-                balance = Math.Round(x * normalizedIncome.Amount, 2),
-                cycle = now.AddDays(x).ToShortDateString(),
-                accountName = incomes.First(x => x.Id == normalizedIncome.IncomeId).Name
-            })).ToList();
-
-            _expensesForecastData = Enumerable.Range(startDay, endDay).SelectMany(x =>
-            {
-                var output = new List<ForecastViewModel>(2 * (endDay - startDay));
-                
-                output.AddRange(NormalizedAggregate.RecurringExpenses.Select(normalizedRecurringExpense => new ForecastViewModel
-                {
-                    balance = Math.Round(x * normalizedRecurringExpense.Amount, 2),
-                    cycle = now.AddDays(x).ToShortDateString(),
-                    accountName = recurringExpenses.First(x => x.Id == normalizedRecurringExpense.RecurringExpenseId).Name
-                }));
-                
-                output.AddRange(expenses.Where(x => x.Money.Exact.HasValue).Select(expense => new ForecastViewModel
-                {
-                    balance = expense.PaidByDate < now.AddDays(x) ? Math.Round(expense.Money.Exact.Value, 2) : 0,
-                    cycle = now.AddDays(x).ToShortDateString(),
-                    accountName = expense.Name
-                }));
-
-                return output;
-            }).ToList();
-        }
-
-            <Space Direction="DirectionVHType.Vertical" Style="width: 100%">
-                <SpaceItem>
-                    <Card Title="Total Income">
-                        <AntDesign.Charts.StackedArea Config="_forecastConfig" Data="@_incomeForecastData"/>
-                    </Card>
-                </SpaceItem>
-
-                <SpaceItem>
-                    <Card Title="Total Expenses">
-                        <AntDesign.Charts.StackedArea Config="_forecastConfig" Data="@_expensesForecastData"/>
-                    </Card>
-                </SpaceItem>
-            </Space>
+                        <SpaceItem>
+                            <Card Title="Totals">
+                                <AntDesign.Charts.StackedArea Config="_forecastConfig" Data="@_totalForecastData"/>
+                            </Card>
+                        </SpaceItem>
+                    </Space>
+                </UpApiWrapper>
+            </RepositoryWrapper>
         </RepositoryWrapper>
     </RepositoryWrapper>
 </RepositoryWrapper>
@@ -87,19 +121,21 @@
 
     private List<ForecastViewModel> _incomeForecastData;
     private List<ForecastViewModel> _expensesForecastData;
-    
+    private List<ForecastViewModel> _totalForecastData;
+
+
     private class ForecastViewModel
     {
         public string cycle { get; set; }
         public decimal balance { get; set; }
         public string accountName { get; set; }
     }
-    
+
     private AntDesign.Charts.StackedAreaConfig _forecastConfig = new()
     {
         XField = "cycle",
         YField = "balance",
         StackField = "accountName"
     };
-    
+
 }

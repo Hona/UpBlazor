@@ -115,6 +115,8 @@
 
                             var predictedBalance = totalNormalizedAccountAggregate * x;
 
+                            predictedBalance += account.Attributes.Balance.ValueInBaseUnits / 100M;
+
                             predictedBalance -= _expensesForecastData
                                 .Where(expensesVm => expensesVm.Index == x)
                                 .Where(expensesVm =>

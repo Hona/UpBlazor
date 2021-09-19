@@ -35,6 +35,7 @@ namespace UpBlazor.Core.Models.Mock
                             Balance = new MoneyObject
                             {
                                 Value = 1000.ToString(),
+                                ValueInBaseUnits = 1000 * 100
                             }
                         }
                     },
@@ -49,6 +50,7 @@ namespace UpBlazor.Core.Models.Mock
                             Balance = new MoneyObject
                             {
                                 Value = 5000.ToString(),
+                                ValueInBaseUnits = 5000 * 100
                             }
                         }
                     },
@@ -63,6 +65,7 @@ namespace UpBlazor.Core.Models.Mock
                             Balance = new MoneyObject
                             {
                                 Value = 2000.ToString(),
+                                ValueInBaseUnits = 2000 * 100
                             }
                         }
                     }

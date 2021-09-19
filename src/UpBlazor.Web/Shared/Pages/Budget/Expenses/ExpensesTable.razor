@@ -30,19 +30,19 @@
     public string UserId { get; set; }
 
     public RepositoryWrapper<IExpenseRepository, IReadOnlyList<Expense>> RepositoryWrapper => _repoRef;
-    
+
     private bool _loading;
 
     private bool LoadingAggregate => _loading ? _loading : _repoRef.Loading;
-    
+
     private RepositoryWrapper<IExpenseRepository, IReadOnlyList<Expense>> _repoRef;
-    
+
     private async Task DeleteAsync(Expense expense)
     {
         _loading = true;
 
         await _expenseRepository.DeleteAsync(expense);
-        
+
         _loading = false;
 
         await _repoRef.ReloadAsync();

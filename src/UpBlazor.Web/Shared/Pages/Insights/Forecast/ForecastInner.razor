@@ -39,9 +39,20 @@
 
                         var duplicateAccounts = accounts.Data.GroupBy(x => x.Attributes.DisplayName);
 
-                        foreach (var duplicateAccount in duplicateAccounts)
+                        foreach (var duplicateAccountGrouping in duplicateAccounts)
                         {
-                            var duplicate
+                            var duplicateAccountGroupingList = duplicateAccountGrouping.ToList();
+                            for (var i = 0; i < duplicateAccountGroupingList.Count; i++)
+                            {
+                                if (i == 0)
+                                {
+                                    continue;
+                                }
+
+                                var duplicateAccount = duplicateAccountGroupingList[i];
+
+                                duplicateAccount.Attributes.DisplayName += " #" + i;
+                            }
                         }
 
                         var startDay = 0;
@@ -64,7 +75,8 @@
                                 balance = Math.Round(x * normalizedRecurringExpense.Amount, 2),
                                 cycle = now.AddDays(x).ToShortDateString(),
                                 accountName = recurringExpenses.First(x => x.Id == normalizedRecurringExpense.RecurringExpenseId).Name,
-                                Index = x
+                                Index = x,
+                                RecurringExpenseId = normalizedRecurringExpense.RecurringExpenseId
                             }));
 
                             output.AddRange(expenses.Where(x => x.Money.Exact.HasValue).Select(expense => new ForecastViewModel
@@ -72,7 +84,8 @@
                                 balance = expense.PaidByDate < now.AddDays(x) ? Math.Round(expense.Money.Exact.Value, 2) : 0,
                                 cycle = now.AddDays(x).ToShortDateString(),
                                 accountName = expense.Name,
-                                Index = x
+                                Index = x,
+                                ExpenseId = expense.Id
                             }));
 
                             return output;
@@ -82,8 +95,8 @@
                         var totalIncomeAmounts = NormalizedAggregate.Incomes.Sum(x => x.Amount);
 
                         var unbudgetedAmount = totalIncomeAmounts - totalSavingsPlanAmount;
-                        
-                        
+
+
                         _totalForecastData = Enumerable.Range(startDay, endDay).SelectMany(x => accounts.Data.Select(account =>
                         {
                             var savingsPlanIdsFiltered = savingsPlans
@@ -98,16 +111,39 @@
                             if (account.Attributes.AccountType == AccountType.Transactional)
                             {
                                 totalNormalizedAccountAggregate += unbudgetedAmount;
-                                unbudgetedAmount = 0;
                             }
 
                             var predictedBalance = totalNormalizedAccountAggregate * x;
 
-                            /*predictedBalance -= _expensesForecastData
+                            predictedBalance -= _expensesForecastData
                                 .Where(expensesVm => expensesVm.Index == x)
-                                .Sum(x => x.balance);*/
+                                .Where(expensesVm =>
+                                {
+                                    if (expensesVm.ExpenseId.HasValue)
+                                    {
+                                        var matchingExpense = expenses.First(x => x.Id == expensesVm.ExpenseId.Value);
 
-                            return new ForecastViewModel()
+                                        if (matchingExpense.SaverId == account.Id)
+                                        {
+                                            return true;
+                                        }
+                                    }
+
+                                    if (expensesVm.RecurringExpenseId.HasValue)
+                                    {
+                                        var matchingRecurringExpense = recurringExpenses.First(x => x.Id == expensesVm.RecurringExpenseId.Value);
+
+                                        if (matchingRecurringExpense.SaverId == account.Id)
+                                        {
+                                            return true;
+                                        }
+                                    }
+
+                                    return false;
+                                })
+                                .Sum(x => x.balance);
+
+                            return new ForecastViewModel
                             {
                                 balance = Math.Round(predictedBalance, 2),
                                 cycle = now.AddDays(x).ToShortDateString(),
@@ -157,6 +193,8 @@
         public decimal balance { get; set; }
         public string accountName { get; set; }
         public int Index { get; set; }
+        public Guid? ExpenseId { get; set; }
+        public Guid? RecurringExpenseId { get; set; }
     }
 
     private AntDesign.Charts.StackedAreaConfig _forecastConfig = new()

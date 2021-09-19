@@ -17,59 +17,58 @@ namespace UpBlazor.Core.Models.Mock
     public class MockUpApi : IUpApi
     {
         public const string MockUpToken = "up:demo";
-        
-        public Task<UpResponse<PaginatedDataResponse<AccountResource>>> GetAccountsAsync(int? pageSize = null) =>
-            Task.FromResult(new UpResponse<PaginatedDataResponse<AccountResource>>
+
+        private UpResponse<PaginatedDataResponse<AccountResource>> _accountsData = new()
+        {
+            Response = new PaginatedDataResponse<AccountResource>
             {
-                Response = new PaginatedDataResponse<AccountResource>
+                Data = new List<AccountResource>
                 {
-                    Data = new List<AccountResource>
+                    new()
                     {
-                        new()
+                        Id = Guid.NewGuid().ToString(),
+                        Attributes = new AccountAttributes
                         {
-                            Id = Guid.NewGuid().ToString(),
-                            Attributes = new AccountAttributes
+                            AccountType = AccountType.Transactional,
+                            DisplayName = "Up Account",
+                            CreatedAt = DateTime.Now.Subtract(TimeSpan.FromDays(50)),
+                            Balance = new MoneyObject
                             {
-                                AccountType = AccountType.Transactional,
-                                DisplayName = "Up Account",
-                                CreatedAt = DateTime.Now.Subtract(TimeSpan.FromDays(50)),
-                                Balance = new MoneyObject
-                                {
-                                    Value = 1000.ToString(),
-                                }
+                                Value = 1000.ToString(),
                             }
-                        },
-                        new()
+                        }
+                    },
+                    new()
+                    {
+                        Id = Guid.NewGuid().ToString(),
+                        Attributes = new AccountAttributes
                         {
-                            Id = Guid.NewGuid().ToString(),
-                            Attributes = new AccountAttributes
+                            AccountType = AccountType.Saver,
+                            DisplayName = "🎁 Saver",
+                            CreatedAt = DateTime.Now.Subtract(TimeSpan.FromDays(50)),
+                            Balance = new MoneyObject
                             {
-                                AccountType = AccountType.Saver,
-                                DisplayName = "🎁 Saver",
-                                CreatedAt = DateTime.Now.Subtract(TimeSpan.FromDays(50)),
-                                Balance = new MoneyObject
-                                {
-                                    Value = 5000.ToString(),
-                                }
+                                Value = 5000.ToString(),
                             }
-                        },
-                        new()
+                        }
+                    },
+                    new()
+                    {
+                        Id = Guid.NewGuid().ToString(),
+                        Attributes = new AccountAttributes
                         {
-                            Id = Guid.NewGuid().ToString(),
-                            Attributes = new AccountAttributes
+                            AccountType = AccountType.Saver,
+                            DisplayName = "🌴 Holidays",
+                            CreatedAt = DateTime.Now.Subtract(TimeSpan.FromDays(50)),
+                            Balance = new MoneyObject
                             {
-                                AccountType = AccountType.Saver,
-                                DisplayName = "🌴 Holidays",
-                                CreatedAt = DateTime.Now.Subtract(TimeSpan.FromDays(50)),
-                                Balance = new MoneyObject
-                                {
-                                    Value = 2000.ToString(),
-                                }
+                                Value = 2000.ToString(),
                             }
                         }
                     }
                 }
-            });
+            }
+        };
 
         public Task<UpResponse<PingResponse>> GetPingAsync() =>
             Task.FromResult(new UpResponse<PingResponse>
@@ -83,7 +82,10 @@ namespace UpBlazor.Core.Models.Mock
                     }
                 }
             });
-        
+
+        public Task<UpResponse<PaginatedDataResponse<AccountResource>>> GetAccountsAsync(int? pageSize = null) =>
+            Task.FromResult(_accountsData);
+
         public Task<UpResponse<DataResponse<AccountResource>>> GetAccountAsync(string id) => throw new NotImplementedException();
 
         public Task<UpResponse<PaginatedDataResponse<CategoriesResource>>> GetCategoriesAsync(string parentId = null) => throw new NotImplementedException();

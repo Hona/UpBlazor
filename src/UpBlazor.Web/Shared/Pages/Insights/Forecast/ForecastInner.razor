@@ -1,4 +1,5 @@
-﻿<RepositoryWrapper TRepository="IIncomeRepository"
+﻿@using Marten
+<RepositoryWrapper TRepository="IIncomeRepository"
                    Action="x => x.GetAllByUserIdAsync(NormalizedAggregate.UserId)"
                    TResponse="IReadOnlyList<Income>"
                    Context="incomes">
@@ -36,6 +37,13 @@
                             }
                         }
 
+                        var duplicateAccounts = accounts.Data.GroupBy(x => x.Attributes.DisplayName);
+
+                        foreach (var duplicateAccount in duplicateAccounts)
+                        {
+                            var duplicate
+                        }
+
                         var startDay = 0;
                         var endDay = 365;
 
@@ -43,7 +51,8 @@
                         {
                             balance = Math.Round(x * normalizedIncome.Amount, 2),
                             cycle = now.AddDays(x).ToShortDateString(),
-                            accountName = incomes.First(x => x.Id == normalizedIncome.IncomeId).Name
+                            accountName = incomes.First(x => x.Id == normalizedIncome.IncomeId).Name,
+                            Index = x
                         })).ToList();
 
                         _expensesForecastData = Enumerable.Range(startDay, endDay).SelectMany(x =>
@@ -54,19 +63,27 @@
                             {
                                 balance = Math.Round(x * normalizedRecurringExpense.Amount, 2),
                                 cycle = now.AddDays(x).ToShortDateString(),
-                                accountName = recurringExpenses.First(x => x.Id == normalizedRecurringExpense.RecurringExpenseId).Name
+                                accountName = recurringExpenses.First(x => x.Id == normalizedRecurringExpense.RecurringExpenseId).Name,
+                                Index = x
                             }));
 
                             output.AddRange(expenses.Where(x => x.Money.Exact.HasValue).Select(expense => new ForecastViewModel
                             {
                                 balance = expense.PaidByDate < now.AddDays(x) ? Math.Round(expense.Money.Exact.Value, 2) : 0,
                                 cycle = now.AddDays(x).ToShortDateString(),
-                                accountName = expense.Name
+                                accountName = expense.Name,
+                                Index = x
                             }));
 
                             return output;
                         }).ToList();
 
+                        var totalSavingsPlanAmount = NormalizedAggregate.SavingsPlans.Sum(x => x.Amount);
+                        var totalIncomeAmounts = NormalizedAggregate.Incomes.Sum(x => x.Amount);
+
+                        var unbudgetedAmount = totalIncomeAmounts - totalSavingsPlanAmount;
+                        
+                        
                         _totalForecastData = Enumerable.Range(startDay, endDay).SelectMany(x => accounts.Data.Select(account =>
                         {
                             var savingsPlanIdsFiltered = savingsPlans
@@ -78,7 +95,17 @@
                                 .Where(x => savingsPlanIdsFiltered.Contains(x.SavingsPlanId))
                                 .Sum(x => x.Amount);
 
+                            if (account.Attributes.AccountType == AccountType.Transactional)
+                            {
+                                totalNormalizedAccountAggregate += unbudgetedAmount;
+                                unbudgetedAmount = 0;
+                            }
+
                             var predictedBalance = totalNormalizedAccountAggregate * x;
+
+                            /*predictedBalance -= _expensesForecastData
+                                .Where(expensesVm => expensesVm.Index == x)
+                                .Sum(x => x.balance);*/
 
                             return new ForecastViewModel()
                             {
@@ -129,6 +156,7 @@
         public string cycle { get; set; }
         public decimal balance { get; set; }
         public string accountName { get; set; }
+        public int Index { get; set; }
     }
 
     private AntDesign.Charts.StackedAreaConfig _forecastConfig = new()

@@ -26,7 +26,7 @@ namespace UpBlazor.Core.Models.Mock
                 {
                     new()
                     {
-                        Id = Guid.NewGuid().ToString(),
+                        Id = "360ef03a-af24-485d-aa9e-bf1249505100",
                         Attributes = new AccountAttributes
                         {
                             AccountType = AccountType.Transactional,
@@ -41,7 +41,7 @@ namespace UpBlazor.Core.Models.Mock
                     },
                     new()
                     {
-                        Id = Guid.NewGuid().ToString(),
+                        Id = "2958da0e-7acd-4bd3-a015-6ec8a09f901b",
                         Attributes = new AccountAttributes
                         {
                             AccountType = AccountType.Saver,
@@ -56,7 +56,7 @@ namespace UpBlazor.Core.Models.Mock
                     },
                     new()
                     {
-                        Id = Guid.NewGuid().ToString(),
+                        Id = "d452d9e8-437a-4b70-9bb7-2155f6dd87a",
                         Attributes = new AccountAttributes
                         {
                             AccountType = AccountType.Saver,

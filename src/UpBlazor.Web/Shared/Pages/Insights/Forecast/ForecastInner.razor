@@ -97,61 +97,67 @@
                         var unbudgetedAmount = totalIncomeAmounts - totalSavingsPlanAmount;
 
 
-                        _totalForecastData = Enumerable.Range(startDay, endDay).SelectMany(x => accounts.Data.Select(account =>
+                        _totalForecastData = Enumerable.Range(startDay, endDay).SelectMany(x =>
                         {
-                            var savingsPlanIdsFiltered = savingsPlans
-                                .Where(x => x.SaverId == account.Id)
-                                .Select(x => x.Id)
-                                .ToList();
+                            var unbudgetedAmountUsed = false;
 
-                            var totalNormalizedAccountAggregate = NormalizedAggregate.SavingsPlans
-                                .Where(x => savingsPlanIdsFiltered.Contains(x.SavingsPlanId))
-                                .Sum(x => x.Amount);
-
-                            if (account.Attributes.AccountType == AccountType.Transactional)
+                            return accounts.Data.Select(account =>
                             {
-                                totalNormalizedAccountAggregate += unbudgetedAmount;
-                            }
+                                var savingsPlanIdsFiltered = savingsPlans
+                                    .Where(x => x.SaverId == account.Id)
+                                    .Select(x => x.Id)
+                                    .ToList();
 
-                            var predictedBalance = totalNormalizedAccountAggregate * x;
+                                var totalNormalizedAccountAggregate = NormalizedAggregate.SavingsPlans
+                                    .Where(x => savingsPlanIdsFiltered.Contains(x.SavingsPlanId))
+                                    .Sum(x => x.Amount);
 
-                            predictedBalance += account.Attributes.Balance.ValueInBaseUnits / 100M;
-
-                            predictedBalance -= _expensesForecastData
-                                .Where(expensesVm => expensesVm.Index == x)
-                                .Where(expensesVm =>
+                                if (!unbudgetedAmountUsed && account.Attributes.AccountType == AccountType.Transactional)
                                 {
-                                    if (expensesVm.ExpenseId.HasValue)
+                                    totalNormalizedAccountAggregate += unbudgetedAmount;
+                                    unbudgetedAmountUsed = true;
+                                }
+
+                                var predictedBalance = totalNormalizedAccountAggregate * x;
+
+                                predictedBalance += account.Attributes.Balance.ValueInBaseUnits / 100M;
+
+                                predictedBalance -= _expensesForecastData
+                                    .Where(expensesVm => expensesVm.Index == x)
+                                    .Where(expensesVm =>
                                     {
-                                        var matchingExpense = expenses.First(x => x.Id == expensesVm.ExpenseId.Value);
-
-                                        if (matchingExpense.SaverId == account.Id)
+                                        if (expensesVm.ExpenseId.HasValue)
                                         {
-                                            return true;
+                                            var matchingExpense = expenses.First(x => x.Id == expensesVm.ExpenseId.Value);
+
+                                            if (matchingExpense.SaverId == account.Id)
+                                            {
+                                                return true;
+                                            }
                                         }
-                                    }
 
-                                    if (expensesVm.RecurringExpenseId.HasValue)
-                                    {
-                                        var matchingRecurringExpense = recurringExpenses.First(x => x.Id == expensesVm.RecurringExpenseId.Value);
-
-                                        if (matchingRecurringExpense.SaverId == account.Id)
+                                        if (expensesVm.RecurringExpenseId.HasValue)
                                         {
-                                            return true;
+                                            var matchingRecurringExpense = recurringExpenses.First(x => x.Id == expensesVm.RecurringExpenseId.Value);
+
+                                            if (matchingRecurringExpense.SaverId == account.Id)
+                                            {
+                                                return true;
+                                            }
                                         }
-                                    }
 
-                                    return false;
-                                })
-                                .Sum(x => x.balance);
+                                        return false;
+                                    })
+                                    .Sum(x => x.balance);
 
-                            return new ForecastViewModel
-                            {
-                                balance = Math.Round(predictedBalance, 2),
-                                cycle = now.AddDays(x).ToShortDateString(),
-                                accountName = account.Attributes.DisplayName
-                            };
-                        })).ToList();
+                                return new ForecastViewModel
+                                {
+                                    balance = Math.Round(predictedBalance, 2),
+                                    cycle = now.AddDays(x).ToShortDateString(),
+                                    accountName = account.Attributes.DisplayName
+                                };
+                            });
+                        }).ToList();
                     }
 
                     <Space Direction="DirectionVHType.Vertical" Style="width: 100%">

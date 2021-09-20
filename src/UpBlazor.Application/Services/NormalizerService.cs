@@ -36,7 +36,7 @@ namespace UpBlazor.Application.Services
             var recurringExpenses = await recurringExpensesTask;
 
             var aggregate = new NormalizedAggregate(userId);
-            
+
             NormalizeIncomes(aggregate, incomes);
             NormalizeSavingsPlans(aggregate, savingsPlans, incomes);
             NormalizeRecurringExpenses(aggregate, recurringExpenses, incomes);
@@ -56,7 +56,7 @@ namespace UpBlazor.Application.Services
 
                 if (recurringExpense.Money.Exact.HasValue)
                 {
-                    amount = recurringExpense.Money.Exact.Value / totalDays;
+                    amount += recurringExpense.Money.Exact.Value / totalDays;
                 }
 
                 if (recurringExpense.Money.Percent.HasValue)
@@ -65,7 +65,7 @@ namespace UpBlazor.Application.Services
                     {
                         var income = incomes.First(x => x.Id == recurringExpense.FromIncomeId);
 
-                        amount = income.ExactMoney * recurringExpense.Money.Percent.Value / totalDays;
+                        amount += income.ExactMoney * recurringExpense.Money.Percent.Value / totalDays;
                     }
 
                     if (recurringExpense.FromSaverId != null)
@@ -87,15 +87,27 @@ namespace UpBlazor.Application.Services
             foreach (var savingsPlan in savingsPlans)
             {
                 var income = incomes.First(x => x.Id == savingsPlan.IncomeId);
-                
+
                 var interval = income.Interval.ToTimeSpan(income.IntervalUnits);
 
                 var totalDays = (decimal)interval.TotalDays;
-                
+
+                var unnormalizedAmount = 0M;
+
+                if (savingsPlan.Amount.Exact.HasValue)
+                {
+                    unnormalizedAmount += savingsPlan.Amount.Exact.Value;
+                }
+
+                if (savingsPlan.Amount.Percent.HasValue)
+                {
+                    unnormalizedAmount += savingsPlan.Amount.Percent.Value * income.ExactMoney;
+                }
+
                 output.SavingsPlans.Add(new NormalizedSavingsPlan
                 {
                     SavingsPlanId = savingsPlan.Id,
-                    Amount = income.ExactMoney / totalDays
+                    Amount = unnormalizedAmount / totalDays
                 });
             }
         }
@@ -107,7 +119,7 @@ namespace UpBlazor.Application.Services
                 var interval = income.Interval.ToTimeSpan(income.IntervalUnits);
 
                 var totalDays = (decimal)interval.TotalDays;
-                
+
                 aggregate.Incomes.Add(new NormalizedIncome
                 {
                     IncomeId = income.Id,

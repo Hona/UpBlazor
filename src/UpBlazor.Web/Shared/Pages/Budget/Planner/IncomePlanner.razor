@@ -13,9 +13,9 @@
             </PrefixTemplate>
         </Statistic>
     </Card>
-    
+
     <Divider />
-    
+
     @{
         var unbudgetedMoney = Income.ExactMoney;
 
@@ -45,7 +45,7 @@
         <SaverIdColumn Title="Saver" TableContext="tableContext" TTableContext="SavingsPlanRunningTotal"/>
         <Column Title="Remaining Balance" Format="$0.00" @bind-Field="@tableContext.RunningTotal"/>
     </Table>
-    
+
     <Title Level="4">Relative Savings Plan</Title>
     <Table DataSource="_percentSubTotals" Context="tableContext">
         <Column Title="Name" @bind-Field="@tableContext.Name" Sortable/>
@@ -59,7 +59,7 @@
         <SaverIdColumn Title="Saver" TableContext="tableContext" TTableContext="SavingsPlanRunningTotal"/>
         <Column Title="Remaining Balance" Format="$0.00" @bind-Field="@tableContext.RunningTotal"/>
     </Table>
-    
+
     <Divider />
 
     <Card>
@@ -68,9 +68,9 @@
                 $
             </PrefixTemplate>
         </Statistic>
-        
+
         <Divider />
-        
+
         <Space Size=@(("8", "8")) Direction="DirectionVHType.Horizontal" Wrap>
             @{
                 _savingsAmount = new Dictionary<AccountResource, decimal>();
@@ -82,6 +82,7 @@
                 if (account.Attributes.AccountType == AccountType.Transactional)
                 {
                     total += unbudgetedMoney;
+                    unbudgetedMoney = 0;
                 }
 
                 foreach (var exactSaving in _exactSubTotals.Where(x => x.SaverId == account.Id))
@@ -118,7 +119,7 @@
                 foreach (var (account, cycleSavings) in _savingsAmount)
                 {
                     var cycleTimeSpan = Income.Interval.ToTimeSpan(Income.IntervalUnits);
-                    
+
                     forecastOutput.Add(new ForecastViewModel
                     {
                         balance = (decimal)account.Attributes.Balance.ValueInBaseUnits / 100 + cycleSavings * x,
@@ -132,18 +133,18 @@
 
                 return forecastOutput;
             }).ToArray();
-            
+
         <Title Level="4">Income Forecast</Title>
         <AntDesign.Charts.StackedArea Config="_forecastConfig" Data="@forecastData" ></AntDesign.Charts.StackedArea>
         }
     </Card>
 </RepositoryWrapper>
 
-@code 
+@code
 {
     [CascadingParameter(Name = CascadingConstants.UpApiWrapper)]
     public PaginatedDataResponse<AccountResource> Accounts { get; set; }
-    
+
     [Parameter]
     public Income Income { get; set; }
 
@@ -158,7 +159,7 @@
         public decimal balance { get; set; }
         public string accountName { get; set; }
     }
-    
+
     private AntDesign.Charts.StackedAreaConfig _forecastConfig = new()
     {
         XField = "cycle",

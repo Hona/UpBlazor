@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Up.NET.Api;
@@ -11,5 +12,7 @@ namespace UpBlazor.Application.Services
         Task<string> GetUserIdAsync();
         Task<IEnumerable<Claim>> GetClaimsAsync();
         Task<string> GetGivenNameAsync();
+        void Impersonate(string userId);
+        void ResetImpersonation();
     }
 }

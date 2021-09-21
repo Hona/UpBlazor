@@ -13,27 +13,42 @@
 <Select @bind-Value="SelectedIncome"
         DataSource="Incomes"
         Placeholder="Select an income..."
-        OnSelectedItemChanged="SelectedIncomeChangedInternal">
+        OnSelectedItemChanged="SelectedIncomeChangedInternal"
+        DefaultValue="GetDefaultValue()">
 </Select>
 
 @code
 {
     [CascadingParameter(Name = CascadingConstants.UserIdWrapper)]
     public string UserId { get; set; }
-    
+
     [CascadingParameter(Name = CascadingConstants.RepositoryWrapper)]
     public IReadOnlyList<Income> Incomes { get; set; }
-    
+
     [Parameter]
     public Income SelectedIncome { get; set; }
-    
+
     [Parameter]
     public EventCallback<Income> SelectedIncomeChanged { get; set; }
 
     private void SelectedIncomeChangedInternal(Income selectedItem)
     {
+        var isChanged = SelectedIncome?.Id != selectedItem?.Id;
+
         SelectedIncome = selectedItem;
 
-        SelectedIncomeChanged.InvokeAsync(SelectedIncome);
+        if (isChanged)
+        {
+            SelectedIncomeChanged.InvokeAsync(SelectedIncome);
+        }
+    }
+
+    private Income GetDefaultValue()
+    {
+        var firstIncome = Incomes.FirstOrDefault();
+
+        SelectedIncomeChangedInternal(firstIncome);
+
+        return firstIncome;
     }
 }

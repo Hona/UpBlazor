@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using Marten;
 using UpBlazor.Core.Repositories;
@@ -8,10 +8,12 @@ namespace UpBlazor.Infrastructure.Repositories
     public class GenericRepository<T> : IGenericRepository<T> where T : class
     {
         protected readonly IDocumentStore Store;
+        protected readonly IDocumentSession Session;
 
         protected GenericRepository(IDocumentStore store)
         {
             Store = store;
+            Session = Store.LightweightSession();
         }
 
         public async Task AddAsync(T model)
@@ -51,11 +53,6 @@ namespace UpBlazor.Infrastructure.Repositories
             await session.SaveChangesAsync();
         }
 
-        public async Task<IReadOnlyList<T>> GetAllAsync()
-        {
-            using var session = Store.QuerySession();
-
-            return await session.Query<T>().ToListAsync();
-        }
+        public IQueryable<T> Query() => Session.Query<T>();
     }
 }

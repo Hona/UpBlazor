@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+﻿using System.Linq;
 using System.Threading.Tasks;
 
 namespace UpBlazor.Core.Repositories
@@ -10,6 +10,6 @@ namespace UpBlazor.Core.Repositories
         Task AddOrUpdateAsync(T model);
         Task DeleteAsync(T model);
 
-        Task<IReadOnlyList<T>> GetAllAsync();
+        IQueryable<T> Query();
     }
 }

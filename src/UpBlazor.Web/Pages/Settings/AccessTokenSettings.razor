@@ -74,7 +74,7 @@ else
     private bool _loading;
     private bool _formLoading;
     private FormValidateErrorMessages _errorMessages;
-    
+
     private UpResponse<PingResponse> _pingResponse;
 
     private SetAccessToken _setAccessToken = new();
@@ -82,7 +82,7 @@ else
     protected override async Task OnInitializedAsync()
     {
         _loading = true;
-        
+
         _upApi = await _currentUserService.GetApiAsync(forceReload: true);
 
         _loading = false;
@@ -92,29 +92,38 @@ else
             _pingResponse = await _upApi.GetPingAsync();
         }
     }
-    
+
     private async Task OnFinishAsync(EditContext editContext)
     {
         _formLoading = true;
-        
+
         var temporaryApi = await _currentUserService.GetApiAsync(_setAccessToken.Value);
 
-        var pingResponse = await temporaryApi.GetPingAsync();
+        bool success = false;
 
-        if (pingResponse.Success)
+        try
         {
-            // Good token
-            _errorMessages = null;
-
-            await _upUserTokenRepository.AddOrUpdateAsync(new UpUserToken
+            var pingResponse = await temporaryApi.GetPingAsync();
+            if (pingResponse.Success)
             {
-                UserId = await _currentUserService.GetUserIdAsync(),
-                AccessToken = _setAccessToken.Value
-            });
-            
-            _setAccessToken.Value = string.Empty;
+                // Good token
+                _errorMessages = null;
+
+                await _upUserTokenRepository.AddOrUpdateAsync(new UpUserToken
+                    {
+                        UserId = await _currentUserService.GetUserIdAsync(),
+                        AccessToken = _setAccessToken.Value
+                    });
+
+                _setAccessToken.Value = string.Empty;
+                success = true;
+            }
         }
-        else
+        catch
+        {
+        }
+
+        if (!success)
         {
             // Bad token
             _setAccessToken.Value = string.Empty;

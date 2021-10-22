@@ -10,6 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using UpBlazor.Application.Services;
 using UpBlazor.Infrastructure;
+using UpBlazor.Infrastructure.EfCore;
 
 namespace UpBlazor.Web
 {
@@ -93,10 +94,11 @@ namespace UpBlazor.Web
                 });
             });
 
-            services.AddMarten(Configuration);
+            //services.AddMarten(Configuration);
+            services.AddEfCore(Configuration, DbType.Sqlite);
 
             services.AddScoped<ICurrentUserService, CurrentUserService>();
-            services.AddSingleton<INormalizerService, NormalizerService>();
+            services.AddScoped<INormalizerService, NormalizerService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

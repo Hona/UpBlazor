@@ -7,6 +7,7 @@ namespace UpBlazor.Infrastructure.EfCore
     {
         public UpBankDbContext(DbContextOptions<UpBankDbContext> options) : base(options)
         {
+            Database.EnsureCreated();
         }
 
         public DbSet<UpUserToken> UpUserTokens { get; set; }
@@ -19,5 +20,32 @@ namespace UpBlazor.Infrastructure.EfCore
         public DbSet<RecurringExpense> RecurringExpenses { get; set; }
         public DbSet<RegisteredUser> RegisteredUsers { get; set; }
         public DbSet<SavingsPlan> SavingsPlans {  get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Expense>().OwnsOne(p => p.Money);
+            modelBuilder.Entity<RecurringExpense>().OwnsOne(p => p.Money);
+            modelBuilder.Entity<SavingsPlan>().OwnsOne(p => p.Amount);
+
+            modelBuilder.Entity<NormalizedAggregate>(entity =>
+            {
+                entity.OwnsOne(p => p.Incomes);
+                entity.OwnsOne(p => p.RecurringExpenses);
+                entity.OwnsOne(p => p.SavingsPlans);
+
+                entity.HasNoKey();
+            });
+
+            modelBuilder.Entity<TwoUp>().HasNoKey();
+            modelBuilder.Entity<TwoUpRequest>().HasNoKey();
+
+            //modelBuilder.Entity<UpUserToken>(entity =>
+            //{
+            //    entity.HasNoKey()
+            //    entity.Property(x => x.UserId).
+            //});
+            //modelBuilder.Entity<UpUserToken>()
+            //    .HasKey(p => p.Id);
+        }
     }
 }

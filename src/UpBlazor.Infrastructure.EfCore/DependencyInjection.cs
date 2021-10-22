@@ -1,6 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using UpBlazor.Core.Repositories;
+using UpBlazor.Infrastructure.EfCore.Repositories;
 
 namespace UpBlazor.Infrastructure.EfCore
 {
@@ -16,7 +18,8 @@ namespace UpBlazor.Infrastructure.EfCore
                         options.UseSqlServer(configuration.GetConnectionString("SqlServer"));
                         break;
                     case DbType.Sqlite:
-
+                        // Using SQLite by default as it is easier setup.
+                        options.UseSqlite("Data Source=db.sqlite");
                         break;
                     case DbType.SqliteInMemory:
                         options.UseSqlite("DataSource=:memory:", x => { });
@@ -32,6 +35,17 @@ namespace UpBlazor.Infrastructure.EfCore
                 options.EnableSensitiveDataLogging();
 #endif
             });
+
+            services.AddTransient<IUpUserTokenRepository, UpUserTokenRepository>();
+            services.AddTransient<ITwoUpRepository, TwoUpRepository>();
+            services.AddTransient<ITwoUpRequestRepository, TwoUpRequestRepository>();
+            services.AddTransient<IRegisteredUserRepository, RegisteredUserRepository>();
+            services.AddTransient<IExpenseRepository, ExpenseRepository>();
+            services.AddTransient<IRecurringExpenseRepository, RecurringExpenseRepository>();
+            services.AddTransient<IIncomeRepository, IncomeRepository>();
+            services.AddTransient<IGoalRepository, GoalRepository>();
+            services.AddTransient<ISavingsPlanRepository, SavingsPlanRepository>();
+            services.AddTransient<INormalizedAggregateRepository, NormalizedAggregateRepository>();
 
             return services;
         }

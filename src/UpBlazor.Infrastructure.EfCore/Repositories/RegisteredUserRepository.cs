@@ -1,53 +1,56 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Marten;
 using UpBlazor.Core.Models;
 using UpBlazor.Core.Repositories;
 
-namespace UpBlazor.Infrastructure.Repositories
+namespace UpBlazor.Infrastructure.EfCore.Repositories
 {
-    public class RegisteredUserRepository : GenericRepository<RegisteredUser>, IRegisteredUserRepository
+    internal class RegisteredUserRepository : GenericRepository<RegisteredUser>, IRegisteredUserRepository
     {
-        public RegisteredUserRepository(IDocumentStore store) : base(store) { }
+        public RegisteredUserRepository(UpBankDbContext context) : base(context, context.RegisteredUsers) { }
 
         public new async Task AddOrUpdateAsync(RegisteredUser model)
         {
-            using var session = Store.LightweightSession();
-
-            var existingModel = await session.Query<RegisteredUser>()
+            var existingModel = await DbSet
                 .SingleOrDefaultAsync(x => x.Id == model.Id);
 
             if (existingModel == null)
             {
                 model.CreatedAt = DateTime.Now;
                 model.UpdatedAt = null;
+
+                await DbSet.AddAsync(model);
             }
             else
             {
-                model.UpdatedAt = DateTime.Now;
+                existingModel.UpdatedAt = DateTime.Now;
             }
 
-            session.Store(model);
-
-            await session.SaveChangesAsync();
+            await Context.SaveChangesAsync();
         }
 
         public async Task<RegisteredUser> GetByIdAsync(string id)
-            => await Query()
+            => await DbSet
+                .AsNoTracking()
                 .SingleOrDefaultAsync(x => x.Id == id);
 
         public async Task<RegisteredUser> GetByEmailAsync(string email)
-            => await Query()
+            => await DbSet
+                .AsNoTracking()
                 .SingleOrDefaultAsync(x => x.Email == email);
 
         public async Task<IReadOnlyList<RegisteredUser>> GetAllByIdsAsync(params string[] ids)
-            => await Query()
-                .Where(x => x.Id.IsOneOf(ids))
+            => await DbSet
+                .AsNoTracking()
+                .Where(x => ids.Contains(x.Id))
                 .ToListAsync();
 
         public async Task<IReadOnlyList<RegisteredUser>> GetAllAsync()
-            => await Query().ToListAsync();
+            => await DbSet
+                .AsNoTracking()
+                .ToListAsync();
     }
 }

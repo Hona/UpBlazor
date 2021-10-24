@@ -1,6 +1,5 @@
 using System.Linq;
 using System.Security.Claims;
-using Marten;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.MicrosoftAccount;
 using Microsoft.AspNetCore.Builder;
@@ -9,10 +8,9 @@ using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using UpBlazor.Core.Models;
-using UpBlazor.Core.Repositories;
 using UpBlazor.Application.Services;
-using UpBlazor.Infrastructure.Repositories;
+using UpBlazor.Infrastructure;
+using UpBlazor.Infrastructure.EfCore;
 
 namespace UpBlazor.Web
 {
@@ -96,35 +94,11 @@ namespace UpBlazor.Web
                 });
             });
 
-            services.AddMarten(options =>
-            {
-                options.Connection(Configuration.GetConnectionString("Marten"));
-
-                options.AutoCreateSchemaObjects = AutoCreate.All;
-
-                options.Schema.For<UpUserToken>()
-                    .Identity(x => x.UserId);
-                options.Schema.For<TwoUp>()
-                    .Identity(x => x.MartenId);
-                options.Schema.For<TwoUpRequest>()
-                    .Identity(x => x.MartenId);
-                options.Schema.For<NormalizedAggregate>()
-                    .Identity(x => x.UserId);
-            });
-            
-            services.AddSingleton<IUpUserTokenRepository, UpUserTokenRepository>();
-            services.AddSingleton<ITwoUpRepository, TwoUpRepository>();
-            services.AddSingleton<ITwoUpRequestRepository, TwoUpRequestRepository>();
-            services.AddSingleton<IRegisteredUserRepository, RegisteredUserRepository>();
-            services.AddSingleton<IExpenseRepository, ExpenseRepository>();
-            services.AddSingleton<IRecurringExpenseRepository, RecurringExpenseRepository>();
-            services.AddSingleton<IIncomeRepository, IncomeRepository>();
-            services.AddSingleton<IGoalRepository, GoalRepository>();
-            services.AddSingleton<ISavingsPlanRepository, SavingsPlanRepository>();
-            services.AddSingleton<INormalizedAggregateRepository, NormalizedAggregateRepository>();
+            //services.AddMarten(Configuration);
+            services.AddEfCore(Configuration, DbType.Sqlite);
 
             services.AddScoped<ICurrentUserService, CurrentUserService>();
-            services.AddSingleton<INormalizerService, NormalizerService>();
+            services.AddScoped<INormalizerService, NormalizerService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

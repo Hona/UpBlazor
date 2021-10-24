@@ -16,15 +16,13 @@ namespace UpBlazor.Infrastructure.Repositories
         {
             using var session = Store.QuerySession();
 
-            return await session.Query<Expense>()
+            return await Query()
                 .SingleOrDefaultAsync(x => x.Id == id);
         }
 
         public async Task<IReadOnlyList<Expense>> GetAllByUserIdAsync(string userId)
         {
-            using var session = Store.QuerySession();
-
-            return await session.Query<Expense>()
+            return await Query()
                 .Where(x => x.UserId == userId)
                 .ToListAsync();
         }

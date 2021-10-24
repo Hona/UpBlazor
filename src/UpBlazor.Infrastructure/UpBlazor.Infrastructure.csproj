@@ -10,6 +10,7 @@
 
     <ItemGroup>
       <PackageReference Include="Marten" Version="3.13.4" />
+      <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="5.0.0" />
     </ItemGroup>
 
 </Project>

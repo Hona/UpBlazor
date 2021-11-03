@@ -10,19 +10,28 @@
                   Bordered="@true"
                   Hoverable="@true"
                   Style="margin: 1rem">
-                @transactionAccount.Attributes.CreatedAt
-                $@transactionAccount.Attributes.Balance.Value
+                <Statistic Prefix="$" 
+                           Precision="12" 
+                           Value="@decimal.Parse(transactionAccount.Attributes.Balance.Value)" 
+                           TValue="decimal"/>
             </Card>
         }
     </div>
-
-    <Table TItem="AccountResource" DataSource="context.Data.Where(x => x.Attributes.AccountType == AccountType.Saver)">
-        <ChildContent Context="tableContext">
-            <Column Title="Account" DataIndex="Attributes.DisplayName" TData="string" Sortable></Column>
-            <Column DataIndex="Attributes.CreatedAt" TData="DateTime" Format="dd/MM/yyyy"></Column>
-            <Column DataIndex="Attributes.Balance.Value" TData="string" Sortable>
-                <span>$@tableContext.Attributes.Balance.Value</span>
-            </Column>
-        </ChildContent>
-    </Table>
+    
+    <Title Level="4">Savers</Title>
+    
+    <div style="display: flex; justify-content: center; align-items: center">
+        @foreach (var saver in context.Data.Where(x => x.Attributes.AccountType == AccountType.Saver))
+        {
+            <Card Title="@saver.Attributes.DisplayName"
+                  Bordered="@true"
+                  Hoverable="@true"
+                  Style="margin: 1rem">
+                <Statistic Prefix="$" 
+                           Precision="12" 
+                           Value="@decimal.Parse(saver.Attributes.Balance.Value)" 
+                           TValue="decimal"/>
+            </Card>
+        }
+    </div>
 </UpApiWrapper>

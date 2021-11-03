@@ -38,11 +38,6 @@ namespace UpBlazor.Application.Services
 
             var userToken = await _upUserTokenRepository.GetByUserIdAsync(userId);
 
-            if (userToken == null && overrideToken != MockUpApi.MockUpToken)
-            {
-                return null;
-            }
-
             if (!string.IsNullOrWhiteSpace(overrideToken) && userToken != null)
             {
                 userToken.AccessToken = overrideToken;
@@ -50,6 +45,11 @@ namespace UpBlazor.Application.Services
 
             var accessToken = userToken?.AccessToken ?? overrideToken;
 
+            if (accessToken is null)
+            {
+                return null;
+            }
+            
             if (accessToken == MockUpApi.MockUpToken)
             {
                 _upApi = new MockUpApi();

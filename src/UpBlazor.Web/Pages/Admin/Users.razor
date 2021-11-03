@@ -11,10 +11,10 @@
                    TResponse="IReadOnlyList<RegisteredUser>"
                    Context="repoContext">
     <Card>
-        <Statistic Value="repoContext.Count" Title="Total Users" />
+        <Statistic Value="repoContext.Count" Title="Total Users"/>
     </Card>
 
-    <Divider />
+    <Divider/>
 
     <Card>
         <Button OnClick="() => _currentUserService.ResetImpersonation()">Reset Impersonation</Button>

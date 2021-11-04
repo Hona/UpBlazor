@@ -14,7 +14,7 @@
         DataSource="Incomes"
         Placeholder="Select an income..."
         OnSelectedItemChanged="SelectedIncomeChangedInternal"
-        DefaultValue="GetDefaultValue()">
+        DefaultValue="SelectFirst ? GetDefaultValue() : null">
 </Select>
 
 @code
@@ -31,24 +31,19 @@
     [Parameter]
     public EventCallback<Income> SelectedIncomeChanged { get; set; }
 
+    [Parameter]
+    public bool SelectFirst { get; set; } = true;
+
     private void SelectedIncomeChangedInternal(Income selectedItem)
     {
-        var isChanged = SelectedIncome?.Id != selectedItem?.Id;
-
         SelectedIncome = selectedItem;
-
-        if (isChanged)
-        {
-            SelectedIncomeChanged.InvokeAsync(SelectedIncome);
-        }
+        
+        SelectedIncomeChanged.InvokeAsync(SelectedIncome);
     }
 
     private Income GetDefaultValue()
     {
         var firstIncome = Incomes.FirstOrDefault();
-
-        SelectedIncomeChangedInternal(firstIncome);
-
         return firstIncome;
     }
 }

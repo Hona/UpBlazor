@@ -20,7 +20,7 @@
         </FormItem>
         <FormItem Label="Source">
             <InputGroup Compact>
-                <IncomeSelector @bind-SelectedIncome="SelectedIncome" />
+                <IncomeSelector @bind-SelectedIncome="SelectedIncome"/>
                 <SaverSelector @bind-SelectedSaver="SelectedSaver" />
             </InputGroup>
         </FormItem>
@@ -130,11 +130,14 @@
             
             if (value == null)
             {
+                StateHasChanged();
                 return;
             }
             
             _selectedIncome = null;
             _request.FromIncomeId = null;
+            
+            StateHasChanged();
         }
     }
 
@@ -148,11 +151,14 @@
 
             if (value == null)
             {
+                StateHasChanged();
                 return;
             }
             
             _selectedSaver = null;
             _request.FromSaverId = null;
+            
+            StateHasChanged();
         }
     }
 

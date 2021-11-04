@@ -1,10 +1,24 @@
 ﻿using Microsoft.AspNetCore.Mvc.Routing;
 using UpBlazor.Core.Models;
+using UpBlazor.Core.Models.Normalized;
 
 namespace UpBlazor.Web.ViewModels
 {
     public class SavingsPlanRunningTotal : SavingsPlan
     {
+        public SavingsPlanRunningTotal(RecurringExpense expense, decimal proRataAmount, decimal runningTotal)
+        {
+            Id = expense.Id;
+            Amount = new Money()
+            {
+                Exact = proRataAmount
+            };
+            Name = expense.Name;
+            SaverId = expense.FromSaverId;
+
+            RunningTotal = runningTotal;
+        }
+        
         public SavingsPlanRunningTotal(Expense expense, decimal runningTotal)
         {
             Id = expense.Id;

@@ -61,7 +61,7 @@
                         _incomeForecastData = Enumerable.Range(startDay, endDay).SelectMany(x => NormalizedAggregate.Incomes.Select(normalizedIncome => new ForecastViewModel
                         {
                             balance = Math.Round(x * normalizedIncome.Amount, 2),
-                            cycle = now.AddDays(x).ToShortDateString(),
+                            cycle = now.AddDays(x).ToString("dd/MM/yyyy"),
                             accountName = incomes.First(x => x.Id == normalizedIncome.IncomeId).Name,
                             Index = x
                         })).ToList();
@@ -73,7 +73,7 @@
                             output.AddRange(NormalizedAggregate.RecurringExpenses.Select(normalizedRecurringExpense => new ForecastViewModel
                             {
                                 balance = Math.Round(x * normalizedRecurringExpense.Amount, 2),
-                                cycle = now.AddDays(x).ToShortDateString(),
+                                cycle = now.AddDays(x).ToString("dd/MM/yyyy"),
                                 accountName = recurringExpenses.First(x => x.Id == normalizedRecurringExpense.RecurringExpenseId).Name,
                                 Index = x,
                                 RecurringExpenseId = normalizedRecurringExpense.RecurringExpenseId
@@ -82,7 +82,7 @@
                             output.AddRange(expenses.Where(x => x.Money.Exact.HasValue).Select(expense => new ForecastViewModel
                             {
                                 balance = expense.PaidByDate < now.AddDays(x) ? Math.Round(expense.Money.Exact.Value, 2) : 0,
-                                cycle = now.AddDays(x).ToShortDateString(),
+                                cycle = now.AddDays(x).ToString("dd/MM/yyyy"),
                                 accountName = expense.Name,
                                 Index = x,
                                 ExpenseId = expense.Id
@@ -153,7 +153,7 @@
                                 return new ForecastViewModel
                                 {
                                     balance = Math.Round(predictedBalance, 2),
-                                    cycle = now.AddDays(x).ToShortDateString(),
+                                    cycle = now.AddDays(x).ToString("dd/MM/yyyy"),
                                     accountName = account.Attributes.DisplayName
                                 };
                             });

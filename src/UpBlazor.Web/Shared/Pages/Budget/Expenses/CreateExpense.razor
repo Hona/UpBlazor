@@ -1,4 +1,5 @@
 ﻿@using UpBlazor.Core.Models.Enums
+@using UpBlazor.Web.Pages.Insights
 
 @inject IExpenseRepository _expenseRepository
 @inject IRecurringExpenseRepository _recurringExpenseRepository
@@ -19,27 +20,40 @@
             </InputGroup>
         </FormItem>
         <FormItem Label="Source">
-            <InputGroup Compact>
-                <IncomeSelector @bind-SelectedIncome="SelectedIncome"/>
-                <SaverSelector @bind-SelectedSaver="SelectedSaver" />
-            </InputGroup>
-        </FormItem>
-        <FormItem Label="@DateLabel">
-            <DatePicker @bind-Value="@formContext.PaidByDate" DefaultValue="DateTime.Now"/>
-        </FormItem>
-        <FormItem Label="Regular Payments">
             <InputGroup>
-                <AntDesign.Checkbox Style="padding-right: 1rem" @bind-Value="formContext.RegularPayments" OnChange="OnRegularPaymentEnabledChange" /> 
-                @if (formContext.RegularPayments)
-                {
-                    <AntDesign.InputNumber Disabled="!_request.RegularPayments" Style="min-width: 7rem" TValue="int?" @bind-Value="@formContext.IntervalUnits" Min="1" Step="1" DefaultValue="1"/>
-                    <EnumSelect TValue="Interval" Placeholder="Interval" Disabled="!_request.RegularPayments" Style="min-width: 9rem" @bind-Value="formContext.Interval"/>
-                }
+                <ExpenseSourceInput @bind-Value="formContext.ExpenseSource"
+                                    @ref="_expenseSourceInput"/>
             </InputGroup>
         </FormItem>
+        @if (_expenseSourceInput?.Value?.IncomeId is not null)
+        {
+            <FormItem WrapperColOffset="4" WrapperColSpan="20">
+                <AntDesign.Text>
+                    Because you have selected an expense from an income - this is automatically recurring at the same rate as your income
+                </AntDesign.Text>
+            </FormItem>
+        }
+        else
+        {
+            <FormItem Label="@DateLabel">
+                <DatePicker @bind-Value="@formContext.PaidByDate" DefaultValue="DateTime.Now"/>
+            </FormItem>
+            
+            <FormItem Label="Regular Payments">
+                <InputGroup>
+                    <AntDesign.Checkbox Style="padding-right: 1rem" @bind-Value="formContext.RegularPayments" OnChange="OnRegularPaymentEnabledChange"/>
+                    @if (formContext.RegularPayments)
+                    {
+                        <AntDesign.InputNumber Disabled="!_request.RegularPayments" Style="min-width: 7rem" TValue="int?" @bind-Value="@formContext.IntervalUnits" Min="1" Step="1" DefaultValue="1"/>
+                        <EnumSelect TValue="Interval" Placeholder="Interval" Disabled="!_request.RegularPayments" Style="min-width: 9rem" @bind-Value="formContext.Interval"/>
+                    }
+                </InputGroup>
+            </FormItem>
+        }
         <FormItem WrapperColOffset="4" WrapperColSpan="20">
             @* TODO: Implement expenses with relative cost on a saver *@
-            <Button Type="primary" HtmlType="submit" Disabled="@(_request.RegularPayments && (!_request.Interval.HasValue || !_request.IntervalUnits.HasValue) || _request.Amount.Percent.HasValue && _request.FromSaverId != null)">
+            <Button Type="primary" HtmlType="submit" Disabled="@(_request.RegularPayments && (!_request.Interval.HasValue || !_request.IntervalUnits.HasValue)
+                                                                 || _request.Amount.Percent.HasValue && _expenseSourceInput?.Value?.SaverId != null)">
                 Submit
             </Button>
         </FormItem>
@@ -60,6 +74,8 @@
 
     private string DateLabel => _request.RegularPayments ? "Start Date" : "Due By";
 
+    private ExpenseSourceInput _expenseSourceInput;
+
     private async Task OnFormFinishAsync(string currentUserId)
     {
         _loading = true;
@@ -71,6 +87,11 @@
 
         if (_request.RegularPayments)
         {
+            if (_expenseSourceInput.Value.IncomeId is not null)
+            {
+                throw new Exception("This path shouldn't be possible");
+            }
+            
             await _recurringExpenseRepository.AddAsync(new RecurringExpense
             {
                 Name = _request.Name,
@@ -79,8 +100,7 @@
                 Money = _request.Amount,
                 StartDate = _request.PaidByDate,
                 UserId = currentUserId,
-                FromIncomeId = _request.FromIncomeId,
-                FromSaverId = _request.FromSaverId
+                FromSaverId = _expenseSourceInput.Value.SaverId
             });
         }
         else
@@ -91,15 +111,15 @@
                 UserId = currentUserId,
                 Money = _request.Amount,
                 PaidByDate = _request.PaidByDate,
-                FromIncomeId = _request.FromIncomeId,
-                FromSaverId = _request.FromSaverId
+                FromIncomeId = _expenseSourceInput.Value.IncomeId,
+                FromSaverId = _expenseSourceInput.Value.SaverId
             });
         }
 
         _request = new();
-        SelectedIncome = null;
-        SelectedSaver = null;
-        
+
+        _expenseSourceInput.Reset();
+
         _loading = false;
 
         if (OnNewExpenseAsync != null)
@@ -115,55 +135,16 @@
             _request.Interval = null;
             _request.IntervalUnits = null;
         }
-    }
-    
-    private AccountResource _selectedSaver;
-    private Income _selectedIncome;
-
-    private AccountResource SelectedSaver
-    {
-        get => _selectedSaver;
-        set
+        else
         {
-            _selectedSaver = value;
-            _request.FromSaverId = value?.Id;
-            
-            if (value == null)
-            {
-                StateHasChanged();
-                return;
-            }
-            
-            _selectedIncome = null;
-            _request.FromIncomeId = null;
-            
-            StateHasChanged();
-        }
-    }
-
-    private Income SelectedIncome
-    {
-        get => _selectedIncome;
-        set
-        {
-            _selectedIncome = value;
-            _request.FromIncomeId = value?.Id;
-
-            if (value == null)
-            {
-                StateHasChanged();
-                return;
-            }
-            
-            _selectedSaver = null;
-            _request.FromSaverId = null;
-            
-            StateHasChanged();
+            // Change type to saver
+            _expenseSourceInput.ChangeType(false);
         }
     }
 
     private class ExpenseRequest
     {
+        private ExpenseSourceInput.ExpenseSource _expenseSource = new();
 
         [DisplayName("Name"), Required]
         public string Name { get; set; }
@@ -179,7 +160,20 @@
         
         public bool RegularPayments { get; set; }
 
-        public string FromSaverId { get; set; }
-        public Guid? FromIncomeId { get; set; }
+        public ExpenseSourceInput.ExpenseSource ExpenseSource
+        {
+            get => _expenseSource;
+            set
+            {
+                _expenseSource = value;
+                
+                if (value.IncomeId.HasValue)
+                {
+                    // Automatically regular payments
+                    RegularPayments = false;
+                    PaidByDate = DateTime.MinValue;
+                }
+            }
+        }
     }
 }

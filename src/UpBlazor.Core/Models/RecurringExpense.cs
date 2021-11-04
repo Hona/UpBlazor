@@ -4,7 +4,7 @@ using UpBlazor.Core.Models.Enums;
 
 namespace UpBlazor.Core.Models
 {
-    public class RecurringExpense : ISaverId, IIncomeId
+    public class RecurringExpense : ISaverId
     {
         public Guid Id { get; set; }
         public string UserId { get; set; }
@@ -14,8 +14,7 @@ namespace UpBlazor.Core.Models
         public int IntervalUnits { get; set; }
         public Money Money { get; set; }
         public string FromSaverId { get; set; }
-        public Guid? FromIncomeId { get; set; }
-        
+
         /// <summary>
         /// Wraps property FromSaverId
         /// </summary>
@@ -24,14 +23,48 @@ namespace UpBlazor.Core.Models
             get => FromSaverId;
             set => FromSaverId = value;
         }
-
-        /// <summary>
-        /// Wraps property FromIncomeId
-        /// </summary>
-        public Guid? InterfaceIncomeId
+        
+        public bool FallsOn(DateTime dateTime, DateTime startDate, out int totalCyclesSinceStart)
         {
-            get => FromIncomeId;
-            set => FromIncomeId = value;
+            var date = dateTime.Date;
+            
+            if (date < startDate)
+            {
+                totalCyclesSinceStart = default;
+                return false;
+            }
+
+            if (date == startDate)
+            {
+                totalCyclesSinceStart = 0;
+                return true;
+            }
+
+            var loopDate = startDate.Date;
+
+            totalCyclesSinceStart = 0;
+            
+            do
+            {
+                totalCyclesSinceStart++;
+                var toAdd = Interval switch
+                {
+                    Interval.Days => TimeSpan.FromDays(IntervalUnits),
+                    Interval.Fortnights => TimeSpan.FromDays(IntervalUnits * 14),
+                    Interval.Weeks => TimeSpan.FromDays(7),
+                    _ => throw new ArgumentOutOfRangeException()
+                };
+
+                loopDate = loopDate.Add(toAdd);
+
+                if (loopDate.Date == date.Date)
+                {
+                    return true;
+                }
+            } while (loopDate < date);
+
+            return false;
         }
+
     }
 }

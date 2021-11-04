@@ -61,17 +61,8 @@ namespace UpBlazor.Application.Services
 
                 if (recurringExpense.Money.Percent.HasValue)
                 {
-                    if (recurringExpense.FromIncomeId.HasValue)
-                    {
-                        var income = incomes.First(x => x.Id == recurringExpense.FromIncomeId);
-
-                        amount += income.ExactMoney * recurringExpense.Money.Percent.Value / totalDays;
-                    }
-
-                    if (recurringExpense.FromSaverId != null)
-                    {
-                        throw new NotImplementedException("Currently cannot normalize percent based saver recurring expenses");
-                    }
+                    throw new NotImplementedException(
+                        "Currently cannot normalize percent based saver recurring expenses");
                 }
 
                 output.RecurringExpenses.Add(new NormalizedRecurringExpense

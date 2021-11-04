@@ -6,138 +6,187 @@
                    Action="x => x.GetAllByIncomeIdAsync(Income.Id)"
                    TResponse="IReadOnlyList<SavingsPlan>"
                    Context="savingsPlans">
-    <Card>
-        <Statistic Title="Starting Total" Value="@Income.ExactMoney">
-            <PrefixTemplate>
-                $
-            </PrefixTemplate>
-        </Statistic>
-    </Card>
+    <RepositoryWrapper TRepository="IExpenseRepository"
+                       Action="x => x.GetAllByUserIdAsync(Income.UserId)"
+                       TResponse="IReadOnlyList<Expense>"
+                       Context="expensesContext">
+        <Card>
+            <Statistic Title="Starting Total" Value="@Income.ExactMoney">
+                <PrefixTemplate>
+                    $
+                </PrefixTemplate>
+            </Statistic>
+        </Card>
 
-    <Divider />
+        <Divider/>
 
-    @{
-        var unbudgetedMoney = Income.ExactMoney;
+        @{
+            var unbudgetedMoney = Income.ExactMoney;
 
-        _exactSubTotals = new List<SavingsPlanRunningTotal>();
+            _incomeExpenseSubTotals = new List<SavingsPlanRunningTotal>();
 
-        foreach (var savingsPlan in savingsPlans.Where(x => x.Amount.Exact.HasValue))
-        {
-            unbudgetedMoney -= savingsPlan.Amount.Exact.Value;
+            foreach (var incomeExpense in expensesContext.Where(x => x.FromIncomeId == Income.Id))
+            {
+                if (incomeExpense.Money.Exact.HasValue)
+                {
+                    unbudgetedMoney -= incomeExpense.Money.Exact.Value;
+                    
+                    _incomeExpenseSubTotals.Add(new SavingsPlanRunningTotal(incomeExpense, unbudgetedMoney));
+                }
+                
+                if (incomeExpense.Money.Percent.HasValue)
+                {
+                    unbudgetedMoney -= incomeExpense.Money.Exact.Value * incomeExpense.Money.Percent.Value;
+                    
+                    _incomeExpenseSubTotals.Add(new SavingsPlanRunningTotal(incomeExpense, unbudgetedMoney));
+                }
+            }
 
-            _exactSubTotals.Add(new SavingsPlanRunningTotal(savingsPlan, unbudgetedMoney));
+            _exactSubTotals = new List<SavingsPlanRunningTotal>();
+
+            foreach (var savingsPlan in savingsPlans.Where(x => x.Amount.Exact.HasValue))
+            {
+                unbudgetedMoney -= savingsPlan.Amount.Exact.Value;
+
+                _exactSubTotals.Add(new SavingsPlanRunningTotal(savingsPlan, unbudgetedMoney));
+            }
+
+            _percentSubTotals = new List<SavingsPlanRunningTotal>();
+
+            foreach (var savingsPlan in savingsPlans.Where(x => x.Amount.Percent.HasValue))
+            {
+                unbudgetedMoney -= Income.ExactMoney * savingsPlan.Amount.Percent.Value;
+
+                _percentSubTotals.Add(new SavingsPlanRunningTotal(savingsPlan, unbudgetedMoney));
+            }
         }
 
-        _percentSubTotals = new List<SavingsPlanRunningTotal>();
-
-        foreach (var savingsPlan in savingsPlans.Where(x => x.Amount.Percent.HasValue))
-        {
-            unbudgetedMoney -= Income.ExactMoney * savingsPlan.Amount.Percent.Value;
-
-            _percentSubTotals.Add(new SavingsPlanRunningTotal(savingsPlan, unbudgetedMoney));
-        }
-    }
-
-    <Title Level="4">Exact Savings Plan</Title>
-    <Table DataSource="_exactSubTotals" Context="tableContext">
-        <Column Title="Name" @bind-Field="@tableContext.Name" Sortable/>
-        <Column Title="Amount" TData="decimal?" DataIndex="Amount.Exact" Format="$0.00" Sortable/>
-        <SaverIdColumn Title="Saver" TableContext="tableContext" TTableContext="SavingsPlanRunningTotal"/>
-        <Column Title="Remaining Balance" Format="$0.00" @bind-Field="@tableContext.RunningTotal"/>
-    </Table>
-
-    <Title Level="4">Relative Savings Plan</Title>
-    <Table DataSource="_percentSubTotals" Context="tableContext">
-        <Column Title="Name" @bind-Field="@tableContext.Name" Sortable/>
-        <Column Title="Amount (%)" TData="decimal?" DataIndex="Amount.Percent" Format="0%" Sortable/>
-        <Column Title="Amount ($)" TData="decimal?" DataIndex="Amount.Percent" Sortable >
-            @{
-                var exactAmount = Income.ExactMoney * tableContext.Amount.Percent.Value;
-            }
-            $@exactAmount.ToString("F2")
-        </Column>
-        <SaverIdColumn Title="Saver" TableContext="tableContext" TTableContext="SavingsPlanRunningTotal"/>
-        <Column Title="Remaining Balance" Format="$0.00" @bind-Field="@tableContext.RunningTotal"/>
-    </Table>
-
-    <Divider />
-
-    <Card>
-        <Statistic Title="Unbudgeted Money" Value="@unbudgetedMoney">
-            <PrefixTemplate>
-                $
-            </PrefixTemplate>
-        </Statistic>
-
-        <Divider />
-
-        <Space Size=@(("8", "8")) Direction="DirectionVHType.Horizontal" Wrap>
-            @{
-                _savingsAmount = new Dictionary<AccountResource, decimal>();
-            }
-            @foreach (var account in Accounts.Data)
-            {
-                var total = 0M;
-
-                if (account.Attributes.AccountType == AccountType.Transactional)
+        <Title Level="4">Income Expenses</Title>
+        <Table DataSource="_incomeExpenseSubTotals" Context="tableContext">
+            <Column Title="Name" @bind-Field="@tableContext.Name" Sortable/>
+            <Column Title="Amount (%)" TData="decimal?" DataIndex="Amount.Percent" Format="0%" Sortable>
+                @if (tableContext.Amount.Percent.HasValue)
                 {
-                    total += unbudgetedMoney;
-                    unbudgetedMoney = 0;
+                    var exactAmount = Income.ExactMoney * tableContext.Amount.Percent.Value;
+                    
+                    <span>
+                        @tableContext.Amount.Percent.Value ($@exactAmount.ToString("F2"))   
+                    </span>
                 }
-
-                foreach (var exactSaving in _exactSubTotals.Where(x => x.SaverId == account.Id))
+            </Column>
+            <Column Title="Amount ($)" TData="decimal?" DataIndex="Amount.Exact" Sortable>
+                @if (tableContext.Amount.Exact.HasValue)
                 {
-                    total += exactSaving.Amount.Exact.Value;
+                    <span>
+                        $@tableContext.Amount.Exact.Value.ToString("F2")
+                    </span>
                 }
+            </Column>            
+            <SaverIdColumn Title="Saver" TableContext="tableContext" TTableContext="SavingsPlanRunningTotal"/>
+            <Column Title="Remaining Balance" Format="$0.00" @bind-Field="@tableContext.RunningTotal"/>
+        </Table>
 
-                foreach (var percentSaving in _percentSubTotals.Where(x => x.SaverId == account.Id))
-                {
-                    total += Income.ExactMoney * percentSaving.Amount.Percent.Value;
+        <Title Level="4">Exact Savings Plan</Title>
+        <Table DataSource="_exactSubTotals" Context="tableContext">
+            <Column Title="Name" @bind-Field="@tableContext.Name" Sortable/>
+            <Column Title="Amount" TData="decimal?" DataIndex="Amount.Exact" Format="$0.00" Sortable/>
+            <SaverIdColumn Title="Saver" TableContext="tableContext" TTableContext="SavingsPlanRunningTotal"/>
+            <Column Title="Remaining Balance" Format="$0.00" @bind-Field="@tableContext.RunningTotal"/>
+        </Table>
+
+        <Title Level="4">Relative Savings Plan</Title>
+        <Table DataSource="_percentSubTotals" Context="tableContext">
+            <Column Title="Name" @bind-Field="@tableContext.Name" Sortable/>
+            <Column Title="Amount (%)" TData="decimal?" DataIndex="Amount.Percent" Format="0%" Sortable/>
+            <Column Title="Amount ($)" TData="decimal?" DataIndex="Amount.Percent" Sortable>
+                @{
+                    var exactAmount = Income.ExactMoney * tableContext.Amount.Percent.Value;
                 }
+                $@exactAmount.ToString("F2")
+            </Column>
+            <SaverIdColumn Title="Saver" TableContext="tableContext" TTableContext="SavingsPlanRunningTotal"/>
+            <Column Title="Remaining Balance" Format="$0.00" @bind-Field="@tableContext.RunningTotal"/>
+        </Table>
 
-                _savingsAmount[account] = total;
+        <Divider/>
 
-                <SpaceItem>
-                    <Card Style="min-width: 300px" Title="@account.Attributes.DisplayName">
-                        <Progress Percent="@((double)(total / Income.ExactMoney * 100))" Format='x => x.ToString("F1") + "%"' Status="@ProgressStatus.Normal"/>
-                        <span>
-                            $@total
-                        </span>
-                    </Card>
-                </SpaceItem>
-            }
-        </Space>
-    </Card>
-    <Divider />
-    <Card>
-        @if (_savingsAmount != null)
-        {
-            var forecastData = Enumerable.Range(0, 60).SelectMany(x =>
-            {
-                var forecastOutput = new List<ForecastViewModel>();
+        <Card>
+            <Statistic Title="Unbudgeted Money" Value="@unbudgetedMoney">
+                <PrefixTemplate>
+                    $
+                </PrefixTemplate>
+            </Statistic>
 
-                foreach (var (account, cycleSavings) in _savingsAmount)
+            <Divider/>
+
+            <Space Size=@(("8", "8")) Direction="DirectionVHType.Horizontal" Wrap>
+                @{
+                    _savingsAmount = new Dictionary<AccountResource, decimal>();
+                }
+                @foreach (var account in Accounts.Data)
                 {
-                    var cycleTimeSpan = Income.Interval.ToTimeSpan(Income.IntervalUnits);
+                    var total = 0M;
 
-                    forecastOutput.Add(new ForecastViewModel
+                    if (account.Attributes.AccountType == AccountType.Transactional)
                     {
-                        balance = (decimal)account.Attributes.Balance.ValueInBaseUnits / 100 + cycleSavings * x,
-                        cycle = Income.StartDate
-                            .FindLastCycleStart(Income.Interval, Income.IntervalUnits)
-                            .Add(cycleTimeSpan * x)
-                            .ToString("dd/MM/yyyy"),
-                        accountName = account.Attributes.DisplayName
-                    });
+                        total += unbudgetedMoney;
+                        unbudgetedMoney = 0;
+                    }
+
+                    foreach (var exactSaving in _exactSubTotals.Where(x => x.SaverId == account.Id))
+                    {
+                        total += exactSaving.Amount.Exact.Value;
+                    }
+
+                    foreach (var percentSaving in _percentSubTotals.Where(x => x.SaverId == account.Id))
+                    {
+                        total += Income.ExactMoney * percentSaving.Amount.Percent.Value;
+                    }
+
+                    _savingsAmount[account] = total;
+
+                    <SpaceItem>
+                        <Card Style="min-width: 300px" Title="@account.Attributes.DisplayName">
+                            <Progress Percent="@((double) (total / Income.ExactMoney * 100))" Format='x => x.ToString("F1") + "%"' Status="@ProgressStatus.Normal"/>
+                            <span>
+                                $@total
+                            </span>
+                        </Card>
+                    </SpaceItem>
                 }
+            </Space>
+        </Card>
+        <Divider/>
+        <Card>
+            @if (_savingsAmount != null)
+            {
+                var forecastData = Enumerable.Range(0, 60).SelectMany(x =>
+                {
+                    var forecastOutput = new List<ForecastViewModel>();
 
-                return forecastOutput;
-            }).ToArray();
+                    foreach (var (account, cycleSavings) in _savingsAmount)
+                    {
+                        var cycleTimeSpan = Income.Interval.ToTimeSpan(Income.IntervalUnits);
 
-        <Title Level="4">Income Forecast</Title>
-        <AntDesign.Charts.StackedArea Config="_forecastConfig" Data="@forecastData" ></AntDesign.Charts.StackedArea>
-        }
-    </Card>
+                        forecastOutput.Add(new ForecastViewModel
+                        {
+                            balance = (decimal) account.Attributes.Balance.ValueInBaseUnits / 100 + cycleSavings * x,
+                            cycle = Income.StartDate
+                                .FindLastCycleStart(Income.Interval, Income.IntervalUnits)
+                                .Add(cycleTimeSpan * x)
+                                .ToString("dd/MM/yyyy"),
+                            accountName = account.Attributes.DisplayName
+                        });
+                    }
+
+                    return forecastOutput;
+                }).ToArray();
+
+                <Title Level="4">Income Forecast</Title>
+                <AntDesign.Charts.StackedArea Config="_forecastConfig" Data="@forecastData"></AntDesign.Charts.StackedArea>
+            }
+        </Card>
+    </RepositoryWrapper>
 </RepositoryWrapper>
 
 @code
@@ -148,6 +197,7 @@
     [Parameter]
     public Income Income { get; set; }
 
+    private List<SavingsPlanRunningTotal> _incomeExpenseSubTotals;
     private List<SavingsPlanRunningTotal> _exactSubTotals;
     private List<SavingsPlanRunningTotal> _percentSubTotals;
 

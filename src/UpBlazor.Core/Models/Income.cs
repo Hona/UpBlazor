@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Security.Cryptography.X509Certificates;
 using UpBlazor.Core.Models.Enums;
 
 namespace UpBlazor.Core.Models
@@ -14,5 +15,47 @@ namespace UpBlazor.Core.Models
         public int IntervalUnits { get; set; }
 
         public override string ToString() => $"{Name} (${ExactMoney:F2} every {IntervalUnits} {Interval})";
+
+        public bool FallsOn(DateTime dateTime, DateTime startDate, out int totalCyclesSinceStart)
+        {
+            var date = dateTime.Date;
+            
+            if (date < startDate)
+            {
+                totalCyclesSinceStart = default;
+                return false;
+            }
+
+            if (date == startDate)
+            {
+                totalCyclesSinceStart = 0;
+                return true;
+            }
+
+            var loopDate = startDate.Date;
+
+            totalCyclesSinceStart = 0;
+            
+            do
+            {
+                totalCyclesSinceStart++;
+                var toAdd = Interval switch
+                {
+                    Interval.Days => TimeSpan.FromDays(IntervalUnits),
+                    Interval.Fortnights => TimeSpan.FromDays(IntervalUnits * 14),
+                    Interval.Weeks => TimeSpan.FromDays(7),
+                    _ => throw new ArgumentOutOfRangeException()
+                };
+
+                loopDate = loopDate.Add(toAdd);
+
+                if (loopDate.Date == date.Date)
+                {
+                    return true;
+                }
+            } while (loopDate < date);
+
+            return false;
+        }
     }
 }

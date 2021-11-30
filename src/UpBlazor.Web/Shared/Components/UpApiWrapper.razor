@@ -1,4 +1,7 @@
 ﻿@inject ICurrentUserService _currentUserService
+@inject ILogger<UpApiWrapper<T>> _logger
+
+@using Microsoft.Extensions.Logging
 
 @typeparam T
 
@@ -78,6 +81,12 @@ else
         }
 
         _response = await Action.Invoke(_upApi);
+
+        if (_response is not null && !_response.Success)
+        {
+            _logger.LogError("Up.NET API Error: {@Body}", _response.Errors);
+        }
+        
         CascadedResponse = default;
 
         _loading = false;

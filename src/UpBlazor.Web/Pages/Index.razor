@@ -1,20 +1,23 @@
 @page "/"
 
 @inject ICurrentUserService _currentUserService
+@inject NavigationManager _navigationManager
 
 <UpApiWrapper Action="api => api.GetAccountsAsync()" T="PaginatedDataResponse<AccountResource>">
     <div style="display: flex; justify-content: center; align-items: center">
         @foreach (var transactionAccount in context.Data.Where(x => x.Attributes.AccountType == AccountType.Transactional))
         {
-            <Card Title="@transactionAccount.Attributes.DisplayName"
-                  Bordered="@true"
-                  Hoverable="@true"
-                  Style="margin: 1rem">
-                <Statistic Prefix="$" 
-                           Precision="2" 
-                           Value="@decimal.Parse(transactionAccount.Attributes.Balance.Value)" 
-                           TValue="decimal"/>
-            </Card>
+            <div @onclick='() => _navigationManager.NavigateTo($"/insights/transactions/{transactionAccount.Id}")'>
+                <Card Title="@transactionAccount.Attributes.DisplayName"
+                      Bordered="@true"
+                      Hoverable="@true"
+                      Style="margin: 1rem">
+                    <Statistic Prefix="$" 
+                               Precision="2" 
+                               Value="@decimal.Parse(transactionAccount.Attributes.Balance.Value)" 
+                               TValue="decimal"/>
+                </Card>
+            </div>
         }
     </div>
     
@@ -23,15 +26,17 @@
     <div style="display: flex; justify-content: center; align-items: center">
         @foreach (var saver in context.Data.Where(x => x.Attributes.AccountType == AccountType.Saver))
         {
-            <Card Title="@saver.Attributes.DisplayName"
-                  Bordered="@true"
-                  Hoverable="@true"
-                  Style="margin: 1rem">
-                <Statistic Prefix="$" 
-                           Precision="2" 
-                           Value="@decimal.Parse(saver.Attributes.Balance.Value)" 
-                           TValue="decimal"/>
-            </Card>
+            <div @onclick='() => _navigationManager.NavigateTo($"/insights/transactions/{saver.Id}")'>
+                <Card Title="@saver.Attributes.DisplayName"
+                      Bordered="@true"
+                      Hoverable="@true"
+                      Style="margin: 1rem">
+                    <Statistic Prefix="$" 
+                               Precision="2" 
+                               Value="@decimal.Parse(saver.Attributes.Balance.Value)" 
+                               TValue="decimal"/>
+                </Card>
+            </div>
         }
     </div>
 </UpApiWrapper>

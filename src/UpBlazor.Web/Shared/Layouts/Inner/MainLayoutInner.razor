@@ -58,6 +58,10 @@
                               RouterMatch="NavLinkMatch.All" RouterLink="/insights/forecast">
                         <span>Forecast</span>
                     </MenuItem>
+                    <MenuItem OnClick='() => _navigationManager.NavigateTo("/insights/transactions")'
+                              RouterMatch="NavLinkMatch.All" RouterLink="/insights/transactions">
+                        <span>Transactions</span>
+                    </MenuItem>
                 </ChildContent>
             </SubMenu>
             <SubMenu>

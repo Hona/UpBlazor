@@ -1,0 +1,29 @@
+﻿@page "/insights/transactions/{AccountId?}"
+
+@using Up.NET.Api.Transactions
+@using UpBlazor.Web.Shared.Pages.Insights.Transactions
+
+
+<UpApiWrapper Context="accounts" Action="api => api.GetAccountsAsync()" T="PaginatedDataResponse<AccountResource>">
+    @if (string.IsNullOrWhiteSpace(AccountId))
+    {
+        <UpApiWrapper T="PaginatedDataResponse<TransactionResource>" 
+                      Action="x => x.GetTransactionsAsync(100, TransactionStatus.Settled)">
+            <TransactionsInner />
+        </UpApiWrapper>
+    }
+    else
+    {
+        <UpApiWrapper T="PaginatedDataResponse<TransactionResource>" 
+                      Action="x => x.GetTransactionsAsync(AccountId, 100, TransactionStatus.Settled)">
+            <TransactionsInner AccountId="@AccountId" />
+        </UpApiWrapper>
+    }
+</UpApiWrapper>
+
+
+@code
+{
+    [Parameter]
+    public string AccountId { get; set; }
+}

@@ -14,6 +14,7 @@ using UpBlazor.Core.Models;
 using UpBlazor.Core.Repositories;
 using UpBlazor.Application.Services;
 using UpBlazor.Infrastructure.Repositories;
+using Weasel.Postgresql;
 
 namespace UpBlazor.Web
 {

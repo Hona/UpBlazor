@@ -27,7 +27,7 @@
                                 @(context.Attributes.Amount.Value.Substring(1, context.Attributes.Amount.Value.Length - 1))
                             </Column>
                         </Table>
-                        
+
                         <Table DataSource="_transactionsIn.Where(x => x.Relationships.Account.Data.Id == account.Id)"
                                Title="Transactions In 🟢">
                             <Column Title="Description" DataIndex="Attributes.Description" TData="string"/>

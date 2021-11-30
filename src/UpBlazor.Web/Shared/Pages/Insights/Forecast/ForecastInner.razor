@@ -1,4 +1,5 @@
 ﻿@using Marten
+
 <RepositoryWrapper TRepository="IIncomeRepository"
                    Action="x => x.GetAllByUserIdAsync(NormalizedAggregate.UserId)"
                    TResponse="IReadOnlyList<Income>"

@@ -4,7 +4,7 @@
 @inject NavigationManager _navigationManager
 
 <UpApiWrapper Action="api => api.GetAccountsAsync()" T="PaginatedDataResponse<AccountResource>">
-    <div style="display: flex; justify-content: center; align-items: center">
+    <div style="display: flex; justify-content: center; align-items: center; flex-wrap: wrap">
         @foreach (var transactionAccount in context.Data.Where(x => x.Attributes.AccountType == AccountType.Transactional))
         {
             <div @onclick='() => _navigationManager.NavigateTo($"/insights/transactions/{transactionAccount.Id}")'>
@@ -23,7 +23,7 @@
     
     <Title Level="4">Savers</Title>
     
-    <div style="display: flex; justify-content: center; align-items: center">
+    <div style="display: flex; justify-content: center; align-items: center; flex-wrap: wrap">
         @foreach (var saver in context.Data.Where(x => x.Attributes.AccountType == AccountType.Saver))
         {
             <div @onclick='() => _navigationManager.NavigateTo($"/insights/transactions/{saver.Id}")'>

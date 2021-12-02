@@ -14,7 +14,7 @@ namespace UpBlazor.Infrastructure.Repositories
 
         public new async Task AddOrUpdateAsync(RegisteredUser model)
         {
-            using var session = Store.LightweightSession();
+            await using var session = Store.LightweightSession();
 
             var existingModel = await session.Query<RegisteredUser>()
                 .SingleOrDefaultAsync(x => x.Id == model.Id);
@@ -36,7 +36,7 @@ namespace UpBlazor.Infrastructure.Repositories
 
         public async Task<RegisteredUser> GetByIdAsync(string id)
         {
-            using var session = Store.QuerySession();
+            await using var session = Store.QuerySession();
 
             return await session.Query<RegisteredUser>()
                 .SingleOrDefaultAsync(x => x.Id == id);
@@ -44,7 +44,7 @@ namespace UpBlazor.Infrastructure.Repositories
 
         public async Task<RegisteredUser> GetByEmailAsync(string email)
         {
-            using var session = Store.QuerySession();
+            await using var session = Store.QuerySession();
 
             return await session.Query<RegisteredUser>()
                 .SingleOrDefaultAsync(x => x.Email == email);
@@ -52,7 +52,7 @@ namespace UpBlazor.Infrastructure.Repositories
 
         public async Task<IReadOnlyList<RegisteredUser>> GetAllByIdsAsync(params string[] ids)
         {
-            using var session = Store.QuerySession();
+            await using var session = Store.QuerySession();
 
             return await session.Query<RegisteredUser>()
                 .Where(x => x.Id.IsOneOf(ids))

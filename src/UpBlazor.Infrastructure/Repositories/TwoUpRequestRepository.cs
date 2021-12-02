@@ -13,7 +13,7 @@ namespace UpBlazor.Infrastructure.Repositories
 
         public async Task<TwoUpRequest> GetByRequesterAndRequesteeAsync(string requesterId, string requesteeId)
         {
-            using var session = Store.QuerySession();
+            await using var session = Store.QuerySession();
 
             return await session.Query<TwoUpRequest>()
                 .SingleOrDefaultAsync(x => x.RequesterId == requesterId &&
@@ -22,7 +22,7 @@ namespace UpBlazor.Infrastructure.Repositories
 
         public async Task<IReadOnlyList<TwoUpRequest>> GetAllByRequesterAsync(string requesterId)
         {
-            using var session = Store.QuerySession();
+            await using var session = Store.QuerySession();
 
             return await session.Query<TwoUpRequest>()
                 .Where(x => x.RequesterId == requesterId)
@@ -31,7 +31,7 @@ namespace UpBlazor.Infrastructure.Repositories
 
         public async Task<IReadOnlyList<TwoUpRequest>> GetAllByRequesteeAsync(string requesteeId)
         {
-            using var session = Store.QuerySession();
+            await using var session = Store.QuerySession();
 
             return await session.Query<TwoUpRequest>()
                 .Where(x => x.RequesteeId == requesteeId)

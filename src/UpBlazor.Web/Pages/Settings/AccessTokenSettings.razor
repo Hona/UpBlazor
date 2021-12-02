@@ -77,7 +77,7 @@ else
     
     private UpResponse<PingResponse> _pingResponse;
 
-    private SetAccessToken _setAccessToken = new();
+    private readonly SetAccessToken _setAccessToken = new();
 
     protected override async Task OnInitializedAsync()
     {

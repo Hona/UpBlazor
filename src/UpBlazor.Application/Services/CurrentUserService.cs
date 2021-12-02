@@ -14,7 +14,7 @@ namespace UpBlazor.Application.Services
     {
         private readonly AuthenticationStateProvider _authenticationStateProvider;
         private readonly IUpUserTokenRepository _upUserTokenRepository;
-        private IRegisteredUserRepository _registeredUserRepository;
+        private readonly IRegisteredUserRepository _registeredUserRepository;
 
         private string _impersonationUserId;
 
@@ -45,18 +45,16 @@ namespace UpBlazor.Application.Services
 
             var accessToken = userToken?.AccessToken ?? overrideToken;
 
-            if (accessToken is null)
+            switch (accessToken)
             {
-                return null;
-            }
-            
-            if (accessToken == MockUpApi.MockUpToken)
-            {
-                _upApi = new MockUpApi();
-            }
-            else
-            {
-                _upApi = new UpApi(accessToken);
+                case null:
+                    return null;
+                case MockUpApi.MockUpToken:
+                    _upApi = new MockUpApi();
+                    break;
+                default:
+                    _upApi = new UpApi(accessToken);
+                    break;
             }
 
             return _upApi;

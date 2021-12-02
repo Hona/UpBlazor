@@ -18,7 +18,7 @@ namespace UpBlazor.Core.Models.Mock
     {
         public const string MockUpToken = "up:demo";
 
-        private UpResponse<PaginatedDataResponse<AccountResource>> _accountsData = new()
+        private readonly UpResponse<PaginatedDataResponse<AccountResource>> _accountsData = new()
         {
             Response = new PaginatedDataResponse<AccountResource>
             {

@@ -14,7 +14,7 @@ namespace UpBlazor.Infrastructure.Repositories
 
         public async Task<Expense> GetByIdAsync(Guid id)
         {
-            using var session = Store.QuerySession();
+            await using var session = Store.QuerySession();
 
             return await session.Query<Expense>()
                 .SingleOrDefaultAsync(x => x.Id == id);
@@ -22,7 +22,7 @@ namespace UpBlazor.Infrastructure.Repositories
 
         public async Task<IReadOnlyList<Expense>> GetAllByUserIdAsync(string userId)
         {
-            using var session = Store.QuerySession();
+            await using var session = Store.QuerySession();
 
             return await session.Query<Expense>()
                 .Where(x => x.UserId == userId)

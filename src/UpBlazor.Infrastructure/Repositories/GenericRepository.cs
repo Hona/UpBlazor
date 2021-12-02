@@ -16,7 +16,7 @@ namespace UpBlazor.Infrastructure.Repositories
 
         public async Task AddAsync(T model)
         {
-            using var session = Store.LightweightSession();
+            await using var session = Store.LightweightSession();
             
             session.Insert(model);
 
@@ -25,7 +25,7 @@ namespace UpBlazor.Infrastructure.Repositories
 
         public async Task UpdateAsync(T model)
         {
-            using var session = Store.LightweightSession();
+            await using var session = Store.LightweightSession();
             
             session.Update(model);
 
@@ -35,7 +35,7 @@ namespace UpBlazor.Infrastructure.Repositories
 
         public async Task AddOrUpdateAsync(T model)
         {
-            using var session = Store.LightweightSession();
+            await using var session = Store.LightweightSession();
             
             session.Store(model);
 
@@ -44,7 +44,7 @@ namespace UpBlazor.Infrastructure.Repositories
 
         public async Task DeleteAsync(T model)
         {
-            using var session = Store.LightweightSession();
+            await using var session = Store.LightweightSession();
             
             session.Delete(model);
 
@@ -53,7 +53,7 @@ namespace UpBlazor.Infrastructure.Repositories
 
         public async Task<IReadOnlyList<T>> GetAllAsync()
         {
-            using var session = Store.QuerySession();
+            await using var session = Store.QuerySession();
 
             return await session.Query<T>().ToListAsync();
         }

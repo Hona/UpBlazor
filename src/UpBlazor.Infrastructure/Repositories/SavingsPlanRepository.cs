@@ -14,7 +14,7 @@ namespace UpBlazor.Infrastructure.Repositories
 
         public async Task<SavingsPlan> GetByIdAsync(Guid id)
         {
-            using var session = Store.QuerySession();
+            await using var session = Store.QuerySession();
 
             return await session.Query<SavingsPlan>()
                 .SingleOrDefaultAsync(x => x.Id == id);
@@ -22,7 +22,7 @@ namespace UpBlazor.Infrastructure.Repositories
 
         public async Task<IReadOnlyList<SavingsPlan>> GetAllByIncomeIdAsync(Guid incomeId)
         {
-            using var session = Store.QuerySession();
+            await using var session = Store.QuerySession();
 
             return await session.Query<SavingsPlan>()
                 .Where(x => x.IncomeId == incomeId)
@@ -31,7 +31,7 @@ namespace UpBlazor.Infrastructure.Repositories
 
         public async Task<IReadOnlyList<SavingsPlan>> GetAllByUserIdAsync(string userId)
         {
-            using var session = Store.QuerySession();
+            await using var session = Store.QuerySession();
 
             var userIncomeIds = (await session.Query<Income>()
                 .Where(x => x.UserId == userId)

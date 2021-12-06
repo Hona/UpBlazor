@@ -20,8 +20,11 @@ namespace UpBlazor.Web
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        private readonly IHostEnvironment _env;
+
+        public Startup(IConfiguration configuration, IHostEnvironment env)
         {
+            _env = env;
             Configuration = configuration;
         }
 
@@ -72,7 +75,7 @@ namespace UpBlazor.Web
                             return allowedEmails.Any(x => x == emailAddress);
                         });
                 });
-                
+
                 options.AddPolicy(Constants.AdminAuthorizationPolicy, policy =>
                 {
                     policy.RequireAuthenticatedUser()
@@ -81,7 +84,7 @@ namespace UpBlazor.Web
                         {
                             var emailAddress = context.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Email)
                                 ?.Value;
-                            
+
                             var adminEmails = Configuration
                                 .GetSection(Constants.AdminAuthorizationPolicy)
                                 .GetChildren()
@@ -102,7 +105,9 @@ namespace UpBlazor.Web
             {
                 options.Connection(Configuration.GetConnectionString("Marten"));
 
-                options.AutoCreateSchemaObjects = AutoCreate.All;
+                options.AutoCreateSchemaObjects = _env.IsDevelopment()
+                    ? AutoCreate.All 
+                    : AutoCreate.CreateOrUpdate;
 
                 options.Schema.For<UpUserToken>()
                     .Identity(x => x.UserId);
@@ -113,7 +118,7 @@ namespace UpBlazor.Web
                 options.Schema.For<NormalizedAggregate>()
                     .Identity(x => x.UserId);
             });
-            
+
             services.AddSingleton<IUpUserTokenRepository, UpUserTokenRepository>();
             services.AddSingleton<ITwoUpRepository, TwoUpRepository>();
             services.AddSingleton<ITwoUpRequestRepository, TwoUpRequestRepository>();
@@ -140,7 +145,7 @@ namespace UpBlazor.Web
             forwardedOptions.KnownNetworks.Clear();
             forwardedOptions.KnownProxies.Clear();
             app.UseForwardedHeaders(forwardedOptions);
-            
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -155,9 +160,9 @@ namespace UpBlazor.Web
             app.UseSerilogRequestLogging();
 
             app.UseStaticFiles();
-            
+
             app.UseRouting();
-            
+
             app.UseAuthentication();
             app.UseAuthorization();
 

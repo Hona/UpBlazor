@@ -26,16 +26,16 @@ else
 @code {
     [Parameter]
     public RenderFragment<TResponse> ChildContent { get; set; }
-    
+
     [Parameter]
     public Func<TRepository, Task<TResponse>> Action { get; set; }
-    
+
     [Parameter]
     public Action OnLoad { get; set; }
-    
+
     [Parameter]
     public bool ChildHandlesLoading { get; set; }
-    
+
     [CascadingParameter(Name = CascadingConstants.RepositoryWrapper)]
     public TResponse CascadedResponse { get; set; }
 
@@ -43,19 +43,19 @@ else
 
     private bool _loading;
     private TResponse _response;
-    
+
     protected override async Task OnParametersSetAsync()
     {
         _loading = true;
 
-        _response = await Action.Invoke(_repository);
+        _response = await Action.Invoke(_repository).ConfigureAwait(false);
         CascadedResponse = default;
-        
+
         _loading = false;
-        
+
         OnLoad?.Invoke();
         StateHasChanged();
     }
 
-    public async Task ReloadAsync() => await OnParametersSetAsync();
+    public async Task ReloadAsync() => await OnParametersSetAsync().ConfigureAwait(false);
 }

@@ -34,9 +34,9 @@ namespace UpBlazor.Application.Services
                 return _upApi;
             }
 
-            var userId = await GetUserIdAsync();
+            var userId = await GetUserIdAsync().ConfigureAwait(false);
 
-            var userToken = await _upUserTokenRepository.GetByUserIdAsync(userId);
+            var userToken = await _upUserTokenRepository.GetByUserIdAsync(userId).ConfigureAwait(false);
 
             if (!string.IsNullOrWhiteSpace(overrideToken) && userToken != null)
             {
@@ -62,7 +62,7 @@ namespace UpBlazor.Application.Services
 
         public async Task<string> GetUserIdAsync()
         {
-            var claims = await GetClaimsAsync();
+            var claims = await GetClaimsAsync().ConfigureAwait(false);
             return claims?.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value ??
                    throw new InvalidOperationException("Logged in user must have a ID claim");
         }
@@ -71,7 +71,7 @@ namespace UpBlazor.Application.Services
         {
             if (!string.IsNullOrWhiteSpace(_impersonationUserId))
             {
-                var cachedUser = await _registeredUserRepository.GetByIdAsync(_impersonationUserId);
+                var cachedUser = await _registeredUserRepository.GetByIdAsync(_impersonationUserId).ConfigureAwait(false);
 
                 return new List<Claim>
                 {
@@ -81,7 +81,7 @@ namespace UpBlazor.Application.Services
                 };
             }
 
-            var authState = await _authenticationStateProvider.GetAuthenticationStateAsync();
+            var authState = await _authenticationStateProvider.GetAuthenticationStateAsync().ConfigureAwait(false);
 
             var user = authState.User;
 
@@ -95,7 +95,7 @@ namespace UpBlazor.Application.Services
 
         public async Task<string> GetGivenNameAsync()
         {
-            var claims = await GetClaimsAsync();
+            var claims = await GetClaimsAsync().ConfigureAwait(false);
 
             return claims.FirstOrDefault(x => x.Type == ClaimTypes.GivenName)?.Value;
         }

@@ -11,10 +11,11 @@ namespace UpBlazor.Infrastructure.Repositories
 
         public async Task<NormalizedAggregate> GetByUserIdAsync(string userId)
         {
-            await using var session = Store.QuerySession();
+            var session = Store.QuerySession();
+            await using var _ = session.ConfigureAwait(false);
 
             return await session.Query<NormalizedAggregate>()
-                .SingleOrDefaultAsync(x => x.UserId == userId);
+                .SingleOrDefaultAsync(x => x.UserId == userId).ConfigureAwait(false);
         }
     }
 }

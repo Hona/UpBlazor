@@ -14,33 +14,36 @@ namespace UpBlazor.Infrastructure.Repositories
 
         public async Task<SavingsPlan> GetByIdAsync(Guid id)
         {
-            await using var session = Store.QuerySession();
+            var session = Store.QuerySession();
+            await using var _ = session.ConfigureAwait(false);
 
             return await session.Query<SavingsPlan>()
-                .SingleOrDefaultAsync(x => x.Id == id);
+                .SingleOrDefaultAsync(x => x.Id == id).ConfigureAwait(false);
         }
 
         public async Task<IReadOnlyList<SavingsPlan>> GetAllByIncomeIdAsync(Guid incomeId)
         {
-            await using var session = Store.QuerySession();
+            var session = Store.QuerySession();
+            await using var _ = session.ConfigureAwait(false);
 
             return await session.Query<SavingsPlan>()
                 .Where(x => x.IncomeId == incomeId)
-                .ToListAsync();
+                .ToListAsync().ConfigureAwait(false);
         }
 
         public async Task<IReadOnlyList<SavingsPlan>> GetAllByUserIdAsync(string userId)
         {
-            await using var session = Store.QuerySession();
+            var session = Store.QuerySession();
+            await using var _ = session.ConfigureAwait(false);
 
             var userIncomeIds = (await session.Query<Income>()
                 .Where(x => x.UserId == userId)
                 .Select(x => x.Id)
-                .ToListAsync()).ToArray();
+                .ToListAsync().ConfigureAwait(false)).ToArray();
 
             return await session.Query<SavingsPlan>()
                 .Where(x => x.IncomeId.IsOneOf(userIncomeIds))
-                .ToListAsync();        
+                .ToListAsync().ConfigureAwait(false);        
         }
     }
 }

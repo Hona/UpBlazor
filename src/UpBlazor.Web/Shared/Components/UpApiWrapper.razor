@@ -72,7 +72,7 @@ else
     {
         _loading = true;
 
-        _upApi = await _currentUserService.GetApiAsync();
+        _upApi = await _currentUserService.GetApiAsync().ConfigureAwait(false);
         
         if (_upApi == null)
         {
@@ -80,7 +80,7 @@ else
             return;
         }
 
-        _response = await Action.Invoke(_upApi);
+        _response = await Action.Invoke(_upApi).ConfigureAwait(false);
 
         if (_response is not null && !_response.Success)
         {

@@ -7,7 +7,7 @@
     <Form Model="_request" 
           LabelColSpan="4"
           WrapperColSpan="20"
-          OnFinish="async () => await OnFormFinishAsync(UserId)"
+          OnFinish="async () => await OnFormFinishAsync(UserId).ConfigureAwait(false)"
           Loading="_loading"
           Context="formContext">
         <FormItem Label="Name">
@@ -57,14 +57,14 @@
             ExactMoney =  _request.ExactMoney,
             StartDate = _request.StartDate,
             UserId = currentUserId
-        });
+        }).ConfigureAwait(false);
         
         _request = new();
         _loading = false;
 
         if (OnNewIncomeAsync != null)
         {
-            await OnNewIncomeAsync.Invoke();
+            await OnNewIncomeAsync.Invoke().ConfigureAwait(false);
         }
     }
 

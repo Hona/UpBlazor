@@ -31,10 +31,10 @@
                                 @((DateTime.Now - item.CreatedDate).Humanize() + " ago")
                             </SpaceItem>
                             <SpaceItem>
-                                <Button Loading="_acceptRequestLoading" OnClick="async () => await AcceptRequestAsync(item)">Accept</Button>
+                                <Button Loading="_acceptRequestLoading" OnClick="async () => await AcceptRequestAsync(item).ConfigureAwait(false)">Accept</Button>
                             </SpaceItem>
                             <SpaceItem>
-                                <Button Loading="_acceptRequestLoading" OnClick="async () => await IgnoreRequestAsync(item)" Danger>Ignore</Button>
+                                <Button Loading="_acceptRequestLoading" OnClick="async () => await IgnoreRequestAsync(item).ConfigureAwait(false)" Danger>Ignore</Button>
                             </SpaceItem>
                         </Space>
                     </ListItem>
@@ -59,24 +59,24 @@
     {
         _acceptRequestLoading = true;
         
-        await _twoUpRequestRepository.DeleteAsync(request);
+        await _twoUpRequestRepository.DeleteAsync(request).ConfigureAwait(false);
 
         var twoUp = new TwoUp(request.RequesteeId, request.RequesterId);
-        await _twoUpRepository.AddOrUpdateAsync(twoUp);
+        await _twoUpRepository.AddOrUpdateAsync(twoUp).ConfigureAwait(false);
         
         _acceptRequestLoading = false;
 
-        await _repositoryWrapper.ReloadAsync();
+        await _repositoryWrapper.ReloadAsync().ConfigureAwait(false);
     }
     
     private async Task IgnoreRequestAsync(TwoUpRequest request)
     {
         _acceptRequestLoading = true;
         
-        await _twoUpRequestRepository.DeleteAsync(request);
+        await _twoUpRequestRepository.DeleteAsync(request).ConfigureAwait(false);
 
         _acceptRequestLoading = false;
 
-        await _repositoryWrapper.ReloadAsync();
+        await _repositoryWrapper.ReloadAsync().ConfigureAwait(false);
     }
 }

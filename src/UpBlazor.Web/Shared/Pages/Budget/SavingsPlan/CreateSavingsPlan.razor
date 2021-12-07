@@ -6,7 +6,7 @@
     <Form Model="_request"
           LabelColSpan="4"
           WrapperColSpan="20"
-          OnFinish="async () => await OnFormFinishAsync(UserId)"
+          OnFinish="async () => await OnFormFinishAsync(UserId).ConfigureAwait(false)"
           Loading="_loading"
           Context="formContext">
         <FormItem Label="Name">
@@ -58,14 +58,14 @@
             IncomeId = Income.Id,
             SaverId = _request.SaverId,
             Amount = _request.Amount
-        });
+        }).ConfigureAwait(false);
         
         _request = new();
         _loading = false;
 
         if (OnNewSavingsPlanAsync != null)
         {
-            await OnNewSavingsPlanAsync.Invoke();
+            await OnNewSavingsPlanAsync.Invoke().ConfigureAwait(false);
         }
     }
 

@@ -35,7 +35,7 @@ else
     {
         _loading = true;
 
-        _userId = await _currentUserService.GetUserIdAsync();
+        _userId = await _currentUserService.GetUserIdAsync().ConfigureAwait(false);
         CascadedUserId = null;
 
         _loading = false;

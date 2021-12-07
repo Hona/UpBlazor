@@ -7,7 +7,7 @@
 {
     protected override async Task OnInitializedAsync()
     {
-        var claims = (await _currentUserService.GetClaimsAsync()).ToList();
+        var claims = (await _currentUserService.GetClaimsAsync().ConfigureAwait(false)).ToList();
 
         var registeredUser = new RegisteredUser
         {
@@ -16,6 +16,6 @@
             GivenName = claims.FirstOrDefault(x => x.Type == ClaimTypes.GivenName)?.Value
         };
 
-        await _registeredUserRepository.AddOrUpdateAsync(registeredUser);
+        await _registeredUserRepository.AddOrUpdateAsync(registeredUser).ConfigureAwait(false);
     }
 }

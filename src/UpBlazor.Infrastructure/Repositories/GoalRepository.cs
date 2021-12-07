@@ -14,19 +14,21 @@ namespace UpBlazor.Infrastructure.Repositories
 
         public async Task<Goal> GetByIdAsync(Guid id)
         {
-            await using var session = Store.QuerySession();
+            var session = Store.QuerySession();
+            await using var _ = session.ConfigureAwait(false);
 
             return await session.Query<Goal>()
-                .SingleOrDefaultAsync(x => x.Id == id);
+                .SingleOrDefaultAsync(x => x.Id == id).ConfigureAwait(false);
         }
 
         public async Task<IReadOnlyList<Goal>> GetAllByUserIdAsync(string userId)
         {
-            await using var session = Store.QuerySession();
+            var session = Store.QuerySession();
+            await using var _ = session.ConfigureAwait(false);
 
             return await session.Query<Goal>()
                 .Where(x => x.UserId == userId)
-                .ToListAsync();
+                .ToListAsync().ConfigureAwait(false);
         }
     }
 }

@@ -9,7 +9,7 @@ namespace UpBlazor.Web.Controllers
     [Route("/signin")]
     public class AuthenticationController : Controller
     {
-        private async Task InternalSignoutAsync() => await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+        private async Task InternalSignoutAsync() => await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme).ConfigureAwait(false);
 
         [HttpGet]
         public IActionResult Signin([FromQuery] string @return = "/")
@@ -25,7 +25,7 @@ namespace UpBlazor.Web.Controllers
         [HttpGet("/signout")]
         public async Task<IActionResult> SignoutAsync()
         {
-            await InternalSignoutAsync();
+            await InternalSignoutAsync().ConfigureAwait(false);
             
             return LocalRedirect("/signout/success");
         }
@@ -33,7 +33,7 @@ namespace UpBlazor.Web.Controllers
         [HttpGet("/switch-user")]
         public async Task<IActionResult> SwitchUserAsync()
         {
-            await InternalSignoutAsync();
+            await InternalSignoutAsync().ConfigureAwait(false);
 
             return Signin();
         }

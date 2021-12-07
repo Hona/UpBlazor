@@ -11,10 +11,11 @@ namespace UpBlazor.Infrastructure.Repositories
 
         public async Task<UpUserToken> GetByUserIdAsync(string id)
         {
-            await using var session = Store.QuerySession();
+            var session = Store.QuerySession();
+            await using var _ = session.ConfigureAwait(false);
 
             return await session.Query<UpUserToken>()
-                .SingleOrDefaultAsync(x => x.UserId == id);
+                .SingleOrDefaultAsync(x => x.UserId == id).ConfigureAwait(false);
         }
     }
 }

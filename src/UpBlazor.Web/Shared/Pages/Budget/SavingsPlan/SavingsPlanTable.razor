@@ -15,7 +15,7 @@
           <ActionColumn>
                <Space>
                     <SpaceItem>
-                         <Button Danger OnClick="async () => await DeleteAsync(tableContext)">Remove</Button>
+                         <Button Danger OnClick="async () => await DeleteAsync(tableContext).ConfigureAwait(false)">Remove</Button>
                     </SpaceItem>
                </Space>
           </ActionColumn>
@@ -45,10 +45,10 @@
      {
           _loading = true;
 
-          await _savingsPlanRepository.DeleteAsync(savingsPlan);
+          await _savingsPlanRepository.DeleteAsync(savingsPlan).ConfigureAwait(false);
 
           _loading = false;
 
-          await _repoRef.ReloadAsync();
+          await _repoRef.ReloadAsync().ConfigureAwait(false);
      }
 }

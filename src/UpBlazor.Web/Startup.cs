@@ -14,6 +14,7 @@ using UpBlazor.Core.Models;
 using UpBlazor.Core.Repositories;
 using UpBlazor.Application.Services;
 using UpBlazor.Infrastructure.Repositories;
+using UpBlazor.Infrastructure.Services;
 using Weasel.Postgresql;
 
 namespace UpBlazor.Web
@@ -106,7 +107,7 @@ namespace UpBlazor.Web
                 options.Connection(Configuration.GetConnectionString("Marten"));
 
                 options.AutoCreateSchemaObjects = _env.IsDevelopment()
-                    ? AutoCreate.All 
+                    ? AutoCreate.All
                     : AutoCreate.CreateOrUpdate;
 
                 options.Schema.For<UpUserToken>()
@@ -129,6 +130,8 @@ namespace UpBlazor.Web
             services.AddSingleton<IGoalRepository, GoalRepository>();
             services.AddSingleton<ISavingsPlanRepository, SavingsPlanRepository>();
             services.AddSingleton<INormalizedAggregateRepository, NormalizedAggregateRepository>();
+
+            services.AddHostedService<MartenHostedService>();
 
             services.AddScoped<ICurrentUserService, CurrentUserService>();
             services.AddSingleton<INormalizerService, NormalizerService>();

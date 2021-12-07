@@ -17,6 +17,7 @@ public class MartenHostedService : IHostedService
     public async Task StartAsync(CancellationToken cancellationToken)
     {
         await _store.Schema.ApplyAllConfiguredChangesToDatabaseAsync();
+        await _store.Schema.AssertDatabaseMatchesConfigurationAsync();
     }
 
     public Task StopAsync(CancellationToken cancellationToken) => Task.CompletedTask;

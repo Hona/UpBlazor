@@ -25,7 +25,7 @@
             <ActionColumn>
                 <Space>
                     <SpaceItem>
-                        <Button Danger OnClick="async () => await DeleteAsync(UserId, tableContext.Id).ConfigureAwait(false)">Remove</Button>
+                        <Button Danger OnClick="async () => await DeleteAsync(UserId, tableContext.Id)">Remove</Button>
                     </SpaceItem>
                 </Space>
             </ActionColumn>
@@ -45,9 +45,9 @@
     {
         _loading = true;
 
-        await _twoUpRepository.DeleteAsync(new TwoUp(userId1, userId2)).ConfigureAwait(false);
+        await _twoUpRepository.DeleteAsync(new TwoUp(userId1, userId2));
 
-        await _repoRef.ReloadAsync().ConfigureAwait(false);
+        await _repoRef.ReloadAsync();
 
         _loading = false;
     }

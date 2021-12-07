@@ -6,7 +6,7 @@
     <Form Model="_connectRequest" 
           LabelColSpan="4"
           WrapperColSpan="20"
-          OnFinish="async () => await OnFormFinishAsync(UserId).ConfigureAwait(false)"
+          OnFinish="async () => await OnFormFinishAsync(UserId)"
           Context="formContext">
         <FormItem>
             <Input DebounceMilliseconds="int.MaxValue" @bind-Value="@formContext.Email" />
@@ -31,16 +31,16 @@
     
     private async Task OnFormFinishAsync(string currentUserId)
     {
-        var user = await _registeredUserRepository.GetByEmailAsync(_connectRequest.Email).ConfigureAwait(false);
+        var user = await _registeredUserRepository.GetByEmailAsync(_connectRequest.Email);
         
         await _twoUpRequestRepository.AddOrUpdateAsync(new TwoUpRequest
         {
             CreatedDate = DateTime.Now,
             RequesterId = currentUserId,
-            RequesterName = await _currentUserService.GetGivenNameAsync().ConfigureAwait(false),
+            RequesterName = await _currentUserService.GetGivenNameAsync(),
             RequesterMessage = _connectRequest.Message,
             RequesteeId = user.Id,
-        }).ConfigureAwait(false);
+        });
     }
 
 

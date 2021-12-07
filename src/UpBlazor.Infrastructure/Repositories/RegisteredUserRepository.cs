@@ -14,11 +14,10 @@ namespace UpBlazor.Infrastructure.Repositories
 
         public new async Task AddOrUpdateAsync(RegisteredUser model)
         {
-            var session = Store.LightweightSession();
-            await using var _ = session.ConfigureAwait(false);
+            await using var session = Store.LightweightSession();
 
             var existingModel = await session.Query<RegisteredUser>()
-                .SingleOrDefaultAsync(x => x.Id == model.Id).ConfigureAwait(false);
+                .SingleOrDefaultAsync(x => x.Id == model.Id);
 
             if (existingModel == null)
             {
@@ -32,35 +31,32 @@ namespace UpBlazor.Infrastructure.Repositories
 
             session.Store(model);
 
-            await session.SaveChangesAsync().ConfigureAwait(false);
+            await session.SaveChangesAsync();
         }
 
         public async Task<RegisteredUser> GetByIdAsync(string id)
         {
-            var session = Store.QuerySession();
-            await using var _ = session.ConfigureAwait(false);
+            await using var session = Store.QuerySession();
 
             return await session.Query<RegisteredUser>()
-                .SingleOrDefaultAsync(x => x.Id == id).ConfigureAwait(false);
+                .SingleOrDefaultAsync(x => x.Id == id);
         }
 
         public async Task<RegisteredUser> GetByEmailAsync(string email)
         {
-            var session = Store.QuerySession();
-            await using var _ = session.ConfigureAwait(false);
+            await using var session = Store.QuerySession();
 
             return await session.Query<RegisteredUser>()
-                .SingleOrDefaultAsync(x => x.Email == email).ConfigureAwait(false);
+                .SingleOrDefaultAsync(x => x.Email == email);
         }
 
         public async Task<IReadOnlyList<RegisteredUser>> GetAllByIdsAsync(params string[] ids)
         {
-            var session = Store.QuerySession();
-            await using var _ = session.ConfigureAwait(false);
+            await using var session = Store.QuerySession();
 
             return await session.Query<RegisteredUser>()
                 .Where(x => x.Id.IsOneOf(ids))
-                .ToListAsync().ConfigureAwait(false);
+                .ToListAsync();
         }
     }
 }

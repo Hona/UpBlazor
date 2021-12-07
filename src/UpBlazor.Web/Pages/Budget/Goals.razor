@@ -4,7 +4,7 @@
 
 <UserIdWrapper>
     <UpApiWrapper Context="accounts" Action="api => api.GetAccountsAsync()" T="PaginatedDataResponse<AccountResource>">
-        <CreateGoal OnNewGoalAsync="async () => await _goalsTable.RepositoryWrapper.ReloadAsync().ConfigureAwait(false)"/>
+        <CreateGoal OnNewGoalAsync="async () => await _goalsTable.RepositoryWrapper.ReloadAsync()"/>
     
         <Divider/>
 

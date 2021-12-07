@@ -8,7 +8,7 @@
         <Form Model="_request"
               LabelColSpan="4"
               WrapperColSpan="20"
-              OnFinish="async () => await OnFormFinishAsync(UserId).ConfigureAwait(false)"
+              OnFinish="async () => await OnFormFinishAsync(UserId)"
               Loading="_loading"
               Context="formContext">
             <FormItem Label="Name">
@@ -54,14 +54,14 @@
             Date = _request.Date,
             UserId = currentUserId,
             SaverId = _request.SaverId
-        }).ConfigureAwait(false);
+        });
         
         _request = new();
         _loading = false;
 
         if (OnNewGoalAsync != null)
         {
-            await OnNewGoalAsync.Invoke().ConfigureAwait(false);
+            await OnNewGoalAsync.Invoke();
         }
     }
 

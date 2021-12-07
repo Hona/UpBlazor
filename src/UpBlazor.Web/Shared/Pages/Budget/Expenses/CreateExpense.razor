@@ -8,7 +8,7 @@
     <Form Model="_request" 
           LabelColSpan="4"
           WrapperColSpan="20"
-          OnFinish="async () => await OnFormFinishAsync(UserId).ConfigureAwait(false)"
+          OnFinish="async () => await OnFormFinishAsync(UserId)"
           Loading="_loading"
           Context="formContext">
         <FormItem>
@@ -101,7 +101,7 @@
                 StartDate = _request.PaidByDate,
                 UserId = currentUserId,
                 FromSaverId = _expenseSourceInput.Value.SaverId
-            }).ConfigureAwait(false);
+            });
         }
         else
         {
@@ -113,7 +113,7 @@
                 PaidByDate = _request.PaidByDate,
                 FromIncomeId = _expenseSourceInput.Value.IncomeId,
                 FromSaverId = _expenseSourceInput.Value.SaverId
-            }).ConfigureAwait(false);
+            });
         }
 
         _request = new();
@@ -124,7 +124,7 @@
 
         if (OnNewExpenseAsync != null)
         {
-            await OnNewExpenseAsync.Invoke().ConfigureAwait(false);
+            await OnNewExpenseAsync.Invoke();
         }
     }
 

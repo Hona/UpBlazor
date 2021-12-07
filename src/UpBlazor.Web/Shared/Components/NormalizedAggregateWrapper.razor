@@ -38,8 +38,8 @@ else
     {
         _loading = true;
         
-        var userId = await _currentUserService.GetUserIdAsync().ConfigureAwait(false);
-        await _normalizerService.UpdateUserAsync(userId).ConfigureAwait(false);
+        var userId = await _currentUserService.GetUserIdAsync();
+        await _normalizerService.UpdateUserAsync(userId);
 
         _loading = false;
     }

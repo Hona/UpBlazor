@@ -16,51 +16,46 @@ namespace UpBlazor.Infrastructure.Repositories
 
         public async Task AddAsync(T model)
         {
-            var session = Store.LightweightSession();
-            await using var _ = session.ConfigureAwait(false);
-
+            await using var session = Store.LightweightSession();
+            
             session.Insert(model);
 
-            await session.SaveChangesAsync().ConfigureAwait(false);
+            await session.SaveChangesAsync();
         }
 
         public async Task UpdateAsync(T model)
         {
-            var session = Store.LightweightSession();
-            await using var _ = session.ConfigureAwait(false);
-
+            await using var session = Store.LightweightSession();
+            
             session.Update(model);
 
-            await session.SaveChangesAsync().ConfigureAwait(false);
+            await session.SaveChangesAsync();
             
         }
 
         public async Task AddOrUpdateAsync(T model)
         {
-            var session = Store.LightweightSession();
-            await using var _ = session.ConfigureAwait(false);
-
+            await using var session = Store.LightweightSession();
+            
             session.Store(model);
 
-            await session.SaveChangesAsync().ConfigureAwait(false);
+            await session.SaveChangesAsync();
         }
 
         public async Task DeleteAsync(T model)
         {
-            var session = Store.LightweightSession();
-            await using var _ = session.ConfigureAwait(false);
-
+            await using var session = Store.LightweightSession();
+            
             session.Delete(model);
 
-            await session.SaveChangesAsync().ConfigureAwait(false);
+            await session.SaveChangesAsync();
         }
 
         public async Task<IReadOnlyList<T>> GetAllAsync()
         {
-            var session = Store.QuerySession();
-            await using var _ = session.ConfigureAwait(false);
+            await using var session = Store.QuerySession();
 
-            return await session.Query<T>().ToListAsync().ConfigureAwait(false);
+            return await session.Query<T>().ToListAsync();
         }
     }
 }

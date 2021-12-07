@@ -13,32 +13,29 @@ namespace UpBlazor.Infrastructure.Repositories
 
         public async Task<TwoUpRequest> GetByRequesterAndRequesteeAsync(string requesterId, string requesteeId)
         {
-            var session = Store.QuerySession();
-            await using var _ = session.ConfigureAwait(false);
+            await using var session = Store.QuerySession();
 
             return await session.Query<TwoUpRequest>()
                 .SingleOrDefaultAsync(x => x.RequesterId == requesterId &&
-                                           x.RequesteeId == requesteeId).ConfigureAwait(false);
+                                      x.RequesteeId == requesteeId);
         }
 
         public async Task<IReadOnlyList<TwoUpRequest>> GetAllByRequesterAsync(string requesterId)
         {
-            var session = Store.QuerySession();
-            await using var _ = session.ConfigureAwait(false);
+            await using var session = Store.QuerySession();
 
             return await session.Query<TwoUpRequest>()
                 .Where(x => x.RequesterId == requesterId)
-                .ToListAsync().ConfigureAwait(false);
+                .ToListAsync();
         }
 
         public async Task<IReadOnlyList<TwoUpRequest>> GetAllByRequesteeAsync(string requesteeId)
         {
-            var session = Store.QuerySession();
-            await using var _ = session.ConfigureAwait(false);
+            await using var session = Store.QuerySession();
 
             return await session.Query<TwoUpRequest>()
                 .Where(x => x.RequesteeId == requesteeId)
-                .ToListAsync().ConfigureAwait(false);        
+                .ToListAsync();        
         }
     }
 }

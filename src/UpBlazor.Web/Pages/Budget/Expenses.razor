@@ -32,7 +32,7 @@
         var reloadExpenses = _expensesTable.RepositoryWrapper.ReloadAsync();
         var reloadRecurringExpenses = _recurringExpensesTable.RepositoryWrapper.ReloadAsync();
 
-        await reloadExpenses.ConfigureAwait(false);
-        await reloadRecurringExpenses.ConfigureAwait(false);
+        await reloadExpenses;
+        await reloadRecurringExpenses;
     }
 }

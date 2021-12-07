@@ -83,13 +83,13 @@ else
     {
         _loading = true;
         
-        _upApi = await _currentUserService.GetApiAsync(forceReload: true).ConfigureAwait(false);
+        _upApi = await _currentUserService.GetApiAsync(forceReload: true);
 
         _loading = false;
 
         if (_upApi != null)
         {
-            _pingResponse = await _upApi.GetPingAsync().ConfigureAwait(false);
+            _pingResponse = await _upApi.GetPingAsync();
         }
     }
     
@@ -97,9 +97,9 @@ else
     {
         _formLoading = true;
         
-        var temporaryApi = await _currentUserService.GetApiAsync(_setAccessToken.Value).ConfigureAwait(false);
+        var temporaryApi = await _currentUserService.GetApiAsync(_setAccessToken.Value);
 
-        var pingResponse = await temporaryApi.GetPingAsync().ConfigureAwait(false);
+        var pingResponse = await temporaryApi.GetPingAsync();
 
         if (pingResponse.Success)
         {
@@ -108,9 +108,9 @@ else
 
             await _upUserTokenRepository.AddOrUpdateAsync(new UpUserToken
             {
-                UserId = await _currentUserService.GetUserIdAsync().ConfigureAwait(false),
+                UserId = await _currentUserService.GetUserIdAsync(),
                 AccessToken = _setAccessToken.Value
-            }).ConfigureAwait(false);
+            });
             
             _setAccessToken.Value = string.Empty;
         }
@@ -127,24 +127,24 @@ else
 
         _formLoading = false;
 
-        await OnInitializedAsync().ConfigureAwait(false);
+        await OnInitializedAsync();
     }
 
     private async Task OnClearAccessTokenClickAsync()
     {
         _loading = true;
 
-        var userId = await _currentUserService.GetUserIdAsync().ConfigureAwait(false);
-        var existingToken = await _upUserTokenRepository.GetByUserIdAsync(userId).ConfigureAwait(false);
+        var userId = await _currentUserService.GetUserIdAsync();
+        var existingToken = await _upUserTokenRepository.GetByUserIdAsync(userId);
 
         if (existingToken != null)
         {
-            await _upUserTokenRepository.DeleteAsync(existingToken).ConfigureAwait(false);
+            await _upUserTokenRepository.DeleteAsync(existingToken);
         }
 
         _loading = false;
         
-        await OnInitializedAsync().ConfigureAwait(false);
+        await OnInitializedAsync();
     }
 
     private class SetAccessToken

@@ -14,21 +14,19 @@ namespace UpBlazor.Infrastructure.Repositories
 
         public async Task<RecurringExpense> GetByIdAsync(Guid id)
         {
-            var session = Store.QuerySession();
-            await using var _ = session.ConfigureAwait(false);
+            await using var session = Store.QuerySession();
 
             return await session.Query<RecurringExpense>()
-                .SingleOrDefaultAsync(x => x.Id == id).ConfigureAwait(false);
+                .SingleOrDefaultAsync(x => x.Id == id);
         }
 
         public async Task<IReadOnlyList<RecurringExpense>> GetAllByUserIdAsync(string userId)
         {
-            var session = Store.QuerySession();
-            await using var _ = session.ConfigureAwait(false);
+            await using var session = Store.QuerySession();
 
             return await session.Query<RecurringExpense>()
                 .Where(x => x.UserId == userId)
-                .ToListAsync().ConfigureAwait(false);
+                .ToListAsync();
         }
     }
 }

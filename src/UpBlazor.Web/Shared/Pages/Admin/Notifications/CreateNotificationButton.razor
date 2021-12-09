@@ -1,0 +1,50 @@
+﻿@using Notification = UpBlazor.Core.Models.Notification
+
+@inject INotificationRepository _notificationRepository
+
+<Form Model="@_newNotification"
+          OnFinish="HandleOk"
+          OnFinishFailed="HandleCancel"
+          LabelColSpan="8"
+          WrapperColSpan="16">
+    <FormItem Label="Title">
+        <Input @bind-Value="@context.Title" DebounceMilliseconds="int.MaxValue"/>
+    </FormItem>
+    <FormItem Label="Description">
+        <TextArea @bind-Value="@context.Description" MinRows="3" DebounceMilliseconds="int.MaxValue"/>
+    </FormItem>
+    <FormItem Label="Author">
+        <Input @bind-Value="@context.Author" DebounceMilliseconds="int.MaxValue"/>
+    </FormItem>
+    <FormItem WrapperColOffset="8" WrapperColSpan="16">
+        <Button Type="@ButtonType.Primary" HtmlType="submit">
+            Create Notification
+        </Button>
+    </FormItem>
+</Form>
+
+@code {
+    private Notification _newNotification = new();
+
+    [Parameter]
+    public EventCallback OnNotificationCreated { get; set; }
+
+    private async Task HandleOk()
+    {
+        _newNotification.CreatedAt = DateTime.Now;
+
+        await _notificationRepository.AddAsync(_newNotification);
+
+        if (OnNotificationCreated.HasDelegate)
+        {
+            await OnNotificationCreated.InvokeAsync();
+        }
+
+        _newNotification = new();
+    }
+    
+    private void HandleCancel()
+    {
+        _newNotification = new();
+    }
+}

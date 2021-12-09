@@ -1,40 +1,105 @@
 ﻿@page "/notifications"
+@using Notification = UpBlazor.Core.Models.Notification
 
 @inject NavigationManager _navigationManager
+@inject INotificationRepository _notificationRepository
+@inject INotificationReadRepository _notificationReadRepository
+@inject ICurrentUserService _currentUserService
 
 <Title Level="3">Notifications</Title>
 
 <Card Style="width: 100%">
-    <UserIdWrapper Context="userId">
-        <RepositoryWrapper Context="responses"
-                           TRepository="ITwoUpRequestRepository"
-                           Action="x => x.GetAllByRequesteeAsync(userId)"
-                           TResponse="IReadOnlyList<TwoUpRequest>">
-            @if (!responses.Any())
-            {
-                <Result Icon="smile-outline"
-                        Title="All clear!" />
-            }
-            else
-            {
-                @foreach (var response in responses)
+    @if (_loading)
+    {
+        <Spin />
+    }
+    else
+    {
+        <UserIdWrapper Context="userId">
+            <RepositoryWrapper Context="responses"
+                               TRepository="ITwoUpRequestRepository"
+                               Action="x => x.GetAllByRequesteeAsync(userId)"
+                               TResponse="IReadOnlyList<TwoUpRequest>">
+                @if (!responses.Any() && !_unreadNotifications.Any())
                 {
-                    <Alert Type="@AlertType.Info"
-                           ShowIcon="@true">
-                        <MessageTemplate>
-                            <div style="display: flex; justify-content: space-between; align-items: center">
-                                <span>
-                                    2Up Requested from @response.RequesterName
-                                </span>
-                                <Button OnClick='() => _navigationManager.NavigateTo("/settings/two-up")'>Review</Button>
-                            </div>
-                        </MessageTemplate>
-                        <ChildContent>
-                            "@response.RequesterMessage"
-                        </ChildContent>
-                    </Alert>
+                    <Result Icon="smile-outline"
+                            Title="All clear!"/>
                 }
-            }
-        </RepositoryWrapper>
-    </UserIdWrapper>
+                else
+                {
+                    @foreach (var response in responses)
+                    {
+                        <Alert Type="@AlertType.Info"
+                               ShowIcon="@true" Style="margin-bottom: 1.5rem">
+                            <MessageTemplate>
+                                <div style="display: flex; justify-content: space-between; align-items: center">
+                                    <span>
+                                        2Up Requested from @response.RequesterName
+                                    </span>
+                                    <Button OnClick='() => _navigationManager.NavigateTo("/settings/two-up")'>Review</Button>
+                                </div>
+                            </MessageTemplate>
+                            <ChildContent>
+                                "@response.RequesterMessage"
+                            </ChildContent>
+                        </Alert>
+                    }
+                    
+                    @foreach (var notification in _unreadNotifications)
+                    {
+                        <Alert Type="@AlertType.Info"
+                               ShowIcon="@true">
+                            <MessageTemplate>
+                                <div style="display: flex; justify-content: space-between; align-items: center">
+                                    <span>
+                                        @notification.Title
+                                    </span>
+                                    <Button OnClick="async () => await MarkAsRead(notification)">Done</Button>
+                                </div>
+                            </MessageTemplate>
+                            <ChildContent>
+                                "@notification.Description" - <Text Code>@notification.Author</Text>
+                            </ChildContent>
+                        </Alert>
+                    }
+                }
+            </RepositoryWrapper>
+        </UserIdWrapper>
+    }
 </Card>
+
+@code
+{
+    private IReadOnlyList<Notification> _unreadNotifications;
+
+    private bool _loading;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _loading = true;
+        
+        var allNotifications = await _notificationRepository.GetAllAsync();
+        
+        var userId = await _currentUserService.GetUserIdAsync();
+        var readNotifications = await _notificationReadRepository.GetByUserIdAsync(userId);
+        var readNotificationIds = readNotifications
+            .Select(x => x.NotificationId)
+            .ToList();
+
+        _unreadNotifications = allNotifications.Where(x => !readNotificationIds.Contains(x.Id))
+            .ToList();
+
+        _loading = false;
+    }
+
+    private async Task MarkAsRead(Notification notification)
+    {
+        await _notificationReadRepository.AddOrUpdateAsync(new NotificationRead
+        {
+            NotificationId = notification.Id,
+            UserId = await _currentUserService.GetUserIdAsync()
+        });
+        
+        InvokeAsync(StateHasChanged);
+    }
+}

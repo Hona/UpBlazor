@@ -1,0 +1,42 @@
+﻿@page "/admin/notifications"
+@using Notification = UpBlazor.Core.Models.Notification
+@using UpBlazor.Web.Shared.Pages.Admin.Notifications
+
+@layout AdminAuthorizeLayout
+
+@inject INotificationRepository _notificationRepository
+
+<Title Level="3">Notifications</Title>
+
+<RepositoryWrapper TRepository="INotificationRepository"
+                   Action="x => x.GetAllAsync()"
+                   TResponse="IReadOnlyList<Notification>"
+                   Context="repoContext">
+    <Card>
+        <Statistic Value="repoContext.Count" Title="Total Notifications"/>
+    </Card>
+
+    <Divider/>
+
+    <Card>
+        <CreateNotificationButton />
+    </Card>
+    
+    <Divider/>
+
+    <Table DataSource="repoContext"
+           Context="tableContext">
+        <Column @bind-Field="@tableContext.Id"/>
+        <Column @bind-Field="@tableContext.Title"/>
+        <Column @bind-Field="@tableContext.Description"/>
+        <Column @bind-Field="@tableContext.Author"/>
+        <Column Title="Created At" @bind-Field="@tableContext.CreatedAt" Format="dd/MM/yyyy hh:mm tt" Sortable/>
+        <ActionColumn>
+            <Button OnClick="async () => { await _notificationRepository.DeleteAsync(tableContext); await InvokeAsync(StateHasChanged); }">Delete</Button>
+        </ActionColumn>
+    </Table>
+</RepositoryWrapper>
+
+@code {
+
+}

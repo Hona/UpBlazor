@@ -59,7 +59,7 @@
                         <span>Forecast</span>
                     </MenuItem>
                     <MenuItem OnClick='() => _navigationManager.NavigateTo("/insights/transactions")'
-                              RouterMatch="NavLinkMatch.All" RouterLink="/insights/transactions">
+                              RouterMatch="NavLinkMatch.Prefix" RouterLink="/insights/transactions">
                         <span>Transactions</span>
                     </MenuItem>
                 </ChildContent>
@@ -90,6 +90,10 @@
                         <MenuItem OnClick='() => _navigationManager.NavigateTo("/admin/users")'
                                   RouterMatch="NavLinkMatch.All" RouterLink="/admin/users">
                             <span>Users</span>
+                        </MenuItem>
+                        <MenuItem OnClick='() => _navigationManager.NavigateTo("/admin/notifications")'
+                                  RouterMatch="NavLinkMatch.All" RouterLink="/admin/notifications">
+                            <span>Notifications</span>
                         </MenuItem>
                     </ChildContent>
                 </SubMenu>            

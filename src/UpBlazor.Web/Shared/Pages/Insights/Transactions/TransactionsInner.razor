@@ -30,6 +30,7 @@
 
                         <Table DataSource="_transactionsIn.Where(x => x.Relationships.Account.Data.Id == account.Id)"
                                Title="Transactions In 🟢">
+                            <Column Title="Date" DataIndex="Attributes.CreatedAt" TData="DateTime" Format="dd/MM/yyyy"/>
                             <Column Title="Description" DataIndex="Attributes.Description" TData="string"/>
                             <Column Title="Message" DataIndex="Attributes.Message" TData="string"/>
                             <Column Title="Round Up" DataIndex="Attributes.RoundUp.Amount.Value" TData="string"/>

@@ -1,8 +1,5 @@
 ﻿@page "/insights/transactions/{AccountId?}"
-
 @using Up.NET.Api.Transactions
-@using UpBlazor.Web.Shared.Pages.Insights.Transactions
-
 
 <UpApiWrapper Context="accounts" Action="api => api.GetAccountsAsync()" T="PaginatedDataResponse<AccountResource>">
     @if (string.IsNullOrWhiteSpace(AccountId))

@@ -20,7 +20,7 @@ public class GetUpPingQueryHandler : IRequestHandler<GetUpPingQuery, UpResponse<
 
     public async Task<UpResponse<PingResponse>> Handle(GetUpPingQuery request, CancellationToken cancellationToken)
     {
-        var upApi = await _currentUserService.GetApiAsync(forceReload: request.ForceReload);
+        var upApi = await _currentUserService.GetApiAsync(forceReload: request.ForceReload, cancellationToken: cancellationToken);
 
         if (upApi is null)
         {

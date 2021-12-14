@@ -24,7 +24,7 @@ public class CreateIncomeCommandHandler : IRequestHandler<CreateIncomeCommand, G
 
     public async Task<Guid> Handle(CreateIncomeCommand request, CancellationToken cancellationToken)
     {
-        var userId = await _currentUserService.GetUserIdAsync();
+        var userId = await _currentUserService.GetUserIdAsync(cancellationToken);
 
         var output = new Income
         {
@@ -36,7 +36,7 @@ public class CreateIncomeCommandHandler : IRequestHandler<CreateIncomeCommand, G
             UserId = userId
         };
         
-        await _incomeRepository.AddAsync(output);
+        await _incomeRepository.AddAsync(output, cancellationToken);
 
         return output.Id;
     }

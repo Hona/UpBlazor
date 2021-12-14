@@ -19,7 +19,7 @@ public class DeleteIncomeCommandHandler : IRequestHandler<DeleteIncomeCommand>
 
     public async Task<Unit> Handle(DeleteIncomeCommand request, CancellationToken cancellationToken)
     {
-        await _incomeRepository.DeleteAsync(request.Income);
+        await _incomeRepository.DeleteAsync(request.Income, cancellationToken);
 
         return Unit.Value;
     }

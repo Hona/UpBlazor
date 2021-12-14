@@ -23,9 +23,9 @@ public class GetIncomesQueryHandler : IRequestHandler<GetIncomesQuery, IReadOnly
 
     public async Task<IReadOnlyList<Income>> Handle(GetIncomesQuery request, CancellationToken cancellationToken)
     {
-        var userId = await _currentUserService.GetUserIdAsync();
+        var userId = await _currentUserService.GetUserIdAsync(cancellationToken);
 
-        var output = await _incomeRepository.GetAllByUserIdAsync(userId);
+        var output = await _incomeRepository.GetAllByUserIdAsync(userId, cancellationToken);
         return output;
     }
 }

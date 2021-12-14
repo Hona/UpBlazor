@@ -19,7 +19,7 @@ public class IgnoreTwoUpRequestCommandHandler : IRequestHandler<IgnoreTwoUpReque
 
     public async Task<Unit> Handle(IgnoreTwoUpRequestCommand request, CancellationToken cancellationToken)
     {
-        await _twoUpRequestRepository.DeleteAsync(request.TwoUpRequest);
+        await _twoUpRequestRepository.DeleteAsync(request.TwoUpRequest, cancellationToken);
         
         return Unit.Value;
     }

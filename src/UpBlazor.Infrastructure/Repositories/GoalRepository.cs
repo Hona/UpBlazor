@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Marten;
 using UpBlazor.Core.Models;
@@ -12,21 +13,21 @@ namespace UpBlazor.Infrastructure.Repositories
     {
         public GoalRepository(IDocumentStore store) : base(store) { }
 
-        public async Task<Goal> GetByIdAsync(Guid id)
+        public async Task<Goal> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
         {
             await using var session = Store.QuerySession();
 
             return await session.Query<Goal>()
-                .SingleOrDefaultAsync(x => x.Id == id);
+                .SingleOrDefaultAsync(x => x.Id == id, cancellationToken);
         }
 
-        public async Task<IReadOnlyList<Goal>> GetAllByUserIdAsync(string userId)
+        public async Task<IReadOnlyList<Goal>> GetAllByUserIdAsync(string userId, CancellationToken cancellationToken = default)
         {
             await using var session = Store.QuerySession();
 
             return await session.Query<Goal>()
                 .Where(x => x.UserId == userId)
-                .ToListAsync();
+                .ToListAsync(cancellationToken);
         }
     }
 }

@@ -34,12 +34,12 @@ public class GetTotalForecastQueryHandler : IRequestHandler<GetTotalForecastQuer
 
     public async Task<IReadOnlyList<ForecastDto>> Handle(GetTotalForecastQuery request, CancellationToken cancellationToken)
     {
-        var userId = await _currentUserService.GetUserIdAsync();
+        var userId = await _currentUserService.GetUserIdAsync(cancellationToken);
 
-        var normalizedAggregate = await _normalizedAggregateRepository.GetByUserIdAsync(userId);
-        var savingsPlans = await _savingsPlanRepository.GetAllByUserIdAsync(userId);
-        var expenses = await _expenseRepository.GetAllByUserIdAsync(userId);
-        var recurringExpenses = await _recurringExpenseRepository.GetAllByUserIdAsync(userId);
+        var normalizedAggregate = await _normalizedAggregateRepository.GetByUserIdAsync(userId, cancellationToken);
+        var savingsPlans = await _savingsPlanRepository.GetAllByUserIdAsync(userId, cancellationToken);
+        var expenses = await _expenseRepository.GetAllByUserIdAsync(userId, cancellationToken);
+        var recurringExpenses = await _recurringExpenseRepository.GetAllByUserIdAsync(userId, cancellationToken);
         
         var totalSavingsPlanAmount = normalizedAggregate
             .SavingsPlans

@@ -21,12 +21,12 @@ public class ClearUpAccessTokenCommandHandler : IRequestHandler<ClearUpAccessTok
 
     public async Task<Unit> Handle(ClearUpAccessTokenCommand request, CancellationToken cancellationToken)
     {
-        var userId = await _currentUserService.GetUserIdAsync();
-        var existingToken = await _upUserTokenRepository.GetByUserIdAsync(userId);
+        var userId = await _currentUserService.GetUserIdAsync(cancellationToken);
+        var existingToken = await _upUserTokenRepository.GetByUserIdAsync(userId, cancellationToken);
 
         if (existingToken != null)
         {
-            await _upUserTokenRepository.DeleteAsync(existingToken);
+            await _upUserTokenRepository.DeleteAsync(existingToken, cancellationToken);
         }
         
         return Unit.Value;

@@ -26,10 +26,10 @@ public class GetAllNotificationsForCurrentUserQueryHandler : IRequestHandler<Get
 
     public async Task<IReadOnlyList<Notification>> Handle(GetAllNotificationsForCurrentUserQuery request, CancellationToken cancellationToken)
     {
-        var userId = await _currentUserService.GetUserIdAsync();
+        var userId = await _currentUserService.GetUserIdAsync(cancellationToken);
         
-        var readNotifications = await _notificationReadRepository.GetByUserIdAsync(userId);
-        var allNotifications = await _notificationRepository.GetAllAsync();
+        var readNotifications = await _notificationReadRepository.GetByUserIdAsync(userId, cancellationToken);
+        var allNotifications = await _notificationRepository.GetAllAsync(cancellationToken);
 
         if (request.IncludeRead)
         {

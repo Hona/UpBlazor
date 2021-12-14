@@ -36,11 +36,11 @@ public class GetIncomePlannerQueryHandler : IRequestHandler<GetIncomePlannerQuer
     public async Task<IncomePlannerDto> Handle(GetIncomePlannerQuery request, CancellationToken cancellationToken)
     {
         // TODO: Should this be 4 separate queries?
-        var userId = await _currentUserService.GetUserIdAsync();
-        var expenses = await _expenseRepository.GetAllByUserIdAsync(userId);
-        var normalizedAggregate = await _normalizedAggregateRepository.GetByUserIdAsync(userId);
-        var recurringExpenses = await _recurringExpenseRepository.GetAllByUserIdAsync(userId);
-        var savingsPlans = await _savingsPlanRepository.GetAllByIncomeIdAsync(request.Income.Id);
+        var userId = await _currentUserService.GetUserIdAsync(cancellationToken);
+        var expenses = await _expenseRepository.GetAllByUserIdAsync(userId, cancellationToken);
+        var normalizedAggregate = await _normalizedAggregateRepository.GetByUserIdAsync(userId, cancellationToken);
+        var recurringExpenses = await _recurringExpenseRepository.GetAllByUserIdAsync(userId, cancellationToken);
+        var savingsPlans = await _savingsPlanRepository.GetAllByIncomeIdAsync(request.Income.Id, cancellationToken);
 
         var accounts = await _mediator.Send(new GetUpAccountsQuery(), cancellationToken);
 

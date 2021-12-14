@@ -25,8 +25,8 @@ public class CreateNotificationCommandHandler : IRequestHandler<CreateNotificati
 
     public async Task<Guid> Handle(CreateNotificationCommand request, CancellationToken cancellationToken)
     {
-        var userId = await _currentUserService.GetUserIdAsync();
-        var user = await _registeredUserRepository.GetByIdAsync(userId);
+        var userId = await _currentUserService.GetUserIdAsync(cancellationToken);
+        var user = await _registeredUserRepository.GetByIdAsync(userId, cancellationToken);
 
         var output = new Notification
         {
@@ -36,7 +36,7 @@ public class CreateNotificationCommandHandler : IRequestHandler<CreateNotificati
             Author = user.GivenName
         };
         
-        await _notificationRepository.AddAsync(output);
+        await _notificationRepository.AddAsync(output, cancellationToken);
 
         return output.Id;
     }

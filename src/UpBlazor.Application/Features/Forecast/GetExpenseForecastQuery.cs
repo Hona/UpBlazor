@@ -29,11 +29,11 @@ public class GetExpenseForecastQueryHandler : IRequestHandler<GetExpenseForecast
 
     public async Task<IReadOnlyList<ForecastDto>> Handle(GetExpenseForecastQuery request, CancellationToken cancellationToken)
     {
-        var userId = await _currentUserService.GetUserIdAsync();
+        var userId = await _currentUserService.GetUserIdAsync(cancellationToken);
         
-        var normalizedAggregate = await _normalizedAggregateRepository.GetByUserIdAsync(userId);
-        var recurringExpenses = await _recurringExpenseRepository.GetAllByUserIdAsync(userId);
-        var expenses = await _expenseRepository.GetAllByUserIdAsync(userId);
+        var normalizedAggregate = await _normalizedAggregateRepository.GetByUserIdAsync(userId, cancellationToken);
+        var recurringExpenses = await _recurringExpenseRepository.GetAllByUserIdAsync(userId, cancellationToken);
+        var expenses = await _expenseRepository.GetAllByUserIdAsync(userId, cancellationToken);
 
         var now = DateTime.Now.Date;
 
@@ -51,7 +51,7 @@ public class GetExpenseForecastQueryHandler : IRequestHandler<GetExpenseForecast
                 RecurringExpenseId = normalizedRecurringExpense.RecurringExpenseId
             }));
 
-            output.AddRange(expenses.Where(x => x.Money.Exact.HasValue).Select(expense => new ForecastDto()
+            output.AddRange(expenses.Where(x => x.Money.Exact.HasValue).Select(expense => new ForecastDto
             {
                 balance = expense.PaidByDate < now.AddDays(x) && expense.PaidByDate >= now ? Math.Round(expense.Money.Exact.Value, 2) : 0,
                 cycle = now.AddDays(x).ToString("dd/MM/yyyy"),

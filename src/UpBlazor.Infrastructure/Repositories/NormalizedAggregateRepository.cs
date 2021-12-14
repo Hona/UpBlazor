@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Threading;
+using System.Threading.Tasks;
 using Marten;
 using UpBlazor.Core.Models;
 using UpBlazor.Core.Repositories;
@@ -9,12 +10,12 @@ namespace UpBlazor.Infrastructure.Repositories
     {
         public NormalizedAggregateRepository(IDocumentStore store) : base(store) { }
 
-        public async Task<NormalizedAggregate> GetByUserIdAsync(string userId)
+        public async Task<NormalizedAggregate> GetByUserIdAsync(string userId, CancellationToken cancellationToken = default)
         {
             await using var session = Store.QuerySession();
 
             return await session.Query<NormalizedAggregate>()
-                .SingleOrDefaultAsync(x => x.UserId == userId);
+                .SingleOrDefaultAsync(x => x.UserId == userId, cancellationToken);
         }
     }
 }

@@ -20,7 +20,7 @@ public class GetAllNotificationsQueryHandler : IRequestHandler<GetAllNotificatio
 
     public async Task<IReadOnlyList<Notification>> Handle(GetAllNotificationsQuery request, CancellationToken cancellationToken)
     {
-        var output = await _notificationRepository.GetAllAsync();
+        var output = await _notificationRepository.GetAllAsync(cancellationToken);
 
         return output;
     }

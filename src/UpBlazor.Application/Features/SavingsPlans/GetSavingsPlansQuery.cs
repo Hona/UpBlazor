@@ -21,7 +21,7 @@ public class GetSavingsPlansQueryHandler : IRequestHandler<GetSavingsPlansQuery,
 
     public async Task<IReadOnlyList<SavingsPlan>> Handle(GetSavingsPlansQuery request, CancellationToken cancellationToken)
     {
-        var output = await _savingsPlanRepository.GetAllByIncomeIdAsync(request.IncomeId);
+        var output = await _savingsPlanRepository.GetAllByIncomeIdAsync(request.IncomeId, cancellationToken);
         return output;
     }
 }

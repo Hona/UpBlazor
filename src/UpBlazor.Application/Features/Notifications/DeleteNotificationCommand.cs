@@ -21,14 +21,14 @@ public class DeleteNotificationCommandHandler : IRequestHandler<DeleteNotificati
 
     public async Task<Unit> Handle(DeleteNotificationCommand request, CancellationToken cancellationToken)
     {
-        await _notificationRepository.DeleteAsync(request.Notification);
+        await _notificationRepository.DeleteAsync(request.Notification, cancellationToken);
 
         var notificationId = request.Notification.Id;
-        var notificationReads = await _notificationReadRepository.GetByNotificationIdAsync(notificationId);
+        var notificationReads = await _notificationReadRepository.GetByNotificationIdAsync(notificationId, cancellationToken);
 
         foreach (var notificationRead in notificationReads)
         {
-            await _notificationReadRepository.DeleteAsync(notificationRead);
+            await _notificationReadRepository.DeleteAsync(notificationRead, cancellationToken);
         }
         
         return Unit.Value;

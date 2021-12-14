@@ -23,8 +23,8 @@ public class GetAllUsersQueryHandler : IRequestHandler<GetAllUsersQuery, IReadOn
 
     public async Task<IReadOnlyList<RegisteredUserDto>> Handle(GetAllUsersQuery request, CancellationToken cancellationToken)
     {
-        var allUsers = await _registeredUserRepository.GetAllAsync();
-        var accessTokens = await _upUserTokenRepository.GetAllAsync();
+        var allUsers = await _registeredUserRepository.GetAllAsync(cancellationToken);
+        var accessTokens = await _upUserTokenRepository.GetAllAsync(cancellationToken);
         
         var output = allUsers
             .Select(x =>

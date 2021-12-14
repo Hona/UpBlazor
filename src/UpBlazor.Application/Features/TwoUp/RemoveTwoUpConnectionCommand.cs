@@ -21,11 +21,11 @@ public class RemoveTwoUpConnectionCommandHandler : IRequestHandler<RemoveTwoUpCo
 
     public async Task<Unit> Handle(RemoveTwoUpConnectionCommand request, CancellationToken cancellationToken)
     {
-        var userId = await _currentUserService.GetUserIdAsync();
+        var userId = await _currentUserService.GetUserIdAsync(cancellationToken);
         
         var toRemove = new Core.Models.TwoUp(userId, request.UserId);
 
-        await _twoUpRepository.DeleteAsync(toRemove);
+        await _twoUpRepository.DeleteAsync(toRemove, cancellationToken);
         
         return Unit.Value;
     }

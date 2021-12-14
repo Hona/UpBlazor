@@ -12,12 +12,10 @@ public record CreateSavingsPlanCommand(Guid IncomeId, string Name, string SaverI
 
 public class CreateSavingsPlanCommandHandler : IRequestHandler<CreateSavingsPlanCommand, Guid>
 {
-    private readonly ICurrentUserService _currentUserService;
     private readonly ISavingsPlanRepository _savingsPlanRepository;
 
-    public CreateSavingsPlanCommandHandler(ICurrentUserService currentUserService, ISavingsPlanRepository savingsPlanRepository)
+    public CreateSavingsPlanCommandHandler(ISavingsPlanRepository savingsPlanRepository)
     {
-        _currentUserService = currentUserService;
         _savingsPlanRepository = savingsPlanRepository;
     }
 
@@ -28,7 +26,7 @@ public class CreateSavingsPlanCommandHandler : IRequestHandler<CreateSavingsPlan
             request.Amount.Percent /= 100;
         }
 
-        var output = new Core.Models.SavingsPlan
+        var output = new SavingsPlan
         {
             Name = request.Name,
             IncomeId = request.IncomeId,
@@ -36,7 +34,7 @@ public class CreateSavingsPlanCommandHandler : IRequestHandler<CreateSavingsPlan
             Amount = request.Amount
         };
 
-        await _savingsPlanRepository.AddAsync(output);
+        await _savingsPlanRepository.AddAsync(output, cancellationToken);
 
         return output.Id;
     }

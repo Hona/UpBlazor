@@ -23,7 +23,7 @@ public class CreateGoalCommandHandler : IRequestHandler<CreateGoalCommand, Guid>
 
     public async Task<Guid> Handle(CreateGoalCommand request, CancellationToken cancellationToken)
     {
-        var userId = await _currentUserService.GetUserIdAsync();
+        var userId = await _currentUserService.GetUserIdAsync(cancellationToken);
 
         var output = new Goal
         {
@@ -34,7 +34,7 @@ public class CreateGoalCommandHandler : IRequestHandler<CreateGoalCommand, Guid>
             UserId = userId
         };
 
-        await _goalRepository.AddAsync(output);
+        await _goalRepository.AddAsync(output, cancellationToken);
 
         return output.Id;
     }

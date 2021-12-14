@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Marten;
 using UpBlazor.Core.Models;
@@ -12,12 +13,12 @@ namespace UpBlazor.Infrastructure.Repositories
     {
         public RegisteredUserRepository(IDocumentStore store) : base(store) { }
 
-        public new async Task AddOrUpdateAsync(RegisteredUser model)
+        public new async Task AddOrUpdateAsync(RegisteredUser model, CancellationToken cancellationToken = default)
         {
             await using var session = Store.LightweightSession();
 
             var existingModel = await session.Query<RegisteredUser>()
-                .SingleOrDefaultAsync(x => x.Id == model.Id);
+                .SingleOrDefaultAsync(x => x.Id == model.Id, cancellationToken);
 
             if (existingModel == null)
             {
@@ -31,32 +32,32 @@ namespace UpBlazor.Infrastructure.Repositories
 
             session.Store(model);
 
-            await session.SaveChangesAsync();
+            await session.SaveChangesAsync(cancellationToken);
         }
 
-        public async Task<RegisteredUser> GetByIdAsync(string id)
+        public async Task<RegisteredUser> GetByIdAsync(string id, CancellationToken cancellationToken = default)
         {
             await using var session = Store.QuerySession();
 
             return await session.Query<RegisteredUser>()
-                .SingleOrDefaultAsync(x => x.Id == id);
+                .SingleOrDefaultAsync(x => x.Id == id, cancellationToken);
         }
 
-        public async Task<RegisteredUser> GetByEmailAsync(string email)
+        public async Task<RegisteredUser> GetByEmailAsync(string email, CancellationToken cancellationToken = default)
         {
             await using var session = Store.QuerySession();
 
             return await session.Query<RegisteredUser>()
-                .SingleOrDefaultAsync(x => x.Email == email);
+                .SingleOrDefaultAsync(x => x.Email == email, cancellationToken);
         }
 
-        public async Task<IReadOnlyList<RegisteredUser>> GetAllByIdsAsync(params string[] ids)
+        public async Task<IReadOnlyList<RegisteredUser>> GetAllByIdsAsync(CancellationToken cancellationToken = default, params string[] ids)
         {
             await using var session = Store.QuerySession();
 
             return await session.Query<RegisteredUser>()
                 .Where(x => x.Id.IsOneOf(ids))
-                .ToListAsync();
+                .ToListAsync(cancellationToken);
         }
     }
 }

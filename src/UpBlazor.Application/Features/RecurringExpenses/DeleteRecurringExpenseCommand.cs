@@ -19,7 +19,7 @@ public class DeleteRecurringExpenseCommandHandler : IRequestHandler<DeleteRecurr
 
     public async Task<Unit> Handle(DeleteRecurringExpenseCommand request, CancellationToken cancellationToken)
     {
-        await _recurringExpenseRepository.DeleteAsync(request.RecurringExpense);
+        await _recurringExpenseRepository.DeleteAsync(request.RecurringExpense, cancellationToken);
         
         return Unit.Value;
     }

@@ -27,10 +27,10 @@ public class GetIncomeForecastQueryHandler : IRequestHandler<GetIncomeForecastQu
 
     public async Task<IReadOnlyList<ForecastDto>> Handle(GetIncomeForecastQuery request, CancellationToken cancellationToken)
     {
-        var userId = await _currentUserService.GetUserIdAsync();
+        var userId = await _currentUserService.GetUserIdAsync(cancellationToken);
         
-        var normalizedAggregate = await _normalizedAggregateRepository.GetByUserIdAsync(userId);
-        var incomes = await _incomeRepository.GetAllByUserIdAsync(userId);
+        var normalizedAggregate = await _normalizedAggregateRepository.GetByUserIdAsync(userId, cancellationToken);
+        var incomes = await _incomeRepository.GetAllByUserIdAsync(userId, cancellationToken);
         
         var now = DateTime.Now.Date;
 

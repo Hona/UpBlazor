@@ -26,9 +26,9 @@ public class GetNormalizedAggregateQueryHandler : IRequestHandler<GetNormalizedA
     {
         await _mediator.Send(new UpdateNormalizedAggregateCommand(), cancellationToken);
 
-        var userId = await _currentUserService.GetUserIdAsync();
+        var userId = await _currentUserService.GetUserIdAsync(cancellationToken);
         
-        var output = await _normalizedAggregateRepository.GetByUserIdAsync(userId);
+        var output = await _normalizedAggregateRepository.GetByUserIdAsync(userId, cancellationToken);
         return output;
     }
 }

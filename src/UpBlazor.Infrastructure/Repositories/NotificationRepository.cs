@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Marten;
 using UpBlazor.Core.Models;
@@ -11,11 +12,11 @@ public class NotificationRepository : GenericRepository<Notification>, INotifica
 {
     public NotificationRepository(IDocumentStore store) : base(store) { }
 
-    public async Task<Notification> GetByIdAsync(Guid id)
+    public async Task<Notification> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
         await using var session = Store.QuerySession();
 
         return await session.Query<Notification>()
-            .SingleOrDefaultAsync(x => x.Id == id);
+            .SingleOrDefaultAsync(x => x.Id == id, cancellationToken);
     }
 }

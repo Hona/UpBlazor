@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Marten;
 using UpBlazor.Core.Models;
@@ -12,21 +13,21 @@ namespace UpBlazor.Infrastructure.Repositories
     {
         public RecurringExpenseRepository(IDocumentStore store) : base(store) { }
 
-        public async Task<RecurringExpense> GetByIdAsync(Guid id)
+        public async Task<RecurringExpense> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
         {
             await using var session = Store.QuerySession();
 
             return await session.Query<RecurringExpense>()
-                .SingleOrDefaultAsync(x => x.Id == id);
+                .SingleOrDefaultAsync(x => x.Id == id, cancellationToken);
         }
 
-        public async Task<IReadOnlyList<RecurringExpense>> GetAllByUserIdAsync(string userId)
+        public async Task<IReadOnlyList<RecurringExpense>> GetAllByUserIdAsync(string userId, CancellationToken cancellationToken = default)
         {
             await using var session = Store.QuerySession();
 
             return await session.Query<RecurringExpense>()
                 .Where(x => x.UserId == userId)
-                .ToListAsync();
+                .ToListAsync(cancellationToken);
         }
     }
 }

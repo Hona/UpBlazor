@@ -22,7 +22,7 @@ public class GetUpAccountsQueryHandler : IRequestHandler<GetUpAccountsQuery, IRe
 
     public async Task<IReadOnlyList<AccountResource>> Handle(GetUpAccountsQuery request, CancellationToken cancellationToken)
     {
-        var upApi = await _currentUserService.GetApiAsync();
+        var upApi = await _currentUserService.GetApiAsync(cancellationToken: cancellationToken);
 
         var output = await upApi.GetAccountsAsync();
 

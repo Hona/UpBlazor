@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Marten;
 using UpBlazor.Core.Models;
@@ -12,21 +13,21 @@ namespace UpBlazor.Infrastructure.Repositories
     {
         public IncomeRepository(IDocumentStore store) : base(store) { }
 
-        public async Task<Income> GetByIdAsync(Guid id)
+        public async Task<Income> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
         {
             await using var session = Store.QuerySession();
 
             return await session.Query<Income>()
-                .SingleOrDefaultAsync(x => x.Id == id);
+                .SingleOrDefaultAsync(x => x.Id == id, token: cancellationToken);
         }
 
-        public async Task<IReadOnlyList<Income>> GetAllByUserIdAsync(string userId)
+        public async Task<IReadOnlyList<Income>> GetAllByUserIdAsync(string userId, CancellationToken cancellationToken = default)
         {
             await using var session = Store.QuerySession();
 
             var output = await session.Query<Income>()
                 .Where(x => x.UserId == userId)
-                .ToListAsync();
+                .ToListAsync(cancellationToken);
             
             var duplicateIncomes = output.GroupBy(x => x.Name);
 

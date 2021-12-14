@@ -23,9 +23,9 @@ public class GetExpensesQueryHandler : IRequestHandler<GetExpensesQuery, IReadOn
 
     public async Task<IReadOnlyList<Expense>> Handle(GetExpensesQuery request, CancellationToken cancellationToken)
     {
-        var userId = await _currentUserService.GetUserIdAsync();
+        var userId = await _currentUserService.GetUserIdAsync(cancellationToken);
 
-        var output = await _expenseRepository.GetAllByUserIdAsync(userId);
+        var output = await _expenseRepository.GetAllByUserIdAsync(userId, cancellationToken);
         return output;
     }
 }

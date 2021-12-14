@@ -1,10 +1,11 @@
-﻿using System.Threading.Tasks;
+﻿using System.Threading;
+using System.Threading.Tasks;
 using UpBlazor.Core.Models;
 
 namespace UpBlazor.Core.Repositories
 {
     public interface INormalizedAggregateRepository : IGenericRepository<NormalizedAggregate>
     {
-        Task<NormalizedAggregate> GetByUserIdAsync(string userId);
+        Task<NormalizedAggregate> GetByUserIdAsync(string userId, CancellationToken cancellationToken = default);
     }
 }

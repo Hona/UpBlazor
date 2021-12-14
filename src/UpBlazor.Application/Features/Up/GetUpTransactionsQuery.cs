@@ -22,7 +22,7 @@ public class GetUpTransactionsQueryHandler : IRequestHandler<GetUpTransactionsQu
 
     public async Task<IReadOnlyList<TransactionResource>> Handle(GetUpTransactionsQuery request, CancellationToken cancellationToken)
     {
-        var upApi = await _currentUserService.GetApiAsync();
+        var upApi = await _currentUserService.GetApiAsync(cancellationToken: cancellationToken);
 
         UpResponse<PaginatedDataResponse<TransactionResource>> response;
 

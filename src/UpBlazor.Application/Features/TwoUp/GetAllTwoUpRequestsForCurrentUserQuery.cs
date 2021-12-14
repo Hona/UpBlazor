@@ -23,9 +23,9 @@ public class GetAllTwoUpRequestsForCurrentUserQueryHandler : IRequestHandler<Get
 
     public async Task<IReadOnlyList<TwoUpRequest>> Handle(GetAllTwoUpRequestsForCurrentUserQuery request, CancellationToken cancellationToken)
     {
-        var userId = await _currentUserService.GetUserIdAsync();
+        var userId = await _currentUserService.GetUserIdAsync(cancellationToken);
 
-        var output = await _twoUpRequestRepository.GetAllByRequesteeAsync(userId);
+        var output = await _twoUpRequestRepository.GetAllByRequesteeAsync(userId, cancellationToken);
 
         return output;
     }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Marten;
 using UpBlazor.Core.Models;
@@ -12,28 +13,30 @@ public class NotificationReadRepository : GenericRepository<NotificationRead>, I
 {
     public NotificationReadRepository(IDocumentStore store) : base(store) { }
 
-    public async Task<IReadOnlyList<NotificationRead>> GetByUserIdAsync(string id)
+    public async Task<IReadOnlyList<NotificationRead>> GetByUserIdAsync(string id, CancellationToken cancellationToken = default)
     {
         await using var session = Store.QuerySession();
 
         return await session.Query<NotificationRead>()
             .Where(x => x.UserId == id)
-            .ToListAsync();
+            .ToListAsync(cancellationToken);
     }
 
-    public async Task<IReadOnlyList<NotificationRead>> GetByNotificationIdAsync(Guid id)
+    public async Task<IReadOnlyList<NotificationRead>> GetByNotificationIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
         await using var session = Store.QuerySession();
 
         return await session.Query<NotificationRead>()
             .Where(x => x.NotificationId == id)
-            .ToListAsync();    }
+            .ToListAsync(cancellationToken);
+        
+    }
 
-    public async Task<NotificationRead> GetByUserAndNotificationIdAsync(string userId, Guid notificationId)
+    public async Task<NotificationRead> GetByUserAndNotificationIdAsync(string userId, Guid notificationId, CancellationToken cancellationToken = default)
     {
         await using var session = Store.QuerySession();
 
         return await session.Query<NotificationRead>()
-            .SingleOrDefaultAsync(x => x.UserId == userId && x.NotificationId == notificationId);
+            .SingleOrDefaultAsync(x => x.UserId == userId && x.NotificationId == notificationId, cancellationToken);
     }
 }

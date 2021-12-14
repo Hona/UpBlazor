@@ -26,8 +26,8 @@ public class GetAllTwoUpConnectionsForCurrentUserQueryHandler : IRequestHandler<
 
     public async Task<IReadOnlyList<RegisteredUser>> Handle(GetAllTwoUpConnectionsForCurrentUserQuery request, CancellationToken cancellationToken)
     {
-        var userId = await _currentUserService.GetUserIdAsync();
-        var twoUpConnections = await _twoUpRepository.GetAllByUserIdAsync(userId);
+        var userId = await _currentUserService.GetUserIdAsync(cancellationToken);
+        var twoUpConnections = await _twoUpRepository.GetAllByUserIdAsync(userId, cancellationToken);
 
         var twoUpConnectionUserIds = twoUpConnections.SelectMany(x => new[]
             {
@@ -37,7 +37,7 @@ public class GetAllTwoUpConnectionsForCurrentUserQueryHandler : IRequestHandler<
             .Where(x => x != userId)
             .ToArray();
 
-        var twoUpConnectionUsers = await _registeredUserRepository.GetAllByIdsAsync(twoUpConnectionUserIds);
+        var twoUpConnectionUsers = await _registeredUserRepository.GetAllByIdsAsync(cancellationToken, twoUpConnectionUserIds);
         return twoUpConnectionUsers;
     }
 }

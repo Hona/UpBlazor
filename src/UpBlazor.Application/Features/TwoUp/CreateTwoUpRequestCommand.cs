@@ -25,20 +25,20 @@ public class CreateTwoUpRequestCommandHandler : IRequestHandler<CreateTwoUpReque
 
     public async Task<string> Handle(CreateTwoUpRequestCommand request, CancellationToken cancellationToken)
     {
-        var userId = await _currentUserService.GetUserIdAsync();
+        var userId = await _currentUserService.GetUserIdAsync(cancellationToken);
         
-        var requestee = await _registeredUserRepository.GetByEmailAsync(request.Email);
+        var requestee = await _registeredUserRepository.GetByEmailAsync(request.Email, cancellationToken);
 
         var output = new TwoUpRequest
         {
             CreatedDate = DateTime.Now,
             RequesterId = userId,
-            RequesterName = await _currentUserService.GetGivenNameAsync(),
+            RequesterName = await _currentUserService.GetGivenNameAsync(cancellationToken),
             RequesterMessage = request.Message,
             RequesteeId = requestee.Id,
         };
         
-        await _twoUpRequestRepository.AddAsync(output);
+        await _twoUpRequestRepository.AddAsync(output, cancellationToken);
 
         return output.MartenId;
     }

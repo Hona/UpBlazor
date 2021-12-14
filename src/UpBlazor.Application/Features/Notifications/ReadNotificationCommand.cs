@@ -23,7 +23,7 @@ public class ReadNotificationCommandHandler : IRequestHandler<ReadNotificationCo
 
     public async Task<string> Handle(ReadNotificationCommand request, CancellationToken cancellationToken)
     {
-        var userId = await _currentUserService.GetUserIdAsync();
+        var userId = await _currentUserService.GetUserIdAsync(cancellationToken);
 
         var output = new NotificationRead
         {
@@ -31,7 +31,7 @@ public class ReadNotificationCommandHandler : IRequestHandler<ReadNotificationCo
             UserId = userId
         };
         
-        await _notificationReadRepository.AddOrUpdateAsync(output);
+        await _notificationReadRepository.AddOrUpdateAsync(output, cancellationToken);
 
         return output.Id;
     }

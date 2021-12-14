@@ -18,7 +18,7 @@ public class DeleteSavingsPlanCommandHandler : IRequestHandler<DeleteSavingsPlan
 
     public async Task<Unit> Handle(DeleteSavingsPlanCommand request, CancellationToken cancellationToken)
     {
-        await _savingsPlanRepository.DeleteAsync(request.SavingsPlan);
+        await _savingsPlanRepository.DeleteAsync(request.SavingsPlan, cancellationToken);
         
         return Unit.Value;
     }

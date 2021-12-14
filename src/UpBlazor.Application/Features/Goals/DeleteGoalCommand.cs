@@ -19,7 +19,7 @@ public class DeleteGoalCommandHandler : IRequestHandler<DeleteGoalCommand>
 
     public async Task<Unit> Handle(DeleteGoalCommand request, CancellationToken cancellationToken)
     {
-        await _goalRepository.DeleteAsync(request.Goal);
+        await _goalRepository.DeleteAsync(request.Goal, cancellationToken);
         
         return Unit.Value;
     }

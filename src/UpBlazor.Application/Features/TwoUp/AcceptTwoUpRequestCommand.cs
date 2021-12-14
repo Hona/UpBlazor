@@ -21,10 +21,10 @@ public class AcceptTwoUpRequestCommandHandler : IRequestHandler<AcceptTwoUpReque
 
     public async Task<Unit> Handle(AcceptTwoUpRequestCommand request, CancellationToken cancellationToken)
     {
-        await _twoUpRequestRepository.DeleteAsync(request.TwoUpRequest);
+        await _twoUpRequestRepository.DeleteAsync(request.TwoUpRequest, cancellationToken);
 
         var twoUp = new Core.Models.TwoUp(request.TwoUpRequest.RequesteeId, request.TwoUpRequest.RequesterId);
-        await _twoUpRepository.AddOrUpdateAsync(twoUp);
+        await _twoUpRepository.AddOrUpdateAsync(twoUp, cancellationToken);
         
         return Unit.Value;
     }

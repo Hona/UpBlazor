@@ -23,9 +23,9 @@ public class GetRecurringExpensesQueryHandler : IRequestHandler<GetRecurringExpe
 
     public async Task<IReadOnlyList<RecurringExpense>> Handle(GetRecurringExpensesQuery request, CancellationToken cancellationToken)
     {
-        var userId = await _currentUserService.GetUserIdAsync();
+        var userId = await _currentUserService.GetUserIdAsync(cancellationToken);
 
-        var output = await _recurringExpenseRepository.GetAllByUserIdAsync(userId);
+        var output = await _recurringExpenseRepository.GetAllByUserIdAsync(userId, cancellationToken);
         return output;
     }
 }

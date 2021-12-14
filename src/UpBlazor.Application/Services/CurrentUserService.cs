@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components.Authorization;
 using Up.NET.Api;
@@ -27,7 +28,7 @@ namespace UpBlazor.Application.Services
             _registeredUserRepository = registeredUserRepository;
         }
 
-        public async Task<IUpApi> GetApiAsync(string overrideToken = null, bool forceReload = false)
+        public async Task<IUpApi> GetApiAsync(string overrideToken = null, bool forceReload = false, CancellationToken cancellationToken = default)
         {
             if (!forceReload && string.IsNullOrWhiteSpace(overrideToken) && _upApi != null)
             {
@@ -60,18 +61,18 @@ namespace UpBlazor.Application.Services
             return _upApi;
         }
 
-        public async Task<string> GetUserIdAsync()
+        public async Task<string> GetUserIdAsync(CancellationToken cancellationToken = default)
         {
-            var claims = await GetClaimsAsync();
+            var claims = await GetClaimsAsync(cancellationToken);
             return claims?.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value ??
                    throw new InvalidOperationException("Logged in user must have a ID claim");
         }
 
-        public async Task<IEnumerable<Claim>> GetClaimsAsync()
+        public async Task<IEnumerable<Claim>> GetClaimsAsync(CancellationToken cancellationToken = default)
         {
             if (!string.IsNullOrWhiteSpace(_impersonationUserId))
             {
-                var cachedUser = await _registeredUserRepository.GetByIdAsync(_impersonationUserId);
+                var cachedUser = await _registeredUserRepository.GetByIdAsync(_impersonationUserId, cancellationToken);
 
                 return new List<Claim>
                 {
@@ -93,9 +94,9 @@ namespace UpBlazor.Application.Services
             return null;
         }
 
-        public async Task<string> GetGivenNameAsync()
+        public async Task<string> GetGivenNameAsync(CancellationToken cancellationToken = default)
         {
-            var claims = await GetClaimsAsync();
+            var claims = await GetClaimsAsync(cancellationToken);
 
             return claims.FirstOrDefault(x => x.Type == ClaimTypes.GivenName)?.Value;
         }

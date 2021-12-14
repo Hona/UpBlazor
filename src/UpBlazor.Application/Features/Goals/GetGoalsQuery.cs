@@ -23,9 +23,9 @@ public class GetGoalsQueryHandler : IRequestHandler<GetGoalsQuery, IReadOnlyList
 
     public async Task<IReadOnlyList<Goal>> Handle(GetGoalsQuery request, CancellationToken cancellationToken)
     {
-        var userId = await _currentUserService.GetUserIdAsync();
+        var userId = await _currentUserService.GetUserIdAsync(cancellationToken);
 
-        var output = await _goalRepository.GetAllByUserIdAsync(userId);
+        var output = await _goalRepository.GetAllByUserIdAsync(userId, cancellationToken);
         return output;
     }
 }

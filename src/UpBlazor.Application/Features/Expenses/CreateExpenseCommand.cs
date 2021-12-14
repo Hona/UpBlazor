@@ -23,7 +23,7 @@ public class CreateExpenseCommandHandler : IRequestHandler<CreateExpenseCommand,
 
     public async Task<Guid> Handle(CreateExpenseCommand request, CancellationToken cancellationToken)
     {
-        var userId = await _currentUserService.GetUserIdAsync();
+        var userId = await _currentUserService.GetUserIdAsync(cancellationToken);
 
         var output = new Expense
         {
@@ -35,7 +35,7 @@ public class CreateExpenseCommandHandler : IRequestHandler<CreateExpenseCommand,
             UserId = userId
         };
 
-        await _expenseRepository.AddAsync(output);
+        await _expenseRepository.AddAsync(output, cancellationToken);
 
         return output.Id;
     }

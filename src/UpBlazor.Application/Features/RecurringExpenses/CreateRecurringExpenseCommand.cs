@@ -24,7 +24,7 @@ public class CreateRecurringExpenseCommandHandler : IRequestHandler<CreateRecurr
 
     public async Task<Guid> Handle(CreateRecurringExpenseCommand request, CancellationToken cancellationToken)
     {
-        var userId = await _currentUserService.GetUserIdAsync();
+        var userId = await _currentUserService.GetUserIdAsync(cancellationToken);
 
         var output = new RecurringExpense
         {
@@ -37,7 +37,7 @@ public class CreateRecurringExpenseCommandHandler : IRequestHandler<CreateRecurr
             UserId = userId
         };
 
-        await _recurringExpenseRepository.AddAsync(output);
+        await _recurringExpenseRepository.AddAsync(output, cancellationToken);
 
         return output.Id;
     }

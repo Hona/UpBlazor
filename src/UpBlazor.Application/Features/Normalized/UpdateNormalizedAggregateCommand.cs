@@ -20,8 +20,8 @@ public class UpdateNormalizedAggregateCommandHandler : IRequestHandler<UpdateNor
 
     public async Task<Unit> Handle(UpdateNormalizedAggregateCommand request, CancellationToken cancellationToken)
     {
-        var userId = await _currentUserService.GetUserIdAsync();
-        await _normalizerService.UpdateUserAsync(userId);
+        var userId = await _currentUserService.GetUserIdAsync(cancellationToken);
+        await _normalizerService.UpdateUserAsync(userId, cancellationToken);
         
         return Unit.Value;
     }

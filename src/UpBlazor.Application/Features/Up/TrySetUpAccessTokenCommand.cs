@@ -23,7 +23,7 @@ public class TrySetUpAccessTokenCommandHandler : IRequestHandler<TrySetUpAccessT
 
     public async Task<string> Handle(TrySetUpAccessTokenCommand request, CancellationToken cancellationToken)
     {
-        var temporaryApi = await _currentUserService.GetApiAsync(request.AccessToken);
+        var temporaryApi = await _currentUserService.GetApiAsync(request.AccessToken, cancellationToken: cancellationToken);
 
         var pingResponse = await temporaryApi.GetPingAsync();
 
@@ -33,7 +33,7 @@ public class TrySetUpAccessTokenCommandHandler : IRequestHandler<TrySetUpAccessT
             throw new Exception("You did not input a valid access token - did you copy and paste the whole token?");
         }
 
-        var userId = await _currentUserService.GetUserIdAsync();
+        var userId = await _currentUserService.GetUserIdAsync(cancellationToken);
 
         var output = new UpUserToken
         {
@@ -41,7 +41,7 @@ public class TrySetUpAccessTokenCommandHandler : IRequestHandler<TrySetUpAccessT
             AccessToken = request.AccessToken
         };
         
-        await _upUserTokenRepository.AddOrUpdateAsync(output);
+        await _upUserTokenRepository.AddOrUpdateAsync(output, cancellationToken);
 
         return output.UserId;
     }

@@ -37,6 +37,9 @@ else
                 Format="dd/MM/yyyy hh:mm tt" 
                 Sortable/>
         <ActionColumn>
+            <Button OnClick="async () => await ShowReadByModal(context)">
+                Read Receipts
+            </Button>
             <Button Danger
                     OnClick="async () => await HandleNotificationDeletedAsync(context)">
                 Delete
@@ -45,10 +48,37 @@ else
     </Table>
 }
 
+@if (_selectedNotification is not null)
+{
+    <Modal Visible="_modalVisible" Title="Notification Read Receipts" OnCancel="OnModalClose">
+        @if (_modalLoading)
+        {
+            <Spin />
+        }
+        else
+        {
+            <Space>
+                @foreach (var user in _selectedNotificationUsersWhoRead)
+                {
+                    <SpaceItem>
+                        <Tag>@(user.GivenName) (@(user.Email))</Tag>
+                    </SpaceItem>
+                }
+            </Space>
+        }
+    </Modal>
+}
+
+
 @code
 {
     private bool _loading;
     private IReadOnlyList<Notification> _allNotifications;
+
+    private bool _modalVisible;
+    private bool _modalLoading = true;
+    private Notification _selectedNotification;
+    private IReadOnlyList<RegisteredUser> _selectedNotificationUsersWhoRead;
 
     protected override async Task OnInitializedAsync() => await ReloadAsync();
 
@@ -68,5 +98,24 @@ else
         await _mediator.Send(new DeleteNotificationCommand(notification));
 
         await ReloadAsync();
+    }
+
+    private async Task ShowReadByModal(Notification notification)
+    {
+        _selectedNotification = notification;
+        _modalVisible = true;
+        
+        _modalLoading = true;
+
+        _selectedNotificationUsersWhoRead = await _mediator.Send(new GetAllWhoReadNotificationQuery(_selectedNotification));
+
+        _modalLoading = false;
+    }
+
+    private void OnModalClose()
+    {
+        _modalVisible = false;
+        _selectedNotification = null;
+        _selectedNotificationUsersWhoRead = null;
     }
 }

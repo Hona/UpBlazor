@@ -21,7 +21,15 @@
     <script src="_content/AntDesign.Charts/ant-design-charts-blazor.js"></script>
 </head>
 <body>
-<component type="typeof(App)" render-mode="Server"/>
+<component type="typeof(App)" render-mode="Server">
+    <div class="ant-layout ant-layout-sider" id="upblazor-splash">
+        <div>
+            <img src="/img/up-logo-light-transparent-bg.svg" style="max-height: 30vh; aspect-ratio: 1/1"/>
+        </div>
+        <h1 style="color: #fff; padding: 1rem">Blazor</h1>
+        <div id="loading"></div>
+    </div>
+</component>
 
 <div id="blazor-error-ui">
     <environment include="Staging,Production">

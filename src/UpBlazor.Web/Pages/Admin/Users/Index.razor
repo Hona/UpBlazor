@@ -30,11 +30,14 @@ else
 
     <Table DataSource="_allUsers">
         <Column @bind-Field="@context.Id"/>
-        <Column @bind-Field="@context.Email"/>
+        <Column @bind-Field="@context.Email" 
+                Sortable/>
         <Column @bind-Field="@context.GivenName"
-                Title="Given Name"/>
+                Title="Given Name"
+                Sortable/>
         <Column @bind-Field="@context.Token"
-                Title="Token">
+                Title="Token"
+                Sortable>
             @switch (context.Token)
             {
                 case RegisteredUserDto.TokenType.NotSet:

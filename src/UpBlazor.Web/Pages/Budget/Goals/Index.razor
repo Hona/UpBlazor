@@ -1,14 +1,10 @@
 ﻿@page "/budget/goals"
 
-<UserIdWrapper>
-    <UpApiWrapper Context="accounts" Action="api => api.GetAccountsAsync()" T="PaginatedDataResponse<AccountResource>">
-        <CreateGoal OnNewGoalAsync="async () => await _goalsTable.RepositoryWrapper.ReloadAsync()"/>
-    
-        <Divider/>
+<CreateGoal OnNewGoalAsync="async () => await _goalsTable.ReloadAsync()"/>
 
-        <GoalsTable @ref="_goalsTable"/>
-    </UpApiWrapper>
-</UserIdWrapper>
+<Divider/>
+
+<GoalsTable @ref="_goalsTable"/>
 
 @code
 {

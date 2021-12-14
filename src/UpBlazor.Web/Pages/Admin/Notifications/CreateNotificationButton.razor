@@ -1,50 +1,64 @@
 ﻿@using Notification = UpBlazor.Core.Models.Notification
+@using UpBlazor.Application.Features.Notifications
 
-@inject INotificationRepository _notificationRepository
+@inject IMediator _mediator
 
-<Form Model="@_newNotification"
+<Form Model="@_createNotification"
           OnFinish="HandleOk"
           OnFinishFailed="HandleCancel"
-          LabelColSpan="8"
-          WrapperColSpan="16">
+          LabelColSpan="4"
+          WrapperColSpan="20"
+          Loading="_formLoading">
     <FormItem Label="Title">
-        <Input @bind-Value="@context.Title" DebounceMilliseconds="int.MaxValue"/>
+        <Input @bind-Value="@context.Title" 
+               DebounceMilliseconds="int.MaxValue"/>
     </FormItem>
     <FormItem Label="Description">
-        <TextArea @bind-Value="@context.Description" MinRows="3" DebounceMilliseconds="int.MaxValue"/>
+        <TextArea @bind-Value="@context.Description" 
+                  MinRows="3" 
+                  DebounceMilliseconds="int.MaxValue"/>
     </FormItem>
-    <FormItem Label="Author">
-        <Input @bind-Value="@context.Author" DebounceMilliseconds="int.MaxValue"/>
-    </FormItem>
-    <FormItem WrapperColOffset="8" WrapperColSpan="16">
-        <Button Type="@ButtonType.Primary" HtmlType="submit">
-            Create Notification
+    <FormItem WrapperColOffset="4" 
+              WrapperColSpan="20">
+        <Button Type="@ButtonType.Primary" 
+                HtmlType="submit">
+            Create
         </Button>
     </FormItem>
 </Form>
 
 @code {
-    private Notification _newNotification = new();
-
+    private bool _formLoading;
+    private CreateNotification _createNotification = new();
+    
     [Parameter]
     public EventCallback OnNotificationCreated { get; set; }
 
     private async Task HandleOk()
     {
-        _newNotification.CreatedAt = DateTime.Now;
+        _formLoading = true;
+        
+        await _mediator.Send(new CreateNotificationCommand(_createNotification.Title, _createNotification.Description));
 
-        await _notificationRepository.AddAsync(_newNotification);
-
+        _formLoading = false;
+        
         if (OnNotificationCreated.HasDelegate)
         {
             await OnNotificationCreated.InvokeAsync();
         }
 
-        _newNotification = new();
+        _createNotification = new CreateNotification();
     }
     
     private void HandleCancel()
     {
-        _newNotification = new();
+        _createNotification = new CreateNotification();
+        _formLoading = false;
+    }
+
+    private class CreateNotification
+    {
+        public string Title { get; set; }
+        public string Description { get; set; }
     }
 }

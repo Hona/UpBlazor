@@ -1,50 +1,55 @@
-﻿@inject IExpenseRepository _expenseRepository
+﻿@using UpBlazor.Application.Features.Expenses
+@using UpBlazor.Application.Features.Incomes
+@using UpBlazor.Application.Features.Up
+@inject IMediator _mediator
 
-<RepositoryWrapper @ref="_repoRef"
-                   TRepository="IExpenseRepository"
-                   Action="x => x.GetAllByUserIdAsync(UserId)"
-                   TResponse="IReadOnlyList<Expense>"
-                   Context="expenses"
-                   ChildHandlesLoading="false">
-    <Title Level="3">Expenses</Title>
-    <Table DataSource="expenses" Loading="LoadingAggregate" Context="tableContext">
-        <Column Title="Name" @bind-Field="@tableContext.Name" Sortable/>
-        <Column Title="Exact" TData="decimal?" DataIndex="Money.Exact" Format="$0.00" Sortable/>
-        <Column Title="Relative" TData="decimal?" DataIndex="Money.Percent" Format="0%" Sortable/>
-        <Column Title="Paid By" @bind-Field="@tableContext.PaidByDate" Format="dd/MM/yyyy" Sortable/>
-        <SaverIdColumn Title="From Saver" TableContext="tableContext" TTableContext="Expense"/>
-        <IncomeIdColumn Title="From Income" TableContext="tableContext" TTableContext="Expense"/>
-        <ActionColumn>
-            <Space>
-                <SpaceItem>
-                    <Button Danger OnClick="async () => await DeleteAsync(tableContext)">Remove</Button>
-                </SpaceItem>
-            </Space>
-        </ActionColumn>
-    </Table>
-</RepositoryWrapper>
+<Title Level="3">Expenses</Title>
+
+<Table DataSource="_expenses" Loading="_loading">
+    <Column Title="Name" @bind-Field="@context.Name" Sortable/>
+    <Column Title="Exact" TData="decimal?" DataIndex="Money.Exact" Format="$0.00" Sortable/>
+    <Column Title="Relative" TData="decimal?" DataIndex="Money.Percent" Format="0%" Sortable/>
+    <Column Title="Paid By" @bind-Field="@context.PaidByDate" Format="dd/MM/yyyy" Sortable/>
+    <SaverIdColumn Title="From Saver" TableContext="context" TTableContext="Expense" Accounts="_accounts"/>
+    <IncomeIdColumn Title="From Income" TableContext="context" TTableContext="Expense" Incomes="_incomes"/>
+    <ActionColumn>
+        <Space>
+            <SpaceItem>
+                <Button Danger OnClick="async () => await DeleteAsync(context)">Remove</Button>
+            </SpaceItem>
+        </Space>
+    </ActionColumn>
+</Table>
 
 @code
 {
-    [CascadingParameter(Name = CascadingConstants.UserIdWrapper)]
-    public string UserId { get; set; }
-
-    public RepositoryWrapper<IExpenseRepository, IReadOnlyList<Expense>> RepositoryWrapper => _repoRef;
-
     private bool _loading;
 
-    private bool LoadingAggregate => _loading ? _loading : _repoRef.Loading;
+    private IReadOnlyList<Expense> _expenses;
+    private IReadOnlyList<Income> _incomes;
+    private IReadOnlyList<AccountResource> _accounts;
 
-    private RepositoryWrapper<IExpenseRepository, IReadOnlyList<Expense>> _repoRef;
+    protected override async Task OnInitializedAsync() => await ReloadAsync();
 
+    internal async Task ReloadAsync()
+    {
+        _loading = true;
+
+        _expenses = await _mediator.Send(new GetExpensesQuery());
+        _incomes = await _mediator.Send(new GetIncomesQuery());
+        _accounts = await _mediator.Send(new GetUpAccountsQuery());
+
+        _loading = false;
+    }
+    
     private async Task DeleteAsync(Expense expense)
     {
         _loading = true;
 
-        await _expenseRepository.DeleteAsync(expense);
+        await _mediator.Send(new DeleteExpenseCommand(expense));
 
         _loading = false;
 
-        await _repoRef.ReloadAsync();
+        await ReloadAsync();
     }
 }

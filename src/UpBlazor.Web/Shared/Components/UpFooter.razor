@@ -1,12 +1,41 @@
-﻿<div style="display: flex; justify-content: center; align-items: center; width: 100%">
-    <AuthorizeView>
-        <Authorized>
-            <UpApiWrapper Context="response" Action="api => api.GetPingAsync()" T="PingResponse" HideOnNoAccessToken="@true">
-                @response.Meta.StatusEmoji
-            </UpApiWrapper>
-        </Authorized>
-        <NotAuthorized>
-            
-        </NotAuthorized>
-    </AuthorizeView>
+﻿@using UpBlazor.Application.Features.Up
+@inject IMediator _mediator
+
+<div style="display: flex; justify-content: center; align-items: center; width: 100%">
+    @if (_loading)
+    {
+        <Spin />
+    }
+    else
+    {
+        <AuthorizeView>
+            <Authorized>
+                @if (_response is {Success: false })
+                {
+                    <span>❌</span>
+                }
+                else
+                {
+                    <span>@_response.Response.Meta.StatusEmoji</span>
+                }
+            </Authorized>
+            <NotAuthorized />
+        </AuthorizeView>
+    }
+    
 </div>
+
+@code
+{
+    private bool _loading;
+    private UpResponse<PingResponse> _response;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _loading = true;
+
+        _response = await _mediator.Send(new GetUpPingQuery());
+        
+        _loading = false;
+    }
+}

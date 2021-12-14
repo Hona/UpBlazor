@@ -7,6 +7,11 @@
 {
     protected override async Task OnInitializedAsync()
     {
+        if (_currentUserService.IsImpersonating)
+        {
+            return;
+        }
+        
         var claims = (await _currentUserService.GetClaimsAsync()).ToList();
 
         var registeredUser = new RegisteredUser

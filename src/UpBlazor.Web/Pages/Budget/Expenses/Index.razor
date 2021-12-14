@@ -1,24 +1,14 @@
 ﻿@page "/budget/expenses"
 
-<UserIdWrapper Context="userId">
-    <UpApiWrapper Context="accounts" Action="api => api.GetAccountsAsync()" T="PaginatedDataResponse<AccountResource>">
-        <RepositoryWrapper TRepository="IIncomeRepository"
-                           Action="x => x.GetAllByUserIdAsync(userId)"
-                           TResponse="IReadOnlyList<Core.Models.Income>"
-                           Context="incomes">
+<CreateExpense OnNewExpenseAsync="OnNewExpenseAsync"/>
 
-            <CreateExpense OnNewExpenseAsync="OnNewExpenseAsync"/>
+<Divider/>
 
-            <Divider/>
+<ExpensesTable @ref="_expensesTable"/>
 
-            <ExpensesTable @ref="_expensesTable"/>
+<Divider/>
 
-            <Divider/>
-
-            <RecurringExpensesTable @ref="_recurringExpensesTable"/>
-        </RepositoryWrapper>
-    </UpApiWrapper>
-</UserIdWrapper>
+<RecurringExpensesTable @ref="_recurringExpensesTable"/>
 
 @code
 {
@@ -27,10 +17,7 @@
 
     private async Task OnNewExpenseAsync()
     {
-        var reloadExpenses = _expensesTable.RepositoryWrapper.ReloadAsync();
-        var reloadRecurringExpenses = _recurringExpensesTable.RepositoryWrapper.ReloadAsync();
-
-        await reloadExpenses;
-        await reloadRecurringExpenses;
+        await _expensesTable.ReloadAsync();
+        await _recurringExpensesTable.ReloadAsync();
     }
 }

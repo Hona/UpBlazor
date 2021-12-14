@@ -6,6 +6,8 @@
 
     <ItemGroup>
       <PackageReference Include="HUp.NET" Version="1.1.1" />
+      <PackageReference Include="MediatR" Version="9.0.0" />
+      <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="9.0.0" />
       <PackageReference Include="Microsoft.AspNetCore.Components.Authorization" Version="6.0.0" />
     </ItemGroup>
 

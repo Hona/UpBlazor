@@ -4,7 +4,7 @@
 }
 else
 {
-    <CreateSavingsPlan Income="Income" OnNewSavingsPlanAsync="() => _savingsPlanTable.RepositoryWrapper.ReloadAsync()"/>
+    <CreateSavingsPlan Income="Income" OnNewSavingsPlanAsync="async () => await _savingsPlanTable.ReloadAsync()"/>
     
     <Divider />
     

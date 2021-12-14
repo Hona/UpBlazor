@@ -11,6 +11,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Serilog;
+using UpBlazor.Application;
 using UpBlazor.Core.Models;
 using UpBlazor.Core.Repositories;
 using UpBlazor.Application.Services;
@@ -36,6 +37,8 @@ namespace UpBlazor.Web
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddApplication();
+            
             services.AddRazorPages();
             services.AddServerSideBlazor();
             services.AddAntDesign();
@@ -135,9 +138,6 @@ namespace UpBlazor.Web
             services.AddSingleton<INotificationReadRepository, NotificationReadRepository>();
 
             services.AddHostedService<MartenHostedService>();
-
-            services.AddScoped<ICurrentUserService, CurrentUserService>();
-            services.AddSingleton<INormalizerService, NormalizerService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

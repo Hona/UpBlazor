@@ -1,30 +1,34 @@
-﻿@if (CascadedAccounts == null)
-{
-    <UpApiWrapper Context="accounts" 
-                  Action="api => api.GetAccountsAsync()" 
-                  T="PaginatedDataResponse<AccountResource>">
-        @{
-            CascadedAccounts = accounts;
-        }
-    </UpApiWrapper>
-}
+﻿@using UpBlazor.Application.Features.Up
+@inject IMediator _mediator
 
-<Select DataSource="CascadedAccounts?.Data" TItem="AccountResource" TItemValue="AccountResource"
+<Select DataSource="_accounts" TItem="AccountResource" TItemValue="AccountResource"
         LabelName="@($"{nameof(AccountResource.Attributes)}.{nameof(AccountResource.Attributes.DisplayName)}")"
         @bind-Value="SelectedSaver"
         OnSelectedItemChanged="SelectedSaverChangedInternal"
-        Placeholder="Select a saver..."/>
+        Placeholder="Select a saver..."
+        Loading="_loading"/>
 
 @code
 {
-    [CascadingParameter(Name = CascadingConstants.UpApiWrapper)]
-    public PaginatedDataResponse<AccountResource> CascadedAccounts { get; set; }
     
     [Parameter]
     public EventCallback<AccountResource> SelectedSaverChanged { get; set; }
     
     [Parameter]
     public AccountResource SelectedSaver { get; set; }
+
+    private IReadOnlyList<AccountResource> _accounts;
+
+    private bool _loading;
+    
+    protected override async Task OnInitializedAsync()
+    {
+        _loading = true;
+
+        _accounts = await _mediator.Send(new GetUpAccountsQuery());
+
+        _loading = false;
+    }
 
     private void SelectedSaverChangedInternal(AccountResource selectedItem)
     {

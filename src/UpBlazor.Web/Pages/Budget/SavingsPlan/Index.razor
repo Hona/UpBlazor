@@ -2,15 +2,18 @@
 
 <Title Level="3">Savings Plan</Title>
 
-<UserIdWrapper Context="userId">
-    <UpApiWrapper Context="accounts" Action="api => api.GetAccountsAsync()" 
-                  T="PaginatedDataResponse<AccountResource>">
-        <RepositoryWrapper TRepository="IIncomeRepository"
-                           Action="x => x.GetAllByUserIdAsync(userId)"
-                           TResponse="IReadOnlyList<Core.Models.Income>">
-            <SavingsPlanInner/>
-        </RepositoryWrapper>
-    </UpApiWrapper>
-</UserIdWrapper>
+<IncomeSelector SelectedIncomeChanged="Callback"/>
 
+<Divider />
 
+<SingleSavingsPlan Income="@_income"/>
+
+@code
+{
+    private Income _income;
+    
+    private void Callback(Income obj)
+    {
+        _income = obj;
+    }
+}

@@ -1,26 +1,96 @@
 ﻿@page "/insights/transactions/{AccountId?}"
 @using Up.NET.Api.Transactions
+@using UpBlazor.Application.Features.Up
 
-<UpApiWrapper Context="accounts" Action="api => api.GetAccountsAsync()" T="PaginatedDataResponse<AccountResource>">
-    @if (string.IsNullOrWhiteSpace(AccountId))
-    {
-        <UpApiWrapper T="PaginatedDataResponse<TransactionResource>" 
-                      Action="x => x.GetTransactionsAsync(100, TransactionStatus.Settled)">
-            <TransactionsInner />
-        </UpApiWrapper>
-    }
-    else
-    {
-        <UpApiWrapper T="PaginatedDataResponse<TransactionResource>" 
-                      Action="x => x.GetTransactionsAsync(AccountId, 100, TransactionStatus.Settled)">
-            <TransactionsInner AccountId="@AccountId" />
-        </UpApiWrapper>
-    }
-</UpApiWrapper>
+@inject IMediator _mediator
 
+@if (_loading)
+{
+    <Spin />
+}
+else
+{
+    <Card BodyStyle="padding: 0">
+        <CardTabs>
+            <Tabs DefaultActiveKey="0">
+                @for (var i = 0; i < _accounts.Count; i++)
+                {
+                    var account = _accounts[i];
+                    
+                    <TabPane Key="@i.ToString()">
+                        <TabTemplate>
+                            @account.Attributes.DisplayName
+                        </TabTemplate>
+                        <ChildContent>
+                            <Table DataSource="_transactionsOut.Where(x => x.Relationships.Account.Data.Id == account.Id)"
+                                   Title="Transactions Out 🔻">
+                                <Column Title="Date" DataIndex="Attributes.CreatedAt" TData="DateTime" Format="dd/MM/yyyy"/>
+                                <Column Title="Description" DataIndex="Attributes.Description" TData="string"/>
+                                <Column Title="Message" DataIndex="Attributes.Message" TData="string"/>
+                                <Column Title="Round Up" DataIndex="Attributes.RoundUp.Amount.Value" TData="string">
+                                    @(context.Attributes.RoundUp?.Amount?.Value.Substring(1, context.Attributes.RoundUp.Amount.Value.Length - 1))
+                                </Column>
+                                <Column Title="Round Up (Boost)" DataIndex="Attributes.RoundUp.BoostPortion.Value" TData="string">
+                                    @(context.Attributes.RoundUp?.BoostPortion?.Value.Substring(1, context.Attributes.RoundUp.BoostPortion.Value.Length - 1))
+                                </Column>
+                                <Column Title="Amount" DataIndex="Attributes.Amount.Value" TData="string">
+                                    @(context.Attributes.Amount.Value.Substring(1, context.Attributes.Amount.Value.Length - 1))
+                                </Column>
+                            </Table>
+
+                            <Table DataSource="_transactionsIn.Where(x => x.Relationships.Account.Data.Id == account.Id)"
+                                   Title="Transactions In 🟢">
+                                <Column Title="Date" DataIndex="Attributes.CreatedAt" TData="DateTime" Format="dd/MM/yyyy"/>
+                                <Column Title="Description" DataIndex="Attributes.Description" TData="string"/>
+                                <Column Title="Message" DataIndex="Attributes.Message" TData="string"/>
+                                <Column Title="Round Up" DataIndex="Attributes.RoundUp.Amount.Value" TData="string"/>
+                                <Column Title="Round Up (Boost)" DataIndex="Attributes.RoundUp.BoostPortion.Value" TData="string"/>
+                                <Column Title="Amount" DataIndex="Attributes.Amount.Value" TData="string"/>
+                            </Table>
+                        </ChildContent>
+                    </TabPane>
+                }
+            </Tabs>
+        </CardTabs>
+    </Card>
+}
 
 @code
 {
+    private bool _loading;
+    
+    private IReadOnlyList<TransactionResource> _transactions;
+    private IReadOnlyList<AccountResource> _accounts;
+    
+    private List<TransactionResource> _transactionsIn;
+    private List<TransactionResource> _transactionsOut;
+
     [Parameter]
     public string AccountId { get; set; }
+
+    protected override async Task OnInitializedAsync() => await ReloadAsync();
+
+    private async Task ReloadAsync()
+    {
+        _loading = true;
+        
+        _transactions = await _mediator.Send(new GetUpTransactionsQuery(AccountId));
+        _accounts = await _mediator.Send(new GetUpAccountsQuery());
+        
+        _transactionsOut = _transactions
+            .Where(x => x.Attributes.Amount.ValueInBaseUnits < 0)
+            .ToList();
+        
+        _transactionsIn = _transactions
+            .Where(x => x.Attributes.Amount.ValueInBaseUnits >= 0)
+            .ToList();
+        
+        // View only one account
+        if (!string.IsNullOrWhiteSpace(AccountId))
+        {
+            _accounts = _accounts.Where(x => x.Id == AccountId).ToList();
+        }
+
+        _loading = false;
+    }
 }

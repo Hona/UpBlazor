@@ -1,11 +1,17 @@
 @page "/"
+@using UpBlazor.Application.Features.Up
 
-@inject ICurrentUserService _currentUserService
 @inject NavigationManager _navigationManager
+@inject IMediator _mediator
 
-<UpApiWrapper Action="api => api.GetAccountsAsync()" T="PaginatedDataResponse<AccountResource>">
+@if (_loading)
+{
+    <Spin />
+}
+else
+{
     <div style="display: flex; justify-content: center; align-items: center; flex-wrap: wrap">
-        @foreach (var transactionAccount in context.Data.Where(x => x.Attributes.AccountType == AccountType.Transactional))
+        @foreach (var transactionAccount in _accounts.Where(x => x.Attributes.AccountType == AccountType.Transactional))
         {
             <div @onclick='() => _navigationManager.NavigateTo($"/insights/transactions/{transactionAccount.Id}")'>
                 <Card Title="@transactionAccount.Attributes.DisplayName"
@@ -20,11 +26,11 @@
             </div>
         }
     </div>
-    
+
     <Title Level="4">Savers</Title>
-    
+
     <div style="display: flex; justify-content: center; align-items: center; flex-wrap: wrap">
-        @foreach (var saver in context.Data.Where(x => x.Attributes.AccountType == AccountType.Saver))
+        @foreach (var saver in _accounts.Where(x => x.Attributes.AccountType == AccountType.Saver))
         {
             <div @onclick='() => _navigationManager.NavigateTo($"/insights/transactions/{saver.Id}")'>
                 <Card Title="@saver.Attributes.DisplayName"
@@ -39,4 +45,21 @@
             </div>
         }
     </div>
-</UpApiWrapper>
+}
+
+@code
+{
+    private bool _loading;
+    private IReadOnlyList<AccountResource> _accounts;
+
+    protected override async Task OnInitializedAsync() => await ReloadAsync();
+
+    private async Task ReloadAsync()
+    {
+        _loading = true;
+
+        _accounts = await _mediator.Send(new GetUpAccountsQuery());
+        
+        _loading = false;
+    }
+}

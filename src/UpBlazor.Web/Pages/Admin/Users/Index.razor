@@ -1,17 +1,25 @@
 ﻿@page "/admin/users"
+@using UpBlazor.Application.Features.Users
 
 @layout AdminAuthorizeLayout
 
 @inject ICurrentUserService _currentUserService
+@inject IMediator _mediator
 
 <Title Level="3">Users</Title>
 
-<RepositoryWrapper TRepository="IRegisteredUserRepository"
-                   Action="x => x.GetAllAsync()"
-                   TResponse="IReadOnlyList<RegisteredUser>"
-                   Context="repoContext">
+@if (_loading)
+{
+    <Spin />
+}
+else if (_allUsers is null || !_allUsers.Any())
+{
+    <Text>No users found.</Text>
+}
+else
+{
     <Card>
-        <Statistic Value="repoContext.Count" Title="Total Users"/>
+        <Statistic Value="_allUsers.Count" Title="Total Users"/>
     </Card>
 
     <Divider/>
@@ -20,15 +28,53 @@
         <Button OnClick="() => _currentUserService.ResetImpersonation()">Reset Impersonation</Button>
     </Card>
 
-    <Table DataSource="repoContext"
-           Context="tableContext">
-        <Column @bind-Field="@tableContext.Id"/>
-        <Column @bind-Field="@tableContext.Email"/>
-        <Column @bind-Field="@tableContext.GivenName"/>
-        <Column Title="Created At" @bind-Field="@tableContext.CreatedAt" Format="dd/MM/yyyy hh:mm tt" Sortable/>
-        <Column Title="Updated At" @bind-Field="@tableContext.UpdatedAt" Format="dd/MM/yyyy hh:mm tt" Sortable/>
+    <Table DataSource="_allUsers">
+        <Column @bind-Field="@context.Id"/>
+        <Column @bind-Field="@context.Email"/>
+        <Column @bind-Field="@context.GivenName"
+                Title="Given Name"/>
+        <Column @bind-Field="@context.Token"
+                Title="Token">
+            @switch (context.Token)
+            {
+                case RegisteredUserDto.TokenType.NotSet:
+                    <Tag>None</Tag>
+                    break;
+                case RegisteredUserDto.TokenType.Demo:
+                    <Tag PresetColor="PresetColor.Volcano">Demo</Tag>
+                    break;
+                case RegisteredUserDto.TokenType.Real:
+                    <Tag PresetColor="PresetColor.Green">Real</Tag>
+                    break;
+            }
+        </Column>
+        <Column Title="Created At" 
+                @bind-Field="@context.CreatedAt" 
+                Format="dd/MM/yyyy hh:mm tt" 
+                Sortable/>
+        <Column Title="Updated At" 
+                @bind-Field="@context.UpdatedAt" 
+                Format="dd/MM/yyyy hh:mm tt" 
+                Sortable/>
         <ActionColumn>
-            <Button OnClick="() => _currentUserService.Impersonate(tableContext.Id)">Impersonate</Button>
+            <Button OnClick="() => _currentUserService.Impersonate(context.Id)">Impersonate</Button>
         </ActionColumn>
     </Table>
-</RepositoryWrapper>
+}
+
+@code
+{
+    private bool _loading;
+    private IReadOnlyList<RegisteredUserDto> _allUsers;
+
+    protected override async Task OnInitializedAsync() => await ReloadAsync();
+
+    private async Task ReloadAsync()
+    {
+        _loading = true;
+
+        _allUsers = await _mediator.Send(new GetAllUsersQuery());
+        
+        _loading = false;
+    }
+}

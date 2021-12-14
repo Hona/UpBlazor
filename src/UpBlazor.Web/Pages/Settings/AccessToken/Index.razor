@@ -1,7 +1,7 @@
 ﻿@page "/settings/up-access-token"
+@using UpBlazor.Application.Features.Up
 
-@inject ICurrentUserService _currentUserService
-@inject IUpUserTokenRepository _upUserTokenRepository
+@inject IMediator _mediator
 
 @if (_loading)
 {
@@ -54,7 +54,7 @@ else
         <Button Type="@ButtonType.Primary" HtmlType="submit">
             Save
         </Button>
-        <Popover Title="Title" Trigger="@(new AntDesign.Trigger[] { AntDesign.Trigger.Click})">
+        <Popover Title="Title" Trigger="@(new[] { Trigger.Click })">
             <ContentTemplate>
                 Are you sure? <Button Danger Size="small" OnClick="OnClearAccessTokenClickAsync">Yes</Button>
             </ContentTemplate>
@@ -69,82 +69,65 @@ else
 
 @code
 {
-    private IUpApi _upApi;
-    private bool IsSet => _upApi != null;
     private bool _loading;
     private bool _formLoading;
-    private FormValidateErrorMessages _errorMessages;
+
+    private bool IsSet => _pingResponse != null;
     
+    private FormValidateErrorMessages _errorMessages;
     private UpResponse<PingResponse> _pingResponse;
 
     private readonly SetAccessToken _setAccessToken = new();
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnInitializedAsync() => await ReloadAsync();
+
+    private async Task ReloadAsync()
     {
         _loading = true;
-        
-        _upApi = await _currentUserService.GetApiAsync(forceReload: true);
+
+        _pingResponse = await _mediator.Send(new GetUpPingQuery(true));
 
         _loading = false;
-
-        if (_upApi != null)
-        {
-            _pingResponse = await _upApi.GetPingAsync();
-        }
     }
     
     private async Task OnFinishAsync(EditContext editContext)
     {
         _formLoading = true;
-        
-        var temporaryApi = await _currentUserService.GetApiAsync(_setAccessToken.Value);
 
-        var pingResponse = await temporaryApi.GetPingAsync();
-
-        if (pingResponse.Success)
+        try
         {
-            // Good token
-            _errorMessages = null;
-
-            await _upUserTokenRepository.AddOrUpdateAsync(new UpUserToken
-            {
-                UserId = await _currentUserService.GetUserIdAsync(),
-                AccessToken = _setAccessToken.Value
-            });
+            await _mediator.Send(new TrySetUpAccessTokenCommand(_setAccessToken.Value));
             
+            // Success
+            _errorMessages = null;
             _setAccessToken.Value = string.Empty;
         }
-        else
+        catch (Exception e)
         {
-            // Bad token
-            _setAccessToken.Value = string.Empty;
-
             _errorMessages = new FormValidateErrorMessages
             {
-                Required = "You did not input a valid access token - did you copy and paste the whole token?"
+                Required = e.Message
             };
+            _setAccessToken.Value = string.Empty;
+
+            _formLoading = false;
+            return;
         }
 
         _formLoading = false;
 
-        await OnInitializedAsync();
+        await ReloadAsync();
     }
 
     private async Task OnClearAccessTokenClickAsync()
     {
         _loading = true;
 
-        var userId = await _currentUserService.GetUserIdAsync();
-        var existingToken = await _upUserTokenRepository.GetByUserIdAsync(userId);
-
-        if (existingToken != null)
-        {
-            await _upUserTokenRepository.DeleteAsync(existingToken);
-        }
+        await _mediator.Send(new ClearUpAccessTokenCommand());
 
         _loading = false;
         
-        await OnInitializedAsync();
+        await ReloadAsync();
     }
 
     private class SetAccessToken

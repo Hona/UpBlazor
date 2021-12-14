@@ -100,6 +100,7 @@ namespace UpBlazor.Application.Services
             return claims.FirstOrDefault(x => x.Type == ClaimTypes.GivenName)?.Value;
         }
 
+        public bool IsImpersonating => !string.IsNullOrWhiteSpace(_impersonationUserId);
         public void Impersonate(string userId)
         {
             _impersonationUserId = userId;

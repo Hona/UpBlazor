@@ -1,0 +1,19 @@
+﻿@page "/insights/planner"
+
+<Title Level="3">Income Planner</Title>
+
+<IncomeSelector SelectedIncomeChanged="Callback"/>
+
+<Divider />
+
+<SingleIncomePlanner Income="@_income"/>
+
+@code
+{
+    private Income _income;
+
+    private void Callback(Income obj)
+    {
+        _income = obj;
+    }
+}

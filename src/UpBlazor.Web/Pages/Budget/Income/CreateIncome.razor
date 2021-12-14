@@ -1,28 +1,28 @@
 ﻿@using UpBlazor.Core.Models.Enums
 @using System.Text.RegularExpressions
+@using UpBlazor.Application.Features.Incomes
 
-@inject IIncomeRepository _incomeRepository
+@inject IMediator _mediator
 
 <Card Title="New Income">
     <Form Model="_request" 
           LabelColSpan="4"
           WrapperColSpan="20"
-          OnFinish="async () => await OnFormFinishAsync(UserId)"
-          Loading="_loading"
-          Context="formContext">
+          OnFinish="async () => await OnFormFinishAsync()"
+          Loading="_loading">
         <FormItem Label="Name">
-            <Input DebounceMilliseconds="int.MaxValue" @bind-Value="@formContext.Name" />
+            <Input DebounceMilliseconds="int.MaxValue" @bind-Value="@context.Name" />
         </FormItem>
         <FormItem Label="Amount">
-            <AntDesign.InputNumber Style="min-width: 9rem" Formatter="MoneyFormat" Parser="MoneyParse" @bind-Value="@formContext.ExactMoney" DefaultValue="50M" Min="0" Step="0.01M"/>
+            <AntDesign.InputNumber Style="min-width: 9rem" Formatter="MoneyFormat" Parser="MoneyParse" @bind-Value="@context.ExactMoney" DefaultValue="50M" Min="0" Step="0.01M"/>
         </FormItem>
         <FormItem Label="Start Date">
-            <DatePicker @bind-Value="@formContext.StartDate" DefaultValue="DateTime.Now"/>
+            <DatePicker @bind-Value="@context.StartDate" DefaultValue="DateTime.Now"/>
         </FormItem>
         <FormItem Label="Cycle">
             <InputGroup>
-                <AntDesign.InputNumber Style="min-width: 7rem" @bind-Value="@formContext.IntervalUnits" Min="1" Step="1" DefaultValue="1"/>
-                <EnumSelect TValue="Interval" Placeholder="Interval" Style="min-width: 9rem" @bind-Value="@formContext.Interval"/>
+                <AntDesign.InputNumber Style="min-width: 7rem" @bind-Value="@context.IntervalUnits" Min="1" Step="1" DefaultValue="1"/>
+                <EnumSelect TValue="Interval" Placeholder="Interval" Style="min-width: 9rem" @bind-Value="@context.Interval"/>
             </InputGroup>
         </FormItem>
         <FormItem WrapperColOffset="4" WrapperColSpan="20">
@@ -35,36 +35,25 @@
 
 @code
 {
-    [CascadingParameter(Name = CascadingConstants.UserIdWrapper)]
-    public string UserId { get; set; }
-    
     [Parameter]
-    public Func<Task> OnNewIncomeAsync { get; set; }
+    public EventCallback OnNewIncome { get; set; }
     
     private IncomeRequest _request = new();
 
     private bool _loading;
     
-    private async Task OnFormFinishAsync(string currentUserId)
+    private async Task OnFormFinishAsync()
     {
         _loading = true;
 
-        await _incomeRepository.AddAsync(new Income
-        {
-            Name = _request.Name,
-            Interval = _request.Interval,
-            IntervalUnits = _request.IntervalUnits,
-            ExactMoney =  _request.ExactMoney,
-            StartDate = _request.StartDate,
-            UserId = currentUserId
-        });
+        await _mediator.Send(new CreateIncomeCommand(_request.Name, _request.StartDate, _request.ExactMoney, _request.Interval, _request.IntervalUnits));
         
         _request = new();
         _loading = false;
 
-        if (OnNewIncomeAsync != null)
+        if (OnNewIncome.HasDelegate)
         {
-            await OnNewIncomeAsync.Invoke();
+            await OnNewIncome.InvokeAsync();
         }
     }
 

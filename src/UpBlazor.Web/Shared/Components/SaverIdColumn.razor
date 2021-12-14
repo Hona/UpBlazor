@@ -1,8 +1,8 @@
-﻿@typeparam TTableContext
+﻿@typeparam TTableContext where TTableContext : class, ISaverId
 
 <Column Title="@Title" @bind-Field="@TableContext.SaverId">
     @{      
-        var saver = Accounts.Data.FirstOrDefault(x => x.Id == TableContext.SaverId);
+        var saver = Accounts?.FirstOrDefault(x => x.Id == TableContext.SaverId);
     }
     @if (saver != null)
     {
@@ -12,8 +12,8 @@
 
 @code
 {
-    [CascadingParameter(Name = CascadingConstants.UpApiWrapper)]
-    public PaginatedDataResponse<AccountResource> Accounts { get; set; }
+    [Parameter]
+    public IReadOnlyList<AccountResource> Accounts { get; set; }
 
     [Parameter]
     public TTableContext TableContext { get; set; }

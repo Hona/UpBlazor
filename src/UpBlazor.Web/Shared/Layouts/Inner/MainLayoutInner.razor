@@ -38,10 +38,6 @@
                               RouterMatch="NavLinkMatch.All" RouterLink="/budget/goals">
                         <span>Goals</span>
                     </MenuItem>
-                    <MenuItem OnClick='() => _navigationManager.NavigateTo("/budget/planner")'
-                              RouterMatch="NavLinkMatch.All" RouterLink="/budget/planner">
-                        <span>Planner</span>
-                    </MenuItem>
                 </ChildContent>
             </SubMenu>
             <SubMenu>
@@ -53,6 +49,10 @@
                     <MenuItem OnClick='() => _navigationManager.NavigateTo("/insights/analytics")'
                               RouterMatch="NavLinkMatch.All" RouterLink="/insights/analytics">
                         <span>Analytics</span>
+                    </MenuItem>
+                    <MenuItem OnClick='() => _navigationManager.NavigateTo("/insights/planner")'
+                              RouterMatch="NavLinkMatch.All" RouterLink="/insights/planner">
+                        <span>Planner</span>
                     </MenuItem>
                     <MenuItem OnClick='() => _navigationManager.NavigateTo("/insights/forecast")'
                               RouterMatch="NavLinkMatch.All" RouterLink="/insights/forecast">
@@ -103,50 +103,27 @@
     <Layout>
         <Header Style="background: #fff">
             <div style="width: 100%; height: 100%; display: flex; justify-content: flex-end; align-items: center">
-                <AuthorizeView>
-                    <Authorized>
-                        <UserIdWrapper Context="userId">
-                            <RepositoryWrapper Context="response" TRepository="ITwoUpRequestRepository" Action="x => x.GetAllByRequesteeAsync(userId)" TResponse="IReadOnlyList<TwoUpRequest>">
-                                <div style="margin: 0 1.75rem;">
-                                    <a href="/notifications">
-                                        <Badge Count="response.Count">
-                                            <Icon Style="font-size: 150%" Type="notification"/>
-                                        </Badge>
-                                    </a>
-                                </div>
-                            </RepositoryWrapper>
-                        </UserIdWrapper>
-                        <Dropdown Placement="@Placement.BottomLeft">
-                            <Overlay>
-                                <Menu>
-                                    <MenuItem OnClick='() => _navigationManager.NavigateTo("/signout", true)'>
-                                        Sign out
-                                    </MenuItem>
-                                    <MenuItem OnClick='() => _navigationManager.NavigateTo("/switch-user", true)'>
-                                        Switch user
-                                    </MenuItem>
-                                    <MenuDivider/>
-                                    <MenuItem OnClick='() => _navigationManager.NavigateTo("/settings/up-access-token", true)'>
-                                        Settings
-                                    </MenuItem>
-                                </Menu>
-                            </Overlay>
-                            <ChildContent>
-                                <AntDesign.Button Icon="user">
-                                    <span style="padding-left: 0.25rem">
-                                        @(context.User.FindFirst(ClaimTypes.GivenName)?.Value ?? "User")
-                                    </span>
-                                </AntDesign.Button>
-                            </ChildContent>
-                        </Dropdown>
-                    </Authorized>
-                    <NotAuthorized>
-                        <Button Type="primary" OnClick='() => _navigationManager.NavigateTo("/signin", true)'>Sign in</Button>
-                    </NotAuthorized>
-                </AuthorizeView>
+                <UserDropdown />
             </div>
         </Header>
-        <Content Style="padding: 24px; margin: 0; min-height: 280px;">@ChildContent</Content>
+        <Content Style="padding: 24px; margin: 0; min-height: 280px;">
+            <ErrorBoundary>
+                <ChildContent>
+                    @ChildContent
+                </ChildContent>
+                <ErrorContent>
+                    <Result Status="500">
+                        Unhandle exception occurred: @context.Message
+                        
+                        <Divider />
+                        
+                        <Text Code >
+                            @context.ToString()
+                        </Text>
+                    </Result>
+                </ErrorContent>
+            </ErrorBoundary>
+        </Content>
         <Footer>
             <UpFooter/>
         </Footer>

@@ -1,5 +1,66 @@
 ﻿@page "/insights/forecast"
+@using UpBlazor.Application.Features.Forecast
+@using UpBlazor.Application.Features.Normalized
 
-<NormalizedAggregateWrapper Context="aggregate">
-    <ForecastInner />
-</NormalizedAggregateWrapper>
+@inject IMediator _mediator
+
+@if (_loading)
+{
+    <Spin />
+}
+else
+{
+    <Space Direction="DirectionVHType.Vertical" Style="width: 100%">
+        <SpaceItem>
+            <Card Title="Total Income">
+                <AntDesign.Charts.StackedArea Config="_forecastConfig" Data="@_incomeForecastData"/>
+            </Card>
+        </SpaceItem>
+
+        <SpaceItem>
+            <Card Title="Total Expenses">
+                <AntDesign.Charts.StackedArea Config="_forecastConfig" Data="@_expensesForecastData"/>
+            </Card>
+        </SpaceItem>
+
+        <SpaceItem>
+            <Card Title="Totals">
+                <AntDesign.Charts.StackedArea Config="_forecastConfig" Data="@_totalForecastData"/>
+            </Card>
+        </SpaceItem>
+    </Space>
+}
+
+@code
+{
+    private bool _loading;
+    
+    private IReadOnlyList<ForecastDto> _incomeForecastData;
+    private IReadOnlyList<ForecastDto> _expensesForecastData;
+    private IReadOnlyList<ForecastDto> _totalForecastData;
+
+    protected override async Task OnInitializedAsync() => await ReloadAsync();
+
+    private async Task ReloadAsync()
+    {
+        _loading = true;
+
+        // TODO: Let the user input this
+        var totalDays = 365;
+
+        await _mediator.Send(new UpdateNormalizedAggregateCommand());
+        
+        _incomeForecastData = await _mediator.Send(new GetIncomeForecastQuery(totalDays));
+        _expensesForecastData = await _mediator.Send(new GetExpenseForecastQuery(totalDays));
+        _totalForecastData = await _mediator.Send(new GetTotalForecastQuery(totalDays, _expensesForecastData));
+        
+        _loading = false;
+    }
+    
+    private readonly AntDesign.Charts.StackedAreaConfig _forecastConfig = new()
+    {
+        XField = "cycle",
+        YField = "balance",
+        StackField = "accountName"
+    };
+}

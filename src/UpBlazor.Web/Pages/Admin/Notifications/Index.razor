@@ -1,37 +1,76 @@
 ﻿@page "/admin/notifications"
+
 @using Notification = UpBlazor.Core.Models.Notification
+@using UpBlazor.Application.Features.Notifications
 
 @layout AdminAuthorizeLayout
 
-@inject INotificationRepository _notificationRepository
+@inject IMediator _mediator
 
 <Title Level="3">Notifications</Title>
 
-<RepositoryWrapper TRepository="INotificationRepository"
-                   Action="x => x.GetAllAsync()"
-                   TResponse="IReadOnlyList<Notification>"
-                   Context="repoContext">
+@if (_loading)
+{
+    <Spin />
+}
+else if (_allNotifications is null || !_allNotifications.Any())
+{
+    <Text>No notifications found</Text>
+}
+else
+{
     <Card>
-        <Statistic Value="repoContext.Count" Title="Total Notifications"/>
+        <Statistic Value="@_allNotifications.Count" 
+                   Title="Total Notifications"/>
     </Card>
 
     <Divider/>
 
     <Card>
-        <CreateNotificationButton />
+        <CreateNotificationButton OnNotificationCreated="HandleNotificationCreatedAsync"/>
     </Card>
-    
+
     <Divider/>
 
-    <Table DataSource="repoContext"
-           Context="tableContext">
-        <Column @bind-Field="@tableContext.Id"/>
-        <Column @bind-Field="@tableContext.Title"/>
-        <Column @bind-Field="@tableContext.Description"/>
-        <Column @bind-Field="@tableContext.Author"/>
-        <Column Title="Created At" @bind-Field="@tableContext.CreatedAt" Format="dd/MM/yyyy hh:mm tt" Sortable/>
+    <Table DataSource="_allNotifications">
+        <Column @bind-Field="@context.Title"/>
+        <Column @bind-Field="@context.Description"/>
+        <Column @bind-Field="@context.Author"/>
+        <Column Title="Created At" 
+                @bind-Field="@context.CreatedAt" 
+                Format="dd/MM/yyyy hh:mm tt" 
+                Sortable/>
         <ActionColumn>
-            <Button OnClick="async () => { await _notificationRepository.DeleteAsync(tableContext); await InvokeAsync(StateHasChanged); }">Delete</Button>
+            <Button Danger
+                    OnClick="async () => await HandleNotificationDeletedAsync(context)">
+                Delete
+            </Button>
         </ActionColumn>
     </Table>
-</RepositoryWrapper>
+}
+
+@code
+{
+    private bool _loading;
+    private IReadOnlyList<Notification> _allNotifications;
+
+    protected override async Task OnInitializedAsync() => await ReloadAsync();
+
+    private async Task ReloadAsync()
+    {
+        _loading = true;
+        
+        _allNotifications = await _mediator.Send(new GetAllNotificationsQuery());
+
+        _loading = false;
+    }
+
+    private async Task HandleNotificationCreatedAsync() => await ReloadAsync();
+
+    private async Task HandleNotificationDeletedAsync(Notification notification)
+    {
+        await _mediator.Send(new DeleteNotificationCommand(notification));
+
+        await ReloadAsync();
+    }
+}

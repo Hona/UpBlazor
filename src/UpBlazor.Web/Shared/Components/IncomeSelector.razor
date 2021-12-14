@@ -1,43 +1,59 @@
-﻿@if (Incomes == null)
-{
-    <RepositoryWrapper TRepository="IIncomeRepository"
-                       Action="x => x.GetAllByUserIdAsync(UserId)"
-                       TResponse="IReadOnlyList<Core.Models.Income>"
-                       Context="incomes">
-    @{
-        Incomes = incomes;
-    }
-    </RepositoryWrapper>
-}
+﻿@using UpBlazor.Application.Features.Incomes
+@inject IMediator _mediator
 
-<Select @bind-Value="SelectedIncome"
-        DataSource="Incomes"
-        Placeholder="Select an income..."
-        OnSelectedItemChanged="SelectedIncomeChangedInternal"
-        DefaultActiveFirstOption>
-</Select>
+@if (_loading)
+{
+    <Spin />
+}
+else
+{
+    <Select DataSource="_incomes"
+            @bind-Value="@SelectedIncome"
+            Placeholder="Select an income..."
+            @ref="@_selectRef">
+    </Select>
+}
 
 @code
 {
-    [CascadingParameter(Name = CascadingConstants.UserIdWrapper)]
-    public string UserId { get; set; }
-
-    [CascadingParameter(Name = CascadingConstants.RepositoryWrapper)]
-    public IReadOnlyList<Income> Incomes { get; set; }
-
     [Parameter]
-    public Income SelectedIncome { get; set; }
+    public Income SelectedIncome
+    {
+        get => _selectedIncome;
+        set
+        {
+            _selectedIncome = value;
+            InvokeAsync(async () => await SelectedIncomeChanged.InvokeAsync(_selectedIncome));
+        }
+    }
 
     [Parameter]
     public EventCallback<Income> SelectedIncomeChanged { get; set; }
 
     [Parameter]
     public bool SelectFirst { get; set; } = true;
-    
-    private void SelectedIncomeChangedInternal(Income selectedItem)
+
+    private Select<Income, Income> _selectRef;
+
+    private IReadOnlyList<Income> _incomes;
+
+    private bool _loading;
+    private Income _selectedIncome;
+
+    protected override async Task OnInitializedAsync()
     {
-        SelectedIncome = selectedItem;
+        _loading = true;
+
+        _incomes = await _mediator.Send(new GetIncomesQuery());
+        SelectedIncome = _incomes.FirstOrDefault();
         
-        SelectedIncomeChanged.InvokeAsync(SelectedIncome);
+        _loading = false;
+    }
+
+    private async Task SelectedIncomeChangedInternal(Income income)
+    {
+        SelectedIncome = income;
+
+        await SelectedIncomeChanged.InvokeAsync();
     }
 }

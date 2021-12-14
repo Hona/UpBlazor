@@ -1,54 +1,52 @@
-﻿@inject ISavingsPlanRepository _savingsPlanRepository
+﻿@using UpBlazor.Application.Features.SavingsPlans
+@using UpBlazor.Application.Features.Up
+@inject IMediator _mediator
 
-<RepositoryWrapper @ref="_repoRef"
-                   TRepository="ISavingsPlanRepository"
-                   Action="x => x.GetAllByIncomeIdAsync(Income.Id)"
-                   TResponse="IReadOnlyList<SavingsPlan>"
-                   Context="income"
-                   ChildHandlesLoading="false">
-     <Title Level="3">Income</Title>
-     <Table DataSource="income" Loading="LoadingAggregate" Context="tableContext">
-          <Column Title="Name" @bind-Field="@tableContext.Name" Sortable/>
-          <Column Title="Exact" TData="decimal?" DataIndex="Amount.Exact" Format="$0.00" Sortable/>
-          <Column Title="Relative" TData="decimal?" DataIndex="Amount.Percent" Format="0%" Sortable/>
-          <SaverIdColumn Title="Saver" TableContext="tableContext" TTableContext="SavingsPlan"/>
-          <ActionColumn>
-               <Space>
-                    <SpaceItem>
-                         <Button Danger OnClick="async () => await DeleteAsync(tableContext)">Remove</Button>
-                    </SpaceItem>
-               </Space>
-          </ActionColumn>
-     </Table>
-</RepositoryWrapper>
+<Title Level="3">Income</Title>
+<Table DataSource="_savingsPlans" Loading="_loading">
+     <Column Title="Name" @bind-Field="@context.Name" Sortable/>
+     <Column Title="Exact" TData="decimal?" DataIndex="Amount.Exact" Format="$0.00" Sortable/>
+     <Column Title="Relative" TData="decimal?" DataIndex="Amount.Percent" Format="0%" Sortable/>
+     <SaverIdColumn Title="Saver" TableContext="context"  Accounts="_accounts" TTableContext="SavingsPlan"/>
+     <ActionColumn>
+          <Space>
+               <SpaceItem>
+                    <Button Danger OnClick="async () => await DeleteAsync(context)">Remove</Button>
+               </SpaceItem>
+          </Space>
+     </ActionColumn>
+</Table>
 
 @code
 {
-     [CascadingParameter(Name = CascadingConstants.UserIdWrapper)]
-     public string UserId { get; set; }
-
-     [CascadingParameter(Name = CascadingConstants.UpApiWrapper)]
-     public PaginatedDataResponse<AccountResource> Accounts { get; set; }
-
      [Parameter]
      public Income Income { get; set; }
 
-     public RepositoryWrapper<ISavingsPlanRepository, IReadOnlyList<SavingsPlan>> RepositoryWrapper => _repoRef;
-
      private bool _loading;
 
-     private bool LoadingAggregate => _loading || _repoRef.Loading;
+     private IReadOnlyList<SavingsPlan> _savingsPlans;
+     private IReadOnlyList<AccountResource> _accounts;
 
-     private RepositoryWrapper<ISavingsPlanRepository, IReadOnlyList<SavingsPlan>> _repoRef;
+     protected override async Task OnParametersSetAsync() => await ReloadAsync();
+
+     internal async Task ReloadAsync()
+     {
+          _loading = true;
+
+          _savingsPlans = await _mediator.Send(new GetSavingsPlansQuery(Income.Id));
+          _accounts = await _mediator.Send(new GetUpAccountsQuery());
+
+          _loading = false;
+     }
 
      private async Task DeleteAsync(SavingsPlan savingsPlan)
      {
           _loading = true;
 
-          await _savingsPlanRepository.DeleteAsync(savingsPlan);
+          await _mediator.Send(new DeleteSavingsPlanCommand(savingsPlan));
 
           _loading = false;
 
-          await _repoRef.ReloadAsync();
+          await ReloadAsync();
      }
 }

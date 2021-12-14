@@ -1,12 +1,10 @@
 ﻿@page "/budget/income"
 
-<UserIdWrapper>
-    <CreateIncome OnNewIncomeAsync="async () => await _incomeTable.RepositoryWrapper.ReloadAsync()"/>
-    
-    <Divider />
-    
-    <IncomeTable @ref="_incomeTable"/>
-</UserIdWrapper>
+<CreateIncome OnNewIncome="async () => await _incomeTable.ReloadAsync()"/>
+
+<Divider />
+
+<IncomeTable @ref="_incomeTable"/>
 
 @code
 {

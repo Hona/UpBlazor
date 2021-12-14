@@ -1,57 +1,62 @@
-﻿@using Microsoft.AspNetCore.Components
-@inject IGoalRepository _goalRepository
+﻿@using UpBlazor.Application.Features.Goals
+@using UpBlazor.Application.Features.Up
+@inject IMediator _mediator
 
-<RepositoryWrapper @ref="_repoRef"
-                   TRepository="IGoalRepository"
-                   Action="x => x.GetAllByUserIdAsync(UserId)"
-                   TResponse="IReadOnlyList<Goal>"
-                   Context="goals"
-                   ChildHandlesLoading="false">
+@if (_loading)
+{
+    <Spin />
+}
+else
+{
     <Title Level="3">Goals</Title>
-    <Table DataSource="goals" Loading="LoadingAggregate" Context="tableContext">
-        <Column Title="Name" @bind-Field="@tableContext.Name" Sortable/>
-        <Column Title="Amount"  @bind-Field="@tableContext.Amount" Format="$0.00" Sortable/>
-        <Column Title="Date" @bind-Field="@tableContext.Date" Format="dd/MM/yyyy" Sortable/>
-        <Column Title="Saver" @bind-Field="@tableContext.SaverId">
+    
+    <Table DataSource="_goals" Loading="_loading">
+        <Column Title="Name" @bind-Field="@context.Name" Sortable/>
+        <Column Title="Amount"  @bind-Field="@context.Amount" Format="$0.00" Sortable/>
+        <Column Title="Date" @bind-Field="@context.Date" Format="dd/MM/yyyy" Sortable/>
+        <Column Title="Saver" @bind-Field="@context.SaverId">
             @{
-                var saver = Accounts.Data.FirstOrDefault(x => x.Id == tableContext.SaverId);
+                var saver = _accounts.FirstOrDefault(x => x.Id == context.SaverId);
             }
             <span>@(saver?.Attributes.DisplayName ?? "N/A") ($@(saver?.Attributes.Balance.Value ?? "N/A"))</span>
         </Column>
         <ActionColumn>
             <Space>
                 <SpaceItem>
-                    <Button Danger OnClick="async () => await DeleteAsync(tableContext)">Remove</Button>
+                    <Button Danger OnClick="async () => await DeleteAsync(context)">Remove</Button>
                 </SpaceItem>
             </Space>
         </ActionColumn>
     </Table>
-</RepositoryWrapper>
+}
 
 @code
 {
-    [CascadingParameter(Name = CascadingConstants.UserIdWrapper)]
-    public string UserId { get; set; }
-    
-    [CascadingParameter(Name = CascadingConstants.UpApiWrapper)]
-    public PaginatedDataResponse<AccountResource> Accounts { get; set; }
-
-    public RepositoryWrapper<IGoalRepository, IReadOnlyList<Goal>> RepositoryWrapper => _repoRef;
-    
     private bool _loading;
 
-    private bool LoadingAggregate => _loading ? _loading : _repoRef.Loading;
-    
-    private RepositoryWrapper<IGoalRepository, IReadOnlyList<Goal>> _repoRef;
-    
-    private async Task DeleteAsync(Goal income)
+    private IReadOnlyList<Goal> _goals;
+    private IReadOnlyList<AccountResource> _accounts;
+
+    protected override async Task OnInitializedAsync() => await ReloadAsync();
+
+    internal async Task ReloadAsync()
     {
         _loading = true;
 
-        await _goalRepository.DeleteAsync(income);
+        _goals = await _mediator.Send(new GetGoalsQuery());
+        _accounts = await _mediator.Send(new GetUpAccountsQuery());
+        
+        _loading = false;
+    }
+    
+    private async Task DeleteAsync(Goal goal)
+    {
+        _loading = true;
+
+        await _mediator.Send(new DeleteGoalCommand(goal));
         
         _loading = false;
 
-        await _repoRef.ReloadAsync();
+        await ReloadAsync();
     }
 }

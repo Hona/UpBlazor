@@ -1,27 +1,28 @@
 ﻿@using UpBlazor.Core.Models.Enums
 @using UpBlazor.Web.Pages.Insights
+@using UpBlazor.Application.Features.RecurringExpenses
+@using UpBlazor.Application.Features.Expenses
+@using Marten
 
-@inject IExpenseRepository _expenseRepository
-@inject IRecurringExpenseRepository _recurringExpenseRepository
+@inject IMediator _mediator
 
 <Card Title="New Expense">
     <Form Model="_request" 
           LabelColSpan="4"
           WrapperColSpan="20"
-          OnFinish="async () => await OnFormFinishAsync(UserId)"
-          Loading="_loading"
-          Context="formContext">
+          OnFinish="async () => await OnFormFinishAsync()"
+          Loading="_loading">
         <FormItem>
-            <Input DebounceMilliseconds="int.MaxValue" @bind-Value="@formContext.Name" />
+            <Input DebounceMilliseconds="int.MaxValue" @bind-Value="@context.Name" />
         </FormItem>
         <FormItem Label="Cost">
             <InputGroup>
-                <MoneyInput @bind-Amount="@formContext.Amount"/>
+                <MoneyInput @bind-Amount="@context.Amount"/>
             </InputGroup>
         </FormItem>
         <FormItem Label="Source">
             <InputGroup>
-                <ExpenseSourceInput @bind-Value="formContext.ExpenseSource"
+                <ExpenseSourceInput @bind-Value="context.ExpenseSource"
                                     @ref="_expenseSourceInput"/>
             </InputGroup>
         </FormItem>
@@ -36,16 +37,16 @@
         else
         {
             <FormItem Label="@DateLabel">
-                <DatePicker @bind-Value="@formContext.PaidByDate" DefaultValue="DateTime.Now"/>
+                <DatePicker @bind-Value="@context.PaidByDate" DefaultValue="DateTime.Now"/>
             </FormItem>
             
             <FormItem Label="Regular Payments">
                 <InputGroup>
-                    <AntDesign.Checkbox Style="padding-right: 1rem" @bind-Value="formContext.RegularPayments" OnChange="OnRegularPaymentEnabledChange"/>
-                    @if (formContext.RegularPayments)
+                    <AntDesign.Checkbox Style="padding-right: 1rem" @bind-Value="context.RegularPayments" OnChange="OnRegularPaymentEnabledChange"/>
+                    @if (context.RegularPayments)
                     {
-                        <AntDesign.InputNumber Disabled="!_request.RegularPayments" Style="min-width: 7rem" TValue="int?" @bind-Value="@formContext.IntervalUnits" Min="1" Step="1" DefaultValue="1"/>
-                        <EnumSelect TValue="Interval" Placeholder="Interval" Disabled="!_request.RegularPayments" Style="min-width: 9rem" @bind-Value="formContext.Interval"/>
+                        <AntDesign.InputNumber Disabled="!_request.RegularPayments" Style="min-width: 7rem" TValue="int?" @bind-Value="@context.IntervalUnits" Min="1" Step="1" DefaultValue="1"/>
+                        <EnumSelect TValue="Interval" Placeholder="Interval" Disabled="!_request.RegularPayments" Style="min-width: 9rem" @bind-Value="context.Interval"/>
                     }
                 </InputGroup>
             </FormItem>
@@ -62,11 +63,8 @@
 
 @code
 {
-    [CascadingParameter(Name = CascadingConstants.UserIdWrapper)]
-    public string UserId { get; set; }
-    
     [Parameter]
-    public Func<Task> OnNewExpenseAsync { get; set; }
+    public EventCallback OnNewExpense { get; set; }
     
     private ExpenseRequest _request = new();
 
@@ -76,7 +74,7 @@
 
     private ExpenseSourceInput _expenseSourceInput;
 
-    private async Task OnFormFinishAsync(string currentUserId)
+    private async Task OnFormFinishAsync()
     {
         _loading = true;
 
@@ -91,40 +89,23 @@
             {
                 throw new Exception("This path shouldn't be possible");
             }
-            
-            await _recurringExpenseRepository.AddAsync(new RecurringExpense
-            {
-                Name = _request.Name,
-                Interval = _request.Interval.Value,
-                IntervalUnits = _request.IntervalUnits.Value,
-                Money = _request.Amount,
-                StartDate = _request.PaidByDate,
-                UserId = currentUserId,
-                FromSaverId = _expenseSourceInput.Value.SaverId
-            });
+
+            await _mediator.Send(new CreateRecurringExpenseCommand(_request.Name, _request.Interval.Value, _request.IntervalUnits.Value, _request.Amount, _request.PaidByDate, _expenseSourceInput.Value.SaverId));
         }
         else
         {
-            await _expenseRepository.AddAsync(new Expense
-            {
-                Name = _request.Name,
-                UserId = currentUserId,
-                Money = _request.Amount,
-                PaidByDate = _request.PaidByDate,
-                FromIncomeId = _expenseSourceInput.Value.IncomeId,
-                FromSaverId = _expenseSourceInput.Value.SaverId
-            });
+            await _mediator.Send(new CreateExpenseCommand(_request.Name, _request.Amount, _request.PaidByDate, _expenseSourceInput.Value.IncomeId, _expenseSourceInput.Value.SaverId));
         }
 
-        _request = new();
+        _request = new ExpenseRequest();
 
         _expenseSourceInput.Reset();
 
         _loading = false;
 
-        if (OnNewExpenseAsync != null)
+        if (OnNewExpense.HasDelegate)
         {
-            await OnNewExpenseAsync.Invoke();
+            await OnNewExpense.InvokeAsync();
         }
     }
 

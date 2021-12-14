@@ -1,4 +1,4 @@
-﻿@typeparam TTableContext
+﻿@typeparam TTableContext where TTableContext : class, IIncomeId
 
 <Column Title="@Title" @bind-Field="@TableContext.InterfaceIncomeId">
     @{
@@ -9,12 +9,12 @@
 
 @code
 {
-    [CascadingParameter(Name = CascadingConstants.RepositoryWrapper)]
-    public IReadOnlyList<Income> Incomes { get; set; }
-
     [Parameter]
     public TTableContext TableContext { get; set; }
 
     [Parameter]
     public string Title { get; set; }
+    
+    [Parameter]
+    public IReadOnlyList<Income> Incomes { get; set; }
 }

@@ -12,6 +12,7 @@ namespace UpBlazor.Application.Services
         Task<string> GetUserIdAsync();
         Task<IEnumerable<Claim>> GetClaimsAsync();
         Task<string> GetGivenNameAsync();
+        public bool IsImpersonating { get; }
         void Impersonate(string userId);
         void ResetImpersonation();
     }

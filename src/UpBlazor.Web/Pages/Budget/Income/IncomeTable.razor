@@ -1,49 +1,55 @@
-﻿@inject IIncomeRepository _incomeRepository
+﻿@using UpBlazor.Application.Features.Incomes
+@inject IMediator _mediator
 
-<RepositoryWrapper @ref="_repoRef"
-                   TRepository="IIncomeRepository"
-                   Action="x => x.GetAllByUserIdAsync(UserId)"
-                   TResponse="IReadOnlyList<Income>"
-                   Context="income"
-                   ChildHandlesLoading="false">
+@if (_loading)
+{
+    <Spin />
+}
+else
+{
     <Title Level="3">Income</Title>
-    <Table DataSource="income" Loading="LoadingAggregate" Context="tableContext">
-        <Column Title="Name" @bind-Field="@tableContext.Name" Sortable/>
-        <Column Title="Amount" @bind-Field="tableContext.ExactMoney" Format="$0.00" Sortable/>
-        <Column Title="Start Date" @bind-Field="@tableContext.StartDate" Format="dd/MM/yyyy" Sortable/>
-        <Column Title="Interval Units" @bind-Field="@tableContext.IntervalUnits" Sortable/>
-        <Column Title="Interval" @bind-Field="@tableContext.Interval" Sortable/>
+    
+    <Table DataSource="_incomes">
+        <Column Title="Name" @bind-Field="@context.Name" Sortable/>
+        <Column Title="Amount" @bind-Field="context.ExactMoney" Format="$0.00" Sortable/>
+        <Column Title="Start Date" @bind-Field="@context.StartDate" Format="dd/MM/yyyy" Sortable/>
+        <Column Title="Interval Units" @bind-Field="@context.IntervalUnits" Sortable/>
+        <Column Title="Interval" @bind-Field="@context.Interval" Sortable/>
         <ActionColumn>
             <Space>
                 <SpaceItem>
-                    <Button Danger OnClick="async () => await DeleteAsync(tableContext)">Remove</Button>
+                    <Button Danger OnClick="async () => await DeleteAsync(context)">Remove</Button>
                 </SpaceItem>
             </Space>
         </ActionColumn>
     </Table>
-</RepositoryWrapper>
+}
 
 @code
 {
-    [CascadingParameter(Name = CascadingConstants.UserIdWrapper)]
-    public string UserId { get; set; }
-
-    public RepositoryWrapper<IIncomeRepository, IReadOnlyList<Income>> RepositoryWrapper => _repoRef;
-    
     private bool _loading;
 
-    private bool LoadingAggregate => _loading ? _loading : _repoRef.Loading;
-    
-    private RepositoryWrapper<IIncomeRepository, IReadOnlyList<Income>> _repoRef;
-    
+    private IReadOnlyList<Income> _incomes;
+
+    protected override async Task OnInitializedAsync() => await ReloadAsync();
+
+    internal async Task ReloadAsync()
+    {
+        _loading = true;
+
+        _incomes = await _mediator.Send(new GetIncomesQuery());
+        
+        _loading = false;
+    }
+
     private async Task DeleteAsync(Income income)
     {
         _loading = true;
 
-        await _incomeRepository.DeleteAsync(income);
+        await _mediator.Send(new DeleteIncomeCommand(income));
         
         _loading = false;
 
-        await _repoRef.ReloadAsync();
+        await ReloadAsync();
     }
 }

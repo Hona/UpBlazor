@@ -13,9 +13,9 @@ services:
     volumes:
       - ./config/appsettings.json:/app/appsettings.json
     ports:
-      - "9994:80"
+      - 5001:80
   postgres:
-    image: postgres
+    image: postgres:latest
     container_name: UpBlazorPostgres
     environment:
       - POSTGRES_USER=okr

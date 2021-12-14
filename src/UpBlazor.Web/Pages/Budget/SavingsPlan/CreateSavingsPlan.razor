@@ -1,12 +1,13 @@
 ﻿@using UpBlazor.Core.Models.Enums
+@using UpBlazor.Application.Features.SavingsPlans
 
-@inject ISavingsPlanRepository _savingsPlanRepository
+@inject IMediator _mediator
 
 <Card Title="New Savings Plan">
     <Form Model="_request"
           LabelColSpan="4"
           WrapperColSpan="20"
-          OnFinish="async () => await OnFormFinishAsync(UserId)"
+          OnFinish="async () => await OnFormFinishAsync()"
           Loading="_loading"
           Context="formContext">
         <FormItem Label="Name">
@@ -30,42 +31,28 @@
 
 @code
 {
-    [CascadingParameter(Name = CascadingConstants.UserIdWrapper)]
-    public string UserId { get; set; }
-
     [Parameter]
     public Income Income { get; set; }
     
     [Parameter]
-    public Func<Task> OnNewSavingsPlanAsync { get; set; }
+    public EventCallback OnNewSavingsPlan { get; set; }
     
     private SavingsPlanRequest _request = new();
 
     private bool _loading;
     
-    private async Task OnFormFinishAsync(string currentUserId)
+    private async Task OnFormFinishAsync()
     {
         _loading = true;
-        
-        if (_request.Amount.Percent.HasValue)
-        {
-            _request.Amount.Percent /= 100;
-        }
 
-        await _savingsPlanRepository.AddAsync(new SavingsPlan
-        {
-            Name = _request.Name,
-            IncomeId = Income.Id,
-            SaverId = _request.SaverId,
-            Amount = _request.Amount
-        });
+        await _mediator.Send(new CreateSavingsPlanCommand(Income.Id, _request.Name, _request.SaverId, _request.Amount));
         
-        _request = new();
+        _request = new SavingsPlanRequest();
         _loading = false;
 
-        if (OnNewSavingsPlanAsync != null)
+        if (OnNewSavingsPlan.HasDelegate)
         {
-            await OnNewSavingsPlanAsync.Invoke();
+            await OnNewSavingsPlan.InvokeAsync();
         }
     }
 

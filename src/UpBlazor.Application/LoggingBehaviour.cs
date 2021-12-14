@@ -39,7 +39,7 @@ public class LoggingBehaviour<TRequest, TResponse> : IPipelineBehavior<TRequest,
         var response = await next();
         
         // Response
-        _logger.LogInformation("Handled {Response} in {Delta}ms", typeof(TResponse).Name, (DateTime.Now - startTime).TotalMilliseconds.ToString("F2"));
+        _logger.LogInformation("Handled {Request} {Response} in {Delta}ms", typeof(TRequest).Name, typeof(TResponse).Name, (DateTime.Now - startTime).TotalMilliseconds.ToString("F2"));
         
         return response;
     }

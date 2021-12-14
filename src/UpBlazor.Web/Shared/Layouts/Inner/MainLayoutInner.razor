@@ -96,6 +96,10 @@
                                   RouterMatch="NavLinkMatch.All" RouterLink="/admin/notifications">
                             <span>Notifications</span>
                         </MenuItem>
+                        <MenuItem OnClick='() => _navigationManager.NavigateTo("/admin/component-explorer")'
+                                  RouterMatch="NavLinkMatch.All" RouterLink="/admin/component-explorer">
+                            <span>Component Explorer</span>
+                        </MenuItem>
                     </ChildContent>
                 </SubMenu>            
                 </RequireAdmin>

@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components.Authorization;
 using Up.NET.Api;
+using UpBlazor.Application.Exceptions;
 using UpBlazor.Core.Models.Mock;
 using UpBlazor.Core.Repositories;
 
@@ -35,9 +36,9 @@ namespace UpBlazor.Application.Services
                 return _upApi;
             }
 
-            var userId = await GetUserIdAsync();
+            var userId = await GetUserIdAsync(cancellationToken);
 
-            var userToken = await _upUserTokenRepository.GetByUserIdAsync(userId);
+            var userToken = await _upUserTokenRepository.GetByUserIdAsync(userId, cancellationToken);
 
             if (!string.IsNullOrWhiteSpace(overrideToken) && userToken != null)
             {
@@ -46,17 +47,12 @@ namespace UpBlazor.Application.Services
 
             var accessToken = userToken?.AccessToken ?? overrideToken;
 
-            switch (accessToken)
+            _upApi = accessToken switch
             {
-                case null:
-                    return null;
-                case MockUpApi.MockUpToken:
-                    _upApi = new MockUpApi();
-                    break;
-                default:
-                    _upApi = new UpApi(accessToken);
-                    break;
-            }
+                null => throw new UpApiAccessTokenNotSetException(),
+                MockUpApi.MockUpToken => new MockUpApi(),
+                _ => new UpApi(accessToken)
+            };
 
             return _upApi;
         }

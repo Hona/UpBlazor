@@ -1,5 +1,7 @@
 ﻿@using UpBlazor.Application.Features.Up
+@using UpBlazor.Application.Exceptions
 @inject IMediator _mediator
+@inject ICurrentUserService _currentUserService
 
 <div style="display: flex; justify-content: center; align-items: center; width: 100%">
     @if (_loading)
@@ -10,9 +12,13 @@
     {
         <AuthorizeView>
             <Authorized>
-                @if (_response is {Success: false })
+                @if (_response is { Success: false })
                 {
                     <span>❌</span>
+                }
+                else if (_response is null)
+                {
+                    /* No access token set - this is handled by the error boundary; should throw an exception */
                 }
                 else
                 {
@@ -34,6 +40,16 @@
     {
         _loading = true;
 
+        try
+        {
+            var upApi = await _currentUserService.GetApiAsync();
+        }
+        catch (UpApiAccessTokenNotSetException)
+        {
+            _loading = false;
+            return;
+        }
+        
         _response = await _mediator.Send(new GetUpPingQuery());
         
         _loading = false;

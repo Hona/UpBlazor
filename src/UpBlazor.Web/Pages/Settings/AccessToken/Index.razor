@@ -1,5 +1,6 @@
 ﻿@page "/settings/up-access-token"
 @using UpBlazor.Application.Features.Up
+@using UpBlazor.Application.Exceptions
 
 @inject IMediator _mediator
 
@@ -85,7 +86,14 @@ else
     {
         _loading = true;
 
-        _pingResponse = await _mediator.Send(new GetUpPingQuery(true));
+        try
+        {
+            _pingResponse = await _mediator.Send(new GetUpPingQuery(true));
+        }
+        catch (UpApiAccessTokenNotSetException)
+        {
+            _pingResponse = null;
+        }
 
         _loading = false;
     }

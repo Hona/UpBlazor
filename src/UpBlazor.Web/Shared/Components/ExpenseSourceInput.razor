@@ -2,10 +2,10 @@
 
 <Space>
     <SpaceItem>
-        <IncomeSelector @bind-SelectedIncome="SelectedIncome"/>
+        <IncomeSelector @bind-SelectedIncome="SelectedIncome" SelectFirst/>
     </SpaceItem>
     <SpaceItem>
-        <SaverSelector @bind-SelectedSaver="SelectedSaver" />
+        <SaverSelector @bind-SelectedSaver="SelectedSaver"/>
     </SpaceItem>
 </Space>
 
@@ -36,10 +36,10 @@
                 StateHasChanged();
                 return;
             }
-            
+
             _selectedIncome = null;
             Value.IncomeId = null;
-            
+
             InvokeValueChanged();
             StateHasChanged();
         }
@@ -53,17 +53,16 @@
             _selectedIncome = value;
             Value.IncomeId = value?.Id;
 
-            
             if (value == null)
             {
                 InvokeValueChanged();
                 StateHasChanged();
                 return;
             }
-            
+
             _selectedSaver = null;
             Value.SaverId = null;
-            
+
             InvokeValueChanged();
             StateHasChanged();
         }

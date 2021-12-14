@@ -3,19 +3,23 @@
 
 <Select DataSource="_accounts" TItem="AccountResource" TItemValue="AccountResource"
         LabelName="@($"{nameof(AccountResource.Attributes)}.{nameof(AccountResource.Attributes.DisplayName)}")"
-        @bind-Value="SelectedSaver"
-        OnSelectedItemChanged="SelectedSaverChangedInternal"
+        @bind-Value="BoundContainer"
         Placeholder="Select a saver..."
         Loading="_loading"/>
 
 @code
 {
-    
     [Parameter]
     public EventCallback<AccountResource> SelectedSaverChanged { get; set; }
-    
+
     [Parameter]
     public AccountResource SelectedSaver { get; set; }
+
+    private AccountResource BoundContainer
+    {
+        get => SelectedSaver;
+        set => SelectedSaverChanged.InvokeAsync(value);
+    }
 
     private IReadOnlyList<AccountResource> _accounts;
 
@@ -28,12 +32,5 @@
         _accounts = await _mediator.Send(new GetUpAccountsQuery());
 
         _loading = false;
-    }
-
-    private void SelectedSaverChangedInternal(AccountResource selectedItem)
-    {
-        SelectedSaver = selectedItem;
-
-        SelectedSaverChanged.InvokeAsync(SelectedSaver);
     }
 }

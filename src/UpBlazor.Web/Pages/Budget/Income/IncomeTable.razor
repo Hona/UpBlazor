@@ -33,13 +33,23 @@ else
 
     protected override async Task OnInitializedAsync() => await ReloadAsync();
 
-    internal async Task ReloadAsync()
+    internal async Task ReloadAsync(bool forceReload = false)
     {
         _loading = true;
+        
+        if (forceReload)
+        {
+            StateHasChanged();
+        }
 
         _incomes = await _mediator.Send(new GetIncomesQuery());
         
         _loading = false;
+        
+        if (forceReload)
+        {
+            StateHasChanged();
+        }
     }
 
     private async Task DeleteAsync(Income income)

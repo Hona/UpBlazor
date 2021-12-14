@@ -1,4 +1,14 @@
-﻿<ExpenseSourceInput @bind-Value="_model"/>
+﻿<p>
+    <ExpenseSourceInput @bind-Value="_model"/>
+</p>
+
+<p>
+    Income: @(_model.IncomeId?.ToString())
+</p>
+
+<p>
+    Saver: @(_model.SaverId)
+</p>
 
 @code
 {

@@ -29,14 +29,24 @@
 
      protected override async Task OnParametersSetAsync() => await ReloadAsync();
 
-     internal async Task ReloadAsync()
+     internal async Task ReloadAsync(bool forceReload = false)
      {
           _loading = true;
+          
+          if (forceReload)
+          {
+               StateHasChanged();
+          }
 
           _savingsPlans = await _mediator.Send(new GetSavingsPlansQuery(Income.Id));
           _accounts = await _mediator.Send(new GetUpAccountsQuery());
 
           _loading = false;
+          
+          if (forceReload)
+          {
+               StateHasChanged();
+          }
      }
 
      private async Task DeleteAsync(SavingsPlan savingsPlan)

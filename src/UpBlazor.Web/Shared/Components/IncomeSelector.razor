@@ -8,52 +8,43 @@
 else
 {
     <Select DataSource="_incomes"
-            @bind-Value="@SelectedIncome"
-            Placeholder="Select an income..."
-            @ref="@_selectRef">
+            @bind-Value="BoundContainer"
+            Placeholder="Select an income...">
     </Select>
 }
 
 @code
 {
     [Parameter]
-    public Income SelectedIncome
-    {
-        get => _selectedIncome;
-        set
-        {
-            _selectedIncome = value;
-            InvokeAsync(async () => await SelectedIncomeChanged.InvokeAsync(_selectedIncome));
-        }
-    }
+    public Income SelectedIncome { get; set; }
 
     [Parameter]
     public EventCallback<Income> SelectedIncomeChanged { get; set; }
 
     [Parameter]
     public bool SelectFirst { get; set; } = true;
-
-    private Select<Income, Income> _selectRef;
-
+    
     private IReadOnlyList<Income> _incomes;
 
     private bool _loading;
-    private Income _selectedIncome;
+
+    private Income BoundContainer
+    {
+        get => SelectedIncome;
+        set => SelectedIncomeChanged.InvokeAsync(value);
+    }
 
     protected override async Task OnInitializedAsync()
     {
         _loading = true;
 
         _incomes = await _mediator.Send(new GetIncomesQuery());
-        SelectedIncome = _incomes.FirstOrDefault();
+        
+        if (SelectFirst)
+        {
+            BoundContainer = _incomes.FirstOrDefault();
+        }
         
         _loading = false;
-    }
-
-    private async Task SelectedIncomeChangedInternal(Income income)
-    {
-        SelectedIncome = income;
-
-        await SelectedIncomeChanged.InvokeAsync();
     }
 }

@@ -2,7 +2,7 @@
 
 <Title Level="3">Savings Plan</Title>
 
-<IncomeSelector SelectedIncomeChanged="Callback"/>
+<IncomeSelector SelectedIncomeChanged="OnSelectedIncomeChanged"/>
 
 <Divider />
 
@@ -12,8 +12,8 @@
 {
     private Income _income;
     
-    private void Callback(Income obj)
+    private void OnSelectedIncomeChanged(Income income)
     {
-        _income = obj;
+        _income = income;
     }
 }

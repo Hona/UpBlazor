@@ -17,7 +17,7 @@
 
     private async Task OnNewExpenseAsync()
     {
-        await _expensesTable.ReloadAsync();
-        await _recurringExpensesTable.ReloadAsync();
+        await _expensesTable.ReloadAsync(true);
+        await _recurringExpensesTable.ReloadAsync(true);
     }
 }

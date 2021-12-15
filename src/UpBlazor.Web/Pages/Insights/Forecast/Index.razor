@@ -1,6 +1,7 @@
 ﻿@page "/insights/forecast"
 @using UpBlazor.Application.Features.Forecast
 @using UpBlazor.Application.Features.Normalized
+@using AntDesign.Charts
 
 @inject IMediator _mediator
 
@@ -46,7 +47,7 @@ else
         _loading = true;
 
         // TODO: Let the user input this
-        var totalDays = 365;
+        var totalDays = 365 * 2;
 
         await _mediator.Send(new UpdateNormalizedAggregateCommand());
         
@@ -57,10 +58,33 @@ else
         _loading = false;
     }
     
-    private readonly AntDesign.Charts.StackedAreaConfig _forecastConfig = new()
+    private readonly StackedAreaConfig _forecastConfig = new()
     {
         XField = "cycle",
         YField = "balance",
-        StackField = "accountName"
+        StackField = "accountName",
+        XAxis = new ValueCatTimeAxis
+        {
+            Visible = true,
+            Label = new BaseAxisLabel
+            {
+                Visible = true,
+                AutoHide = true,
+                AutoRotate = true,
+                Rotate = -1,
+            }
+        },
+        Interactions = new[]
+        {
+            new Interaction
+            {
+                Type = "slider",
+                Cfg = new
+                {
+                    start = 0,
+                    end = 0.4
+                }
+            }
+        }
     };
 }

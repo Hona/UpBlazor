@@ -9,7 +9,7 @@
            Breakpoint="BreakpointType.Md" 
            OnBreakpoint="collapsed => _siderCollapsed = collapsed"
     >
-        <a target="_blank" @onclick='() => _navigationManager.NavigateTo("/")' style="display: flex; justify-content: center; align-items: flex-end; padding: 0 0.75rem">
+        <a target="_blank" @onclick='() => _navigationManager.NavigateTo("/home")' style="display: flex; justify-content: center; align-items: flex-end; padding: 0 0.75rem">
             <Image Preview="false" Src="/img/up-logo-light-transparent-bg.svg"/>
             @if (!_siderCollapsed)
             {
@@ -17,6 +17,11 @@
             }
         </a>
         <Menu Theme="MenuTheme.Dark" Mode="MenuMode.Inline">
+            <MenuItem OnClick='() => _navigationManager.NavigateTo("/")'
+                      RouterMatch="NavLinkMatch.All" RouterLink="/">
+                <Icon Type="home" Theme="outline"/>
+                <span>Landing Page</span>
+            </MenuItem>
             <SubMenu>
                 <TitleTemplate>
                     <Icon Type="dollar" Theme="outline"/>

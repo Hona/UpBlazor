@@ -2,6 +2,71 @@ body {
     font-family: Circular, Roboto, Helvetica, Arial, sans-serif;
 }
 
+.logo {
+    height: 100%;
+}
+
+.footer-icon {
+    font-size: 24px;
+    padding-right: 8px;
+}
+
+.footer-space a {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.landing-banner-card {
+    width: calc(100% - 128px); 
+    margin-top: -128px;
+}
+
+.banner {
+    width: 100%;
+    height: calc(100% - 128px);
+    
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.banner-img-slider {
+    aspect-ratio: 16/9;
+    width: 50vw;
+}
+
+@media (max-width: 900px) {
+    .banner {
+        flex-wrap: wrap;
+    }
+
+    .banner-img-slider {
+        width: 75vw;
+    }
+}
+
+@media (max-width: 700px) {
+    .landing-banner-card {
+        width: calc(100% - 48px);
+        margin-top: -128px;
+    }
+}
+
+.features-container .ant-card {
+    max-width: 350px;
+}
+
+.features-container .ant-space-item {
+    padding: 24px;
+}
+
+@media (max-height: 973px) {
+    .features-container .ant-space-item{
+        margin-right: 0 !important;
+    }
+}
+
 #upblazor-splash {
     width: 100vw; 
     height: 100vh; 

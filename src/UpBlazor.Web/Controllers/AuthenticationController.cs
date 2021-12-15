@@ -12,11 +12,11 @@ namespace UpBlazor.Web.Controllers
         private async Task InternalSignoutAsync() => await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
 
         [HttpGet]
-        public IActionResult Signin([FromQuery] string @return = "/")
+        public IActionResult Signin([FromQuery] string @return = "/home")
         {
             if (HttpContext.User.Identity is { IsAuthenticated: true })
             {
-                return LocalRedirect(@return);
+                return LocalRedirect(@return ?? "/home");
             }
 
             return Challenge();

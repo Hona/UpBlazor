@@ -32,4 +32,11 @@
       <ProjectReference Include="..\UpBlazor.Infrastructure\UpBlazor.Infrastructure.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Content Include="wwwroot\.well-known\microsoft-identity-association.json">
+        <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+        <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+      </Content>
+    </ItemGroup>
+
 </Project>

@@ -40,11 +40,11 @@
  - [ ] 📈 Insights + analytics
 
      - [x] Show a breakdown of how the calculations work (relative -> absolute), rolling totals, etc
-     - [ ] Forecast graphs
+     - [x] Forecast graphs
 
         - [x] Income (in each Up account) - account for all income streams
         - [x] Expenses (aggregate recurring and one offs)
-        - [ ] Net Balances (Income - Expenses, in each account)
+        - [x] Net Balances (Income - Expenses, in each account)
 
      - [ ] Suggested Budgetting
      - [ ] Daily Breakdown

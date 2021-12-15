@@ -49,6 +49,11 @@
             _loading = false;
             return;
         }
+        catch (InvalidOperationException e)
+        {
+            // User is not logged in - this isn't valid here
+            throw new InvalidOperationException("Tried loading the footer when not logged in", e);
+        }
         
         _response = await _mediator.Send(new GetUpPingQuery());
         

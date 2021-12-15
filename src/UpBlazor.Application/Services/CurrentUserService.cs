@@ -94,7 +94,7 @@ namespace UpBlazor.Application.Services
         {
             var claims = await GetClaimsAsync(cancellationToken);
 
-            return claims.FirstOrDefault(x => x.Type == ClaimTypes.GivenName)?.Value;
+            return claims?.FirstOrDefault(x => x.Type == ClaimTypes.GivenName)?.Value;
         }
 
         public bool IsImpersonating => !string.IsNullOrWhiteSpace(_impersonationUserId);

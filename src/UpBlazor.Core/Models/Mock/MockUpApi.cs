@@ -34,8 +34,8 @@ namespace UpBlazor.Core.Models.Mock
                             CreatedAt = DateTime.Now.Subtract(TimeSpan.FromDays(50)),
                             Balance = new MoneyObject
                             {
-                                Value = 1000.ToString(),
-                                ValueInBaseUnits = 1000 * 100
+                                Value = 100000.ToString(),
+                                ValueInBaseUnits = 100000 * 100
                             }
                         }
                     },

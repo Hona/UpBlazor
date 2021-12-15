@@ -153,7 +153,7 @@ public class GetIncomePlannerQueryHandler : IRequestHandler<GetIncomePlannerQuer
 
             if (incomeExpense.Money.Percent.HasValue)
             {
-                output.UnbudgetedMoney -= incomeExpense.Money.Exact.Value * incomeExpense.Money.Percent.Value;
+                output.UnbudgetedMoney -= request.Income.ExactMoney * incomeExpense.Money.Percent.Value;
 
                 output.IncomeExpenseSubTotals.Add(new SavingsPlanRunningTotal(incomeExpense, output.UnbudgetedMoney));
             }

@@ -59,6 +59,16 @@ public class GetExpenseForecastQueryHandler : IRequestHandler<GetExpenseForecast
                 Index = x,
                 ExpenseId = expense.Id
             }));
+            
+            output.AddRange(expenses.Where(x => x.Money.Percent.HasValue).Select(expense => new ForecastDto
+            {
+                balance = Math.Round(
+                    x * (normalizedAggregate.Incomes.First(x => x.IncomeId == expense.FromIncomeId).Amount * expense.Money.Percent.Value), 2),
+                cycle = now.AddDays(x).ToString("dd/MM/yyyy"),
+                accountName = expense.Name,
+                Index = x,
+                ExpenseId = expense.Id
+            }));
 
             return output;
         })

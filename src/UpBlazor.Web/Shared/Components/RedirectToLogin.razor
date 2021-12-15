@@ -1,6 +1,7 @@
 ﻿@inject NavigationManager _navigationManager
 
-@code {
+@code 
+{
     [CascadingParameter]
     private Task<AuthenticationState> AuthenticationStateTask { get; set; }
     
@@ -15,6 +16,6 @@
             return;
         }
         
-        _navigationManager.NavigateTo("/signin", true);
+        _navigationManager.NavigateTo($"/signin?return=/{_navigationManager.ToBaseRelativePath(_navigationManager.Uri)}", true);
     }
 }

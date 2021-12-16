@@ -1,11 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using System.Linq.Expressions;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Xml.Schema;
 using MediatR;
 using UpBlazor.Application.Services;
+using UpBlazor.Core.Helpers;
 using UpBlazor.Core.Models;
+using UpBlazor.Core.Models.Enums;
 using UpBlazor.Core.Repositories;
 
 namespace UpBlazor.Application.Features.Forecast;
@@ -18,62 +24,188 @@ public class GetExpenseForecastQueryHandler : IRequestHandler<GetExpenseForecast
     private readonly INormalizedAggregateRepository _normalizedAggregateRepository;
     private readonly IRecurringExpenseRepository _recurringExpenseRepository;
     private readonly IExpenseRepository _expenseRepository;
+    private readonly IIncomeRepository _incomeRepository;
+    private readonly IForecastService _forecastService;
+    private readonly IMediator _mediator;
 
-    public GetExpenseForecastQueryHandler(ICurrentUserService currentUserService, INormalizedAggregateRepository normalizedAggregateRepository, IRecurringExpenseRepository recurringExpenseRepository, IExpenseRepository expenseRepository)
+    public GetExpenseForecastQueryHandler(ICurrentUserService currentUserService, INormalizedAggregateRepository normalizedAggregateRepository, IRecurringExpenseRepository recurringExpenseRepository, IExpenseRepository expenseRepository, IIncomeRepository incomeRepository, IForecastService forecastService, IMediator mediator)
     {
         _currentUserService = currentUserService;
         _normalizedAggregateRepository = normalizedAggregateRepository;
         _recurringExpenseRepository = recurringExpenseRepository;
         _expenseRepository = expenseRepository;
+        _incomeRepository = incomeRepository;
+        _forecastService = forecastService;
+        _mediator = mediator;
     }
 
     public async Task<IReadOnlyList<ForecastDto>> Handle(GetExpenseForecastQuery request, CancellationToken cancellationToken)
     {
         var userId = await _currentUserService.GetUserIdAsync(cancellationToken);
-        
-        var normalizedAggregate = await _normalizedAggregateRepository.GetByUserIdAsync(userId, cancellationToken);
-        var recurringExpenses = await _recurringExpenseRepository.GetAllByUserIdAsync(userId, cancellationToken);
+
+        var incomes = await _incomeRepository.GetAllByUserIdAsync(userId, cancellationToken);
         var expenses = await _expenseRepository.GetAllByUserIdAsync(userId, cancellationToken);
+        var recurringExpenses = await _recurringExpenseRepository.GetAllByUserIdAsync(userId, cancellationToken);
 
-        var now = DateTime.Now.Date;
+        var rangeStart = DateTime.Now.Date;
+        var rangeEnd = rangeStart.AddDays(request.TotalDays);
 
-        var output = Enumerable.Range(0, request.TotalDays)
-            .SelectMany(x =>
+        var recurringExpenseCycleRanges = await _forecastService.GetRecurringExpenseCyclesInRangeAsync(rangeStart, rangeEnd, cancellationToken);
+        var incomeCycleRanges = await _forecastService.GetIncomeCyclesInRangeAsync(rangeStart, rangeEnd, cancellationToken);
+
+        var output = new Dictionary<DateOnly, List<ForecastDto>>();
+        for (var i = 0; i < request.TotalDays; i++)
         {
-            var output = new List<ForecastDto>(2 * request.TotalDays);
+            var currentDay = DateOnly.FromDateTime(rangeStart.AddDays(i));
 
-            output.AddRange(normalizedAggregate.RecurringExpenses.Select(normalizedRecurringExpense => new ForecastDto
-            {
-                balance = Math.Round(x * normalizedRecurringExpense.Amount, 2),
-                cycle = now.AddDays(x).ToString("dd/MM/yyyy"),
-                accountName = recurringExpenses.First(x => x.Id == normalizedRecurringExpense.RecurringExpenseId).Name,
-                Index = x,
-                RecurringExpenseId = normalizedRecurringExpense.RecurringExpenseId
-            }));
+            output[currentDay] = new List<ForecastDto>();
 
-            output.AddRange(expenses.Where(x => x.Money.Exact.HasValue).Select(expense => new ForecastDto
+            // Order by smallest interval -> biggest so we add duplicate items for longer intervals
+            foreach (var recurringExpense in recurringExpenses.OrderBy(x => x.Interval.ToTimeSpan(x.IntervalUnits)))
             {
-                balance = expense.PaidByDate < now.AddDays(x) && expense.PaidByDate >= now ? Math.Round(expense.Money.Exact.Value, 2) : 0,
-                cycle = now.AddDays(x).ToString("dd/MM/yyyy"),
-                accountName = expense.Name,
-                Index = x,
-                ExpenseId = expense.Id
-            }));
+                var cycleCollision = recurringExpenseCycleRanges[recurringExpense.Id].FirstOrDefault(x => x == currentDay);
+
+                if (cycleCollision == default)
+                {
+                    // Add the same as the last day - no change because the graph is at a smaller unit than the cycle
+
+                    if (!output.TryGetValue(currentDay.AddDays(-1), out var previousDayList))
+                    {
+                        output[currentDay].Add(new ForecastDto
+                        {
+                            balance = 0,
+                            Index = i,
+                            cycle = currentDay.ToString("dd/MM/yyyy"),
+                            accountName = recurringExpense.Name,
+                            RecurringExpenseId = recurringExpense.Id
+                        });
+                        
+                        continue;
+                    }
+                    
+                    var lastValue = previousDayList
+                        .FirstOrDefault(x => x.accountName == recurringExpense.Name);
+
+                    if (lastValue is not null)
+                    {
+                        output[currentDay].Add(new ForecastDto
+                        {
+                            balance = lastValue.balance,
+                            Index = i,
+                            cycle = currentDay.ToString("dd/MM/yyyy"),
+                            accountName = recurringExpense.Name,
+                            RecurringExpenseId = recurringExpense.Id
+                        });
+                    }
+                    
+                    continue;
+                }
+                
+                var expenseExact = recurringExpense.Money.Exact ?? throw new NotImplementedException(
+                    "Currently cannot calculate percent based saver recurring expenses");
+                
+                output[currentDay].Add(new ForecastDto
+                {
+                    cycle = currentDay.ToString("dd/MM/yyyy"),
+                    Index = i,
+                    accountName = recurringExpense.Name,
+                    balance = Math.Round(recurringExpenseCycleRanges[recurringExpense.Id].IndexOf(currentDay) * expenseExact, 2)
+                });
+            }
             
-            output.AddRange(expenses.Where(x => x.Money.Percent.HasValue).Select(expense => new ForecastDto
+            foreach (var expense in expenses)
             {
-                balance = Math.Round(
-                    x * (normalizedAggregate.Incomes.First(x => x.IncomeId == expense.FromIncomeId).Amount * expense.Money.Percent.Value), 2),
-                cycle = now.AddDays(x).ToString("dd/MM/yyyy"),
-                accountName = expense.Name,
-                Index = x,
-                ExpenseId = expense.Id
-            }));
+                if (expense.FromIncomeId is not null)
+                {
+                    var income = incomeCycleRanges.Keys.First(x => x == expense.FromIncomeId.Value);
+                    
+                    var cycleCollision = incomeCycleRanges[income]
+                        .FirstOrDefault(x => x == currentDay);
 
-            return output;
-        })
+                    if (cycleCollision == default)
+                    {
+                        // Add the same as the last day - no change because the graph is at a smaller unit than the cycle
+
+                        if (!output.TryGetValue(currentDay.AddDays(-1), out var previousDayList))
+                        {
+                            output[currentDay].Add(new ForecastDto
+                            {
+                                balance = 0,
+                                Index = i,
+                                cycle = currentDay.ToString("dd/MM/yyyy"),
+                                accountName = expense.Name,
+                                ExpenseId = expense.Id
+                            });
+                            
+                            continue;
+                        }
+                    
+                        var lastValue = previousDayList
+                            .FirstOrDefault(x => x.accountName == expense.Name);
+
+                        if (lastValue is not null)
+                        {
+                            output[currentDay].Add(new ForecastDto
+                            {
+                                balance = lastValue.balance,
+                                Index = i,
+                                cycle = currentDay.ToString("dd/MM/yyyy"),
+                                accountName = expense.Name,
+                                ExpenseId = expense.Id
+                            });
+                        }
+                    
+                        continue;
+                    }
+                    
+                    var expenseExact = expense.Money.Exact ?? expense.Money.Percent.Value * incomes.First(x => x.Id == income).ExactMoney;
+                
+                    output[currentDay].Add(new ForecastDto
+                    {
+                        cycle = currentDay.ToString("dd/MM/yyyy"),
+                        Index = i,
+                        accountName = expense.Name,
+                        balance = Math.Round(incomeCycleRanges[income].IndexOf(currentDay) * expenseExact, 2),
+                        ExpenseId = expense.Id
+                    });
+                }
+                
+                if (expense.FromSaverId is not null)
+                {
+                    if (currentDay < DateOnly.FromDateTime(expense.PaidByDate))
+                    {
+                        // Set as 0
+                        output[currentDay].Add(new ForecastDto
+                        {
+                            cycle = currentDay.ToString("dd/MM/yyyy"),
+                            Index = i,
+                            accountName = expense.Name,
+                            balance = 0,
+                            ExpenseId = expense.Id,
+                            SortPriority = -10
+                        });
+                    }
+                    else
+                    {
+                        // The total will always be the cost
+                        output[currentDay].Add(new ForecastDto
+                        {
+                            cycle = currentDay.ToString("dd/MM/yyyy"),
+                            Index = i,
+                            accountName = expense.Name,
+                            balance = expense.Money.Exact.Value,
+                            ExpenseId = expense.Id,
+                            SortPriority = -10
+                        });
+                    }
+                }
+            }
+        }
+        
+        return output
+            .SelectMany(x => x.Value)
+            .OrderByDescending(x => x.SortPriority)
             .ToList()
             .AsReadOnly();
-        return output;
     }
 }

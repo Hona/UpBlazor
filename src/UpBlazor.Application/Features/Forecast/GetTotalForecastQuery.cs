@@ -5,8 +5,13 @@ using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using Up.NET.Api.Accounts;
+using UpBlazor.Application.Features.Expenses;
+using UpBlazor.Application.Features.Incomes;
+using UpBlazor.Application.Features.Planner;
+using UpBlazor.Application.Features.RecurringExpenses;
 using UpBlazor.Application.Features.Up;
 using UpBlazor.Application.Services;
+using UpBlazor.Core.Models;
 using UpBlazor.Core.Repositories;
 
 namespace UpBlazor.Application.Features.Forecast;
@@ -21,8 +26,9 @@ public class GetTotalForecastQueryHandler : IRequestHandler<GetTotalForecastQuer
     private readonly ISavingsPlanRepository _savingsPlanRepository;
     private readonly IExpenseRepository _expenseRepository;
     private readonly IRecurringExpenseRepository _recurringExpenseRepository;
-
-    public GetTotalForecastQueryHandler(INormalizedAggregateRepository normalizedAggregateRepository, ICurrentUserService currentUserService, IMediator mediator, ISavingsPlanRepository savingsPlanRepository, IExpenseRepository expenseRepository, IRecurringExpenseRepository recurringExpenseRepository)
+    private readonly IForecastService _forecastService;
+    
+    public GetTotalForecastQueryHandler(INormalizedAggregateRepository normalizedAggregateRepository, ICurrentUserService currentUserService, IMediator mediator, ISavingsPlanRepository savingsPlanRepository, IExpenseRepository expenseRepository, IRecurringExpenseRepository recurringExpenseRepository, IForecastService forecastService)
     {
         _normalizedAggregateRepository = normalizedAggregateRepository;
         _currentUserService = currentUserService;
@@ -30,11 +36,136 @@ public class GetTotalForecastQueryHandler : IRequestHandler<GetTotalForecastQuer
         _savingsPlanRepository = savingsPlanRepository;
         _expenseRepository = expenseRepository;
         _recurringExpenseRepository = recurringExpenseRepository;
+        _forecastService = forecastService;
     }
 
     public async Task<IReadOnlyList<ForecastDto>> Handle(GetTotalForecastQuery request, CancellationToken cancellationToken)
     {
-        var userId = await _currentUserService.GetUserIdAsync(cancellationToken);
+        var accounts = await _mediator.Send(new GetUpAccountsQuery(), cancellationToken);
+        var incomes = await _mediator.Send(new GetIncomesQuery(), cancellationToken);
+        var recurringExpenses = await _mediator.Send(new GetRecurringExpensesQuery(), cancellationToken);
+        
+        var incomePlanners = new Dictionary<Guid, IncomePlannerDto>();
+        foreach (var income in incomes)
+        {
+            var incomePlanner = await _mediator.Send(new GetIncomePlannerQuery(income), cancellationToken);
+            
+            incomePlanners[income.Id] = incomePlanner;
+        }
+        
+        var rangeStart = DateTime.Now.Date;
+        var rangeEnd = rangeStart.AddDays(request.TotalDays);
+
+        var incomeCycles = await _forecastService.GetIncomeCyclesInRangeAsync(rangeStart, rangeEnd, cancellationToken);
+        var recurringExpenseCycles = await _forecastService.GetRecurringExpenseCyclesInRangeAsync(rangeStart, rangeEnd, cancellationToken);
+        var expenses = await _mediator.Send(new GetExpensesQuery(), cancellationToken);
+
+        var output = new Dictionary<DateOnly, List<ForecastDto>>();
+        for (var i = 0; i < request.TotalDays; i++)
+        {
+            var currentDay = DateOnly.FromDateTime(rangeStart.AddDays(i));
+
+            output[currentDay] = new List<ForecastDto>();
+
+            if (!output.TryGetValue(currentDay.AddDays(-1), out var yesterdaysBalances))
+            {
+                // No value - therefore we start with current balances
+                yesterdaysBalances = accounts
+                    .Select(x => new ForecastDto
+                    {
+                        UpAccountId = x.Id,
+                        balance = x.Attributes.Balance.ValueInBaseUnits / 100M,
+                        cycle = currentDay.ToString("dd/MM/yyyy"),
+                        accountName = x.Attributes.DisplayName,
+                        Index = i
+                    })
+                    .ToList();
+            }
+            
+            var todaysIncomes = incomeCycles
+                .Where(x => x.Value.Any(date => date == currentDay))
+                .Select(x => x.Key)
+                .ToList()
+                .AsReadOnly();
+
+            var todaysIncomeExpenses = new List<Expense>();
+            foreach (var todaysIncome in todaysIncomes)
+            {
+                var todaysIncomeExpensesScoped = expenses
+                    .Where(x => x.FromIncomeId.HasValue)
+                    .Where(x => x.FromIncomeId.Value == todaysIncome)
+                    .ToList()
+                    .AsReadOnly();
+                
+                todaysIncomeExpenses.AddRange(todaysIncomeExpensesScoped);
+            }
+
+            var todaysRecurringExpenses = recurringExpenseCycles
+                .Where(x => x.Value.Any(date => date == currentDay))
+                .Select(x => x.Key)
+                .ToList()
+                .AsReadOnly();
+            
+            var todaysExpensesFromSavers = expenses
+                .Where(x => !string.IsNullOrWhiteSpace(x.FromSaverId))
+                .Where(x => DateOnly.FromDateTime(x.PaidByDate) == currentDay)
+                .ToList()
+                .AsReadOnly();
+
+            foreach (var account in accounts)
+            {
+                var shouldTakeUnbudgetedMoney = accounts[0] == account;
+                
+                // Start with yesterday's balance
+                var balance = yesterdaysBalances.First(x => x.UpAccountId == account.Id);
+
+                // Then - add any incomes
+                foreach (var todaysIncome in todaysIncomes)
+                {
+                    var incomePlanner = incomePlanners[todaysIncome];
+
+                    balance.balance += incomePlanner.FinalBudget[account];
+
+                    if (shouldTakeUnbudgetedMoney)
+                    {
+                        balance.balance += incomePlanner.UnbudgetedMoney;
+                    }
+                }
+                
+                // Subtract any recurring expenses
+                foreach (var todaysRecurringExpense in todaysRecurringExpenses
+                             .Select(x => recurringExpenses.First(recurringExpense => recurringExpense.Id == x))
+                             .Where(x => x.SaverId == account.Id))
+                {
+                    balance.balance -= todaysRecurringExpense.Money.Exact ??
+                                       throw new NotImplementedException("Cannot do % off saver yet");
+                }
+                
+                // Subtract any one off expenses
+                foreach (var todaysExpenseFromSaver in todaysExpensesFromSavers
+                             .Where(x => x.FromSaverId == account.Id))
+                {
+                    balance.balance -= todaysExpenseFromSaver.Money.Exact ??
+                                       throw new NotImplementedException("Cannot do % off saver yet");
+                }
+                
+                output[currentDay].Add(new ForecastDto
+                {
+                    balance = Math.Round(balance.balance, 2),
+                    cycle = currentDay.ToString("dd/MM/yyyy"),
+                    accountName = account.Attributes.DisplayName,
+                    Index = i,
+                    UpAccountId = account.Id
+                });
+            }
+        }
+        
+        return output
+            .SelectMany(x => x.Value)
+            .ToList()
+            .AsReadOnly();
+
+        /*var userId = await _currentUserService.GetUserIdAsync(cancellationToken);
 
         var normalizedAggregate = await _normalizedAggregateRepository.GetByUserIdAsync(userId, cancellationToken);
         var savingsPlans = await _savingsPlanRepository.GetAllByUserIdAsync(userId, cancellationToken);
@@ -121,6 +252,6 @@ public class GetTotalForecastQueryHandler : IRequestHandler<GetTotalForecastQuer
         })
             .ToList()
             .AsReadOnly();
-        return output;
+        return output;*/
     }
 }

@@ -10,4 +10,6 @@ public class ForecastDto
     public int Index { get; set; }
     public Guid? ExpenseId { get; set; }
     public Guid? RecurringExpenseId { get; set; }
+    public string UpAccountId { get; set; }
+    public int SortPriority { get; set; }
 }

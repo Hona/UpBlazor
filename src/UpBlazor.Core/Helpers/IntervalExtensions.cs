@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using UpBlazor.Core.Models.Enums;
 
 namespace UpBlazor.Core.Helpers
@@ -14,12 +15,12 @@ namespace UpBlazor.Core.Helpers
                 _ => throw new ArgumentOutOfRangeException(nameof(interval), interval, null)
             };
 
-        public static DateTime FindLastCycleStart(this DateTime start, Interval interval, int units)
+        public static DateTime FindLastCycleStart(this DateTime start, Interval interval, int units, DateTime? since = null)
         {
-            var now = DateTime.Now;
+            since ??= DateTime.Now.Date;
 
-            var nowSubtractStart = now - start;
-            if (nowSubtractStart.TotalMilliseconds < 0)
+            var nowSubtractStart = since - start;
+            if (nowSubtractStart.Value.TotalMilliseconds < 0)
             {
                 return start;
             }
@@ -29,9 +30,47 @@ namespace UpBlazor.Core.Helpers
             do
             {
                 currentCycle = currentCycle.Add(cycleStep);
-            } while ((now - currentCycle).TotalMilliseconds >= cycleStep.TotalMilliseconds);
+            } while ((since - currentCycle).Value.TotalMilliseconds >= cycleStep.TotalMilliseconds);
 
             return currentCycle;
+        }
+
+        public static List<DateOnly> GetAllCyclesInRange(this DateTime start, DateTime rangeStart, DateTime rangeEnd, Interval interval, int units)
+        {
+            var startOfRange = start.FindLastCycleStart(interval, units, rangeStart);
+
+            // Cycle hasn't started yet
+            if (startOfRange > rangeEnd)
+            {
+                return null;
+            }
+
+            var output = new List<DateOnly>
+            {
+                DateOnly.FromDateTime(startOfRange)
+            };
+            
+            // Get values until rangeEnd
+
+            var i = 0;
+            while (true)
+            {
+                i += units;
+
+                var timeSpan = interval.ToTimeSpan(i);
+
+                var potentialHit = startOfRange.Add(timeSpan);
+
+                if (potentialHit <= rangeEnd)
+                {
+                    output.Add(DateOnly.FromDateTime(potentialHit));
+                    continue;
+                }
+                
+                break;
+            }
+
+            return output;
         }
     }
 }

@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using UpBlazor.Application.Services;
+using UpBlazor.Core.Helpers;
 using UpBlazor.Core.Models;
 using UpBlazor.Core.Repositories;
 
@@ -28,24 +30,78 @@ public class GetIncomeForecastQueryHandler : IRequestHandler<GetIncomeForecastQu
     public async Task<IReadOnlyList<ForecastDto>> Handle(GetIncomeForecastQuery request, CancellationToken cancellationToken)
     {
         var userId = await _currentUserService.GetUserIdAsync(cancellationToken);
-        
-        var normalizedAggregate = await _normalizedAggregateRepository.GetByUserIdAsync(userId, cancellationToken);
-        var incomes = await _incomeRepository.GetAllByUserIdAsync(userId, cancellationToken);
-        
-        var now = DateTime.Now.Date;
 
-        var output = Enumerable.Range(0, request.TotalDays)
-            .SelectMany(x => normalizedAggregate.Incomes
-                .Select(normalizedIncome => new ForecastDto
+        var incomes = await _incomeRepository.GetAllByUserIdAsync(userId, cancellationToken);
+
+        var rangeStart = DateTime.Now.Date;
+        var rangeEnd = rangeStart.AddDays(request.TotalDays);
+
+        var incomeCycleRanges = new Dictionary<Income, List<DateOnly>>();
+
+        foreach (var income in incomes)
+        {
+            incomeCycleRanges[income] = income.StartDate.GetAllCyclesInRange(rangeStart, rangeEnd, income.Interval, income.IntervalUnits);
+        }
+
+        var output = new Dictionary<DateOnly, List<ForecastDto>>();
+        for (var i = 0; i < request.TotalDays; i++)
+        {
+            var currentDay = DateOnly.FromDateTime(rangeStart.AddDays(i));
+
+            output[currentDay] = new List<ForecastDto>();
+            
+            // Order by smallest interval -> biggest so we add duplicate items for longer intervals
+            foreach (var income in incomes.OrderBy(x => x.Interval.ToTimeSpan(x.IntervalUnits)))
+            {
+                var cycleCollision = incomeCycleRanges[income].FirstOrDefault(x => x == currentDay);
+
+                if (cycleCollision == default)
                 {
-                    balance = Math.Round(x * normalizedIncome.Amount, 2),
-                    cycle = now.AddDays(x).ToString("dd/MM/yyyy"),
-                    accountName = incomes.First(x => x.Id == normalizedIncome.IncomeId).Name,
-                    Index = x
-                })
-                .ToList())
+                    // Add the same as the last day - no change because the graph is at a smaller unit than the cycle
+
+                    if (!output.TryGetValue(currentDay.AddDays(-1), out var previousDayList))
+                    {
+                        output[currentDay].Add(new ForecastDto
+                        {
+                            balance = 0,
+                            Index = i,
+                            cycle = currentDay.ToString("dd/MM/yyyy"),
+                            accountName = income.Name
+                        });
+                        
+                        continue;
+                    }
+                    
+                    var lastValue = previousDayList
+                        .FirstOrDefault(x => x.accountName == income.Name);
+
+                    if (lastValue is not null)
+                    {
+                        output[currentDay].Add(new ForecastDto
+                        {
+                            balance = lastValue.balance,
+                            Index = i,
+                            cycle = currentDay.ToString("dd/MM/yyyy"),
+                            accountName = income.Name
+                        });
+                    }
+                    
+                    continue;
+                }
+                
+                output[currentDay].Add(new ForecastDto
+                {
+                    cycle = currentDay.ToString("dd/MM/yyyy"),
+                    Index = i,
+                    accountName = income.Name,
+                    balance = Math.Round(incomeCycleRanges[income].IndexOf(currentDay) * income.ExactMoney, 2)
+                });
+            }
+        }
+
+        return output
+            .SelectMany(x => x.Value)
             .ToList()
             .AsReadOnly();
-        return output;
     }
 }

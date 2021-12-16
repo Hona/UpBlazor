@@ -10,6 +10,5 @@ namespace UpBlazor.Core.Repositories
     {
         Task<Income> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
         Task<IReadOnlyList<Income>> GetAllByUserIdAsync(string userId, CancellationToken cancellationToken = default);
-
     }
 }

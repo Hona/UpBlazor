@@ -114,7 +114,7 @@ public class GetTotalForecastQueryHandler : IRequestHandler<GetTotalForecastQuer
 
             foreach (var account in accounts)
             {
-                var shouldTakeUnbudgetedMoney = accounts[0] == account;
+                var shouldTakeUnbudgetedMoney = accounts[0].Id == account.Id;
                 
                 // Start with yesterday's balance
                 var balance = yesterdaysBalances.First(x => x.UpAccountId == account.Id);
@@ -124,7 +124,9 @@ public class GetTotalForecastQueryHandler : IRequestHandler<GetTotalForecastQuer
                 {
                     var incomePlanner = incomePlanners[todaysIncome];
 
-                    balance.balance += incomePlanner.FinalBudget[account];
+                    balance.balance += incomePlanner.FinalBudget
+                        .First(x => x.Key.Id == account.Id)
+                        .Value;
 
                     if (shouldTakeUnbudgetedMoney)
                     {

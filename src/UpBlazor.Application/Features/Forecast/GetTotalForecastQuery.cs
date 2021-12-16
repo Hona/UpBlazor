@@ -41,7 +41,7 @@ public class GetTotalForecastQueryHandler : IRequestHandler<GetTotalForecastQuer
 
     public async Task<IReadOnlyList<ForecastDto>> Handle(GetTotalForecastQuery request, CancellationToken cancellationToken)
     {
-        var accounts = await _mediator.Send(new GetUpAccountsQuery(), cancellationToken);
+        /*var accounts = await _mediator.Send(new GetUpAccountsQuery(), cancellationToken);
         var incomes = await _mediator.Send(new GetIncomesQuery(), cancellationToken);
         var recurringExpenses = await _mediator.Send(new GetRecurringExpensesQuery(), cancellationToken);
         
@@ -165,9 +165,9 @@ public class GetTotalForecastQueryHandler : IRequestHandler<GetTotalForecastQuer
         return output
             .SelectMany(x => x.Value)
             .ToList()
-            .AsReadOnly();
+            .AsReadOnly();*/
 
-        /*var userId = await _currentUserService.GetUserIdAsync(cancellationToken);
+        var userId = await _currentUserService.GetUserIdAsync(cancellationToken);
 
         var normalizedAggregate = await _normalizedAggregateRepository.GetByUserIdAsync(userId, cancellationToken);
         var savingsPlans = await _savingsPlanRepository.GetAllByUserIdAsync(userId, cancellationToken);
@@ -254,6 +254,6 @@ public class GetTotalForecastQueryHandler : IRequestHandler<GetTotalForecastQuer
         })
             .ToList()
             .AsReadOnly();
-        return output;*/
+        return output;
     }
 }

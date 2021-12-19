@@ -9,12 +9,12 @@
 }
 else if (Income is null)
 {
-    
+
 }
 else
 {
     <Card>
-        <Statistic Title="Starting Total" Value="@Income.ExactMoney">
+        <Statistic Title="Starting Total" Value="@Income.ExactMoney" Precision="2">
             <PrefixTemplate>
                 $
             </PrefixTemplate>
@@ -98,7 +98,7 @@ else
     <Divider/>
 
     <Card>
-        <Statistic Title="Unbudgeted Money" Value="@_incomePlanner.UnbudgetedMoney" Precision="2">
+        <Statistic Title="Unbudgeted Money" Value="@_incomePlanner.UnbudgetedMoney">
             <PrefixTemplate>
                 $
             </PrefixTemplate>
@@ -140,14 +140,14 @@ else
         {
             return;
         }
-        
+
         _loading = true;
 
         _incomePlanner = await _mediator.Send(new GetIncomePlannerQuery(Income));
         _accounts = await _mediator.Send(new GetUpAccountsQuery());
 
         _cachedIncomeId = Income.Id;
-        
+
         _loading = false;
     }
 }

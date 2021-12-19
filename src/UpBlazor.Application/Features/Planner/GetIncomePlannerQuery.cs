@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -22,7 +23,7 @@ public class GetIncomePlannerQueryHandler : IRequestHandler<GetIncomePlannerQuer
     private readonly IRecurringExpenseRepository _recurringExpenseRepository;
     private readonly ISavingsPlanRepository _savingsPlanRepository;
     private readonly IMediator _mediator;
-    
+
     public GetIncomePlannerQueryHandler(IExpenseRepository expenseRepository, ICurrentUserService currentUserService, INormalizedAggregateRepository normalizedAggregateRepository, IRecurringExpenseRepository recurringExpenseRepository, ISavingsPlanRepository savingsPlanRepository, IMediator mediator)
     {
         _expenseRepository = expenseRepository;
@@ -56,13 +57,43 @@ public class GetIncomePlannerQueryHandler : IRequestHandler<GetIncomePlannerQuer
 
         GetFinalBudget(request, output, accounts);
 
+        RoundAllValues(output);
+
         return output;
+    }
+
+    private void RoundAllValues(IncomePlannerDto output)
+    {
+        // Round final budget
+        var finalBudgetKeys = output.FinalBudget.Keys.ToList();
+        foreach (var finalBudgetKey in finalBudgetKeys)
+        {
+            output.FinalBudget[finalBudgetKey] = Math.Round(output.FinalBudget[finalBudgetKey], 2);
+        }
+
+        // Round unbudgeted money
+        output.UnbudgetedMoney = Math.Round(output.UnbudgetedMoney, 2);
+
+
+        // Round all running totals
+        void RoundAllSavingsPlanRunningTotal(IEnumerable<SavingsPlanRunningTotal> list)
+        {
+            foreach (var model in list)
+            {
+                model.RunningTotal = Math.Round(model.RunningTotal, 2);
+            }
+        }
+
+        RoundAllSavingsPlanRunningTotal(output.ExactSubTotals);
+        RoundAllSavingsPlanRunningTotal(output.PercentSubTotals);
+        RoundAllSavingsPlanRunningTotal(output.IncomeExpenseSubTotals);
+        RoundAllSavingsPlanRunningTotal(output.ProRataExpenseSubTotals);
     }
 
     private static void GetFinalBudget(GetIncomePlannerQuery request, IncomePlannerDto output, IReadOnlyList<AccountResource> accounts)
     {
         output.FinalBudget = new Dictionary<AccountResource, decimal>();
-        
+
         var unbudgetedMoney = output.UnbudgetedMoney;
 
         foreach (var account in accounts)

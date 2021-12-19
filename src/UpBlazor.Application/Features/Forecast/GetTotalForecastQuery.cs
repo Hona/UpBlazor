@@ -27,7 +27,7 @@ public class GetTotalForecastQueryHandler : IRequestHandler<GetTotalForecastQuer
     private readonly IExpenseRepository _expenseRepository;
     private readonly IRecurringExpenseRepository _recurringExpenseRepository;
     private readonly IForecastService _forecastService;
-    
+
     public GetTotalForecastQueryHandler(INormalizedAggregateRepository normalizedAggregateRepository, ICurrentUserService currentUserService, IMediator mediator, ISavingsPlanRepository savingsPlanRepository, IExpenseRepository expenseRepository, IRecurringExpenseRepository recurringExpenseRepository, IForecastService forecastService)
     {
         _normalizedAggregateRepository = normalizedAggregateRepository;
@@ -41,18 +41,18 @@ public class GetTotalForecastQueryHandler : IRequestHandler<GetTotalForecastQuer
 
     public async Task<IReadOnlyList<ForecastDto>> Handle(GetTotalForecastQuery request, CancellationToken cancellationToken)
     {
-        /*var accounts = await _mediator.Send(new GetUpAccountsQuery(), cancellationToken);
+        var accounts = await _mediator.Send(new GetUpAccountsQuery(), cancellationToken);
         var incomes = await _mediator.Send(new GetIncomesQuery(), cancellationToken);
         var recurringExpenses = await _mediator.Send(new GetRecurringExpensesQuery(), cancellationToken);
-        
+
         var incomePlanners = new Dictionary<Guid, IncomePlannerDto>();
         foreach (var income in incomes)
         {
             var incomePlanner = await _mediator.Send(new GetIncomePlannerQuery(income), cancellationToken);
-            
+
             incomePlanners[income.Id] = incomePlanner;
         }
-        
+
         var rangeStart = DateTime.Now.Date;
         var rangeEnd = rangeStart.AddDays(request.TotalDays);
 
@@ -81,7 +81,7 @@ public class GetTotalForecastQueryHandler : IRequestHandler<GetTotalForecastQuer
                     })
                     .ToList();
             }
-            
+
             var todaysIncomes = incomeCycles
                 .Where(x => x.Value.Any(date => date == currentDay))
                 .Select(x => x.Key)
@@ -96,7 +96,7 @@ public class GetTotalForecastQueryHandler : IRequestHandler<GetTotalForecastQuer
                     .Where(x => x.FromIncomeId.Value == todaysIncome)
                     .ToList()
                     .AsReadOnly();
-                
+
                 todaysIncomeExpenses.AddRange(todaysIncomeExpensesScoped);
             }
 
@@ -105,7 +105,7 @@ public class GetTotalForecastQueryHandler : IRequestHandler<GetTotalForecastQuer
                 .Select(x => x.Key)
                 .ToList()
                 .AsReadOnly();
-            
+
             var todaysExpensesFromSavers = expenses
                 .Where(x => !string.IsNullOrWhiteSpace(x.FromSaverId))
                 .Where(x => DateOnly.FromDateTime(x.PaidByDate) == currentDay)
@@ -115,7 +115,7 @@ public class GetTotalForecastQueryHandler : IRequestHandler<GetTotalForecastQuer
             foreach (var account in accounts)
             {
                 var shouldTakeUnbudgetedMoney = accounts[0].Id == account.Id;
-                
+
                 // Start with yesterday's balance
                 var balance = yesterdaysBalances.First(x => x.UpAccountId == account.Id);
 
@@ -133,7 +133,7 @@ public class GetTotalForecastQueryHandler : IRequestHandler<GetTotalForecastQuer
                         balance.balance += incomePlanner.UnbudgetedMoney;
                     }
                 }
-                
+
                 // Subtract any recurring expenses
                 foreach (var todaysRecurringExpense in todaysRecurringExpenses
                              .Select(x => recurringExpenses.First(recurringExpense => recurringExpense.Id == x))
@@ -142,7 +142,7 @@ public class GetTotalForecastQueryHandler : IRequestHandler<GetTotalForecastQuer
                     balance.balance -= todaysRecurringExpense.Money.Exact ??
                                        throw new NotImplementedException("Cannot do % off saver yet");
                 }
-                
+
                 // Subtract any one off expenses
                 foreach (var todaysExpenseFromSaver in todaysExpensesFromSavers
                              .Where(x => x.FromSaverId == account.Id))
@@ -150,7 +150,7 @@ public class GetTotalForecastQueryHandler : IRequestHandler<GetTotalForecastQuer
                     balance.balance -= todaysExpenseFromSaver.Money.Exact ??
                                        throw new NotImplementedException("Cannot do % off saver yet");
                 }
-                
+
                 output[currentDay].Add(new ForecastDto
                 {
                     balance = Math.Round(balance.balance, 2),
@@ -161,19 +161,19 @@ public class GetTotalForecastQueryHandler : IRequestHandler<GetTotalForecastQuer
                 });
             }
         }
-        
+
         return output
             .SelectMany(x => x.Value)
             .ToList()
-            .AsReadOnly();*/
+            .AsReadOnly();
 
-        var userId = await _currentUserService.GetUserIdAsync(cancellationToken);
+        /*var userId = await _currentUserService.GetUserIdAsync(cancellationToken);
 
         var normalizedAggregate = await _normalizedAggregateRepository.GetByUserIdAsync(userId, cancellationToken);
         var savingsPlans = await _savingsPlanRepository.GetAllByUserIdAsync(userId, cancellationToken);
         var expenses = await _expenseRepository.GetAllByUserIdAsync(userId, cancellationToken);
         var recurringExpenses = await _recurringExpenseRepository.GetAllByUserIdAsync(userId, cancellationToken);
-        
+
         var totalSavingsPlanAmount = normalizedAggregate
             .SavingsPlans
             .Sum(x => x.Amount);
@@ -183,8 +183,8 @@ public class GetTotalForecastQueryHandler : IRequestHandler<GetTotalForecastQuer
         var unbudgetedAmount = totalIncomeAmounts - totalSavingsPlanAmount;
 
         var accounts = await _mediator.Send(new GetUpAccountsQuery(), cancellationToken);
-        
-        var expensesForecastData = request.ExpensesForecastData 
+
+        var expensesForecastData = request.ExpensesForecastData
                                    ?? await _mediator.Send(new GetExpenseForecastQuery(request.TotalDays), cancellationToken);
 
         var now = DateTime.Now.Date;
@@ -254,6 +254,6 @@ public class GetTotalForecastQueryHandler : IRequestHandler<GetTotalForecastQuer
         })
             .ToList()
             .AsReadOnly();
-        return output;
+        return output;*/
     }
 }

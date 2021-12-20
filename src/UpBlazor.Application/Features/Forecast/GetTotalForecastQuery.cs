@@ -48,7 +48,7 @@ public class GetTotalForecastQueryHandler : IRequestHandler<GetTotalForecastQuer
         var incomePlanners = new Dictionary<Guid, IncomePlannerDto>();
         foreach (var income in incomes)
         {
-            var incomePlanner = await _mediator.Send(new GetIncomePlannerQuery(income), cancellationToken);
+            var incomePlanner = await _mediator.Send(new GetIncomePlannerQuery(income, true), cancellationToken);
 
             incomePlanners[income.Id] = incomePlanner;
         }
@@ -114,7 +114,7 @@ public class GetTotalForecastQueryHandler : IRequestHandler<GetTotalForecastQuer
 
             foreach (var account in accounts)
             {
-                var shouldTakeUnbudgetedMoney = accounts[0].Id == account.Id;
+                var isTransactionalAccount = accounts[0].Id == account.Id;
 
                 // Start with yesterday's balance
                 var balance = yesterdaysBalances.First(x => x.UpAccountId == account.Id);
@@ -128,9 +128,19 @@ public class GetTotalForecastQueryHandler : IRequestHandler<GetTotalForecastQuer
                         .First(x => x.Key.Id == account.Id)
                         .Value;
 
-                    if (shouldTakeUnbudgetedMoney)
+                    if (!isTransactionalAccount)
                     {
-                        balance.balance += incomePlanner.UnbudgetedMoney;
+                        continue;
+                    }
+
+                    var scopedIncomeExpenses = todaysIncomeExpenses
+                        .Where(x => x.FromIncomeId.HasValue
+                                    && x.FromIncomeId.Value == todaysIncome);
+
+                    foreach (var scopedIncomeExpense in scopedIncomeExpenses)
+                    {
+                        balance.balance -= scopedIncomeExpense.Money.Exact
+                                           ?? scopedIncomeExpense.Money.Percent.Value * incomes.First(x => x.Id == todaysIncome).ExactMoney;
                     }
                 }
 

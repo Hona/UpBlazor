@@ -13,7 +13,7 @@ using UpBlazor.Core.Repositories;
 
 namespace UpBlazor.Application.Features.Planner;
 
-public record GetIncomePlannerQuery(Income Income) : IRequest<IncomePlannerDto>;
+public record GetIncomePlannerQuery(Income Income, bool OnlyUseSavingsPlans = false) : IRequest<IncomePlannerDto>;
 
 public class GetIncomePlannerQueryHandler : IRequestHandler<GetIncomePlannerQuery, IncomePlannerDto>
 {
@@ -50,8 +50,12 @@ public class GetIncomePlannerQueryHandler : IRequestHandler<GetIncomePlannerQuer
             UnbudgetedMoney = request.Income.ExactMoney
         };
 
-        GetIncomeExpenseSubTotals(request, output, expenses);
-        GetProRataExpenseSubTotals(request, output, normalizedAggregate, recurringExpenses);
+        if (!request.OnlyUseSavingsPlans)
+        {
+            GetIncomeExpenseSubTotals(request, output, expenses);
+            GetProRataExpenseSubTotals(request, output, normalizedAggregate, recurringExpenses);
+        }
+
         GetExactSubTotals(output, savingsPlans);
         GetPercentSubTotals(request, output, savingsPlans);
 
@@ -78,6 +82,11 @@ public class GetIncomePlannerQueryHandler : IRequestHandler<GetIncomePlannerQuer
         // Round all running totals
         void RoundAllSavingsPlanRunningTotal(IEnumerable<SavingsPlanRunningTotal> list)
         {
+            if (list is null)
+            {
+                return;
+            }
+
             foreach (var model in list)
             {
                 model.RunningTotal = Math.Round(model.RunningTotal, 2);

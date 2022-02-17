@@ -30,7 +30,7 @@ namespace UpBlazor.Core.Helpers
             do
             {
                 currentCycle = currentCycle.Add(cycleStep);
-            } while ((since - currentCycle).Value.TotalMilliseconds >= cycleStep.TotalMilliseconds);
+            } while (currentCycle < since || (since - currentCycle).Value.TotalMilliseconds >= cycleStep.TotalMilliseconds);
 
             return currentCycle;
         }

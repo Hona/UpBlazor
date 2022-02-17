@@ -40,7 +40,7 @@ public class GetIncomeForecastQueryHandler : IRequestHandler<GetIncomeForecastQu
 
         foreach (var income in incomes)
         {
-            incomeCycleRanges[income] = income.StartDate.GetAllCyclesInRange(rangeStart, rangeEnd, income.Interval, income.IntervalUnits);
+            incomeCycleRanges[income] = income.StartDate.Date.GetAllCyclesInRange(rangeStart, rangeEnd, income.Interval, income.IntervalUnits);
         }
 
         var output = new Dictionary<DateOnly, List<ForecastDto>>();

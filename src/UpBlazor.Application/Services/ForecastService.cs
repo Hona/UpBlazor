@@ -26,7 +26,7 @@ public class ForecastService : IForecastService
 
         foreach (var recurringExpense in recurringExpenses)
         {
-            recurringExpenseCycleRanges[recurringExpense.Id] = recurringExpense.StartDate.GetAllCyclesInRange(rangeStart,
+            recurringExpenseCycleRanges[recurringExpense.Id] = recurringExpense.StartDate.Date.GetAllCyclesInRange(rangeStart,
                 rangeEnd, recurringExpense.Interval, recurringExpense.IntervalUnits);
         }
 
@@ -41,7 +41,7 @@ public class ForecastService : IForecastService
 
         foreach (var income in incomes)
         {
-            incomeCycleRanges[income.Id] = income.StartDate.GetAllCyclesInRange(rangeStart,
+            incomeCycleRanges[income.Id] = income.StartDate.Date.GetAllCyclesInRange(rangeStart,
                 rangeEnd, income.Interval, income.IntervalUnits);
         }
 

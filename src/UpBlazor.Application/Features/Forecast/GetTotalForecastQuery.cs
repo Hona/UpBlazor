@@ -130,11 +130,19 @@ public class GetTotalForecastQueryHandler : IRequestHandler<GetTotalForecastQuer
                         .First(x => x.Key.Id == account.Id)
                         .Value;
 
-                    if (!isTransactionalAccount)
+                    // Income planner's final budget already has deducted the recurring expenses on a day average.
+                    // Adding it back here, because we deduct recurring expenses exactly to the day further down
+                    balance.balance += incomePlanner.ProRataExpenseSubTotals?
+                        .Where(x => x.Amount.Exact is not null)
+                        .Select(x => (decimal)x.Amount.Exact)
+                        .Sum() ?? 0;
+                    
+                    // The incomePlanner.FinalBudget has already deducted income expenses
+                    /*if (!isTransactionalAccount)
                     {
                         continue;
                     }
-
+                    
                     var scopedIncomeExpenses = todaysIncomeExpenses
                         .Where(x => x.FromIncomeId.HasValue
                                     && x.FromIncomeId.Value == todaysIncome);
@@ -143,7 +151,7 @@ public class GetTotalForecastQueryHandler : IRequestHandler<GetTotalForecastQuer
                     {
                         balance.balance -= scopedIncomeExpense.Money.Exact
                                            ?? scopedIncomeExpense.Money.Percent.Value * incomes.First(x => x.Id == todaysIncome).ExactMoney;
-                    }
+                    }*/
                 }
 
                 // Subtract any recurring expenses

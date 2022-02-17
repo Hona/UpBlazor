@@ -94,7 +94,7 @@ public class GetIncomeForecastQueryHandler : IRequestHandler<GetIncomeForecastQu
                     cycle = currentDay.ToString("dd/MM/yyyy"),
                     Index = i,
                     accountName = income.Name,
-                    balance = Math.Round(incomeCycleRanges[income].IndexOf(currentDay) * income.ExactMoney, 2)
+                    balance = Math.Round((incomeCycleRanges[income].IndexOf(currentDay) + 1) * income.ExactMoney, 2)
                 });
             }
         }

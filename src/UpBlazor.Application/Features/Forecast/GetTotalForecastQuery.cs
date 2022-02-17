@@ -112,6 +112,11 @@ public class GetTotalForecastQueryHandler : IRequestHandler<GetTotalForecastQuer
                 .ToList()
                 .AsReadOnly();
 
+            var todaysIncomeExpensesTotalUnpaid = todaysIncomeExpenses
+                .Select(x => x.Money.Exact ?? x.Money.Percent.Value * incomes.First(income => x.FromIncomeId == income.Id).ExactMoney)
+                .Sum();
+                
+            
             foreach (var account in accounts)
             {
                 var isTransactionalAccount = accounts[0].Id == account.Id;
@@ -121,6 +126,20 @@ public class GetTotalForecastQueryHandler : IRequestHandler<GetTotalForecastQuer
                     .First(x => x.UpAccountId == account.Id)
                     .Clone();
 
+                if (todaysIncomeExpensesTotalUnpaid != 0)
+                {
+                    if (todaysIncomeExpensesTotalUnpaid > balance.balance)
+                    {
+                        todaysIncomeExpensesTotalUnpaid -= balance.balance;
+                        balance.balance = 0;
+                    }
+                    else
+                    {
+                        balance.balance -= todaysIncomeExpensesTotalUnpaid;
+                        todaysIncomeExpensesTotalUnpaid = 0;
+                    }
+                }
+                
                 // Then - add any incomes
                 foreach (var todaysIncome in todaysIncomes)
                 {

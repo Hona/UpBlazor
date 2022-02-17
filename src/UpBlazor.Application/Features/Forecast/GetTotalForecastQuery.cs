@@ -126,20 +126,6 @@ public class GetTotalForecastQueryHandler : IRequestHandler<GetTotalForecastQuer
                     .First(x => x.UpAccountId == account.Id)
                     .Clone();
 
-                if (todaysIncomeExpensesTotalUnpaid != 0)
-                {
-                    if (todaysIncomeExpensesTotalUnpaid > balance.balance)
-                    {
-                        todaysIncomeExpensesTotalUnpaid -= balance.balance;
-                        balance.balance = 0;
-                    }
-                    else
-                    {
-                        balance.balance -= todaysIncomeExpensesTotalUnpaid;
-                        todaysIncomeExpensesTotalUnpaid = 0;
-                    }
-                }
-                
                 // Then - add any incomes
                 foreach (var todaysIncome in todaysIncomes)
                 {
@@ -171,6 +157,20 @@ public class GetTotalForecastQueryHandler : IRequestHandler<GetTotalForecastQuer
                         balance.balance -= scopedIncomeExpense.Money.Exact
                                            ?? scopedIncomeExpense.Money.Percent.Value * incomes.First(x => x.Id == todaysIncome).ExactMoney;
                     }*/
+                }
+                
+                if (todaysIncomeExpensesTotalUnpaid != 0)
+                {
+                    if (todaysIncomeExpensesTotalUnpaid > balance.balance)
+                    {
+                        todaysIncomeExpensesTotalUnpaid -= balance.balance;
+                        balance.balance = 0;
+                    }
+                    else
+                    {
+                        balance.balance -= todaysIncomeExpensesTotalUnpaid;
+                        todaysIncomeExpensesTotalUnpaid = 0;
+                    }
                 }
 
                 // Subtract any recurring expenses

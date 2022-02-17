@@ -8,8 +8,8 @@ public class IncomePlannerDto
 {
     public List<SavingsPlanRunningTotal> IncomeExpenseSubTotals { get; set; }
     public List<SavingsPlanRunningTotal> ProRataExpenseSubTotals { get; set; }
-    public List<SavingsPlanRunningTotal> ExactSubTotals { get; set; }
-    public List<SavingsPlanRunningTotal> PercentSubTotals { get; set; }
+    public List<SavingsPlanRunningTotal> ExactSavingsPlanSubTotals { get; set; }
+    public List<SavingsPlanRunningTotal> PercentSavingsPlanSubTotals { get; set; }
 
     public decimal UnbudgetedMoney { get; set; }
 

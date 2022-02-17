@@ -74,7 +74,7 @@ else
     </Table>
 
     <Title Level="4">Exact Savings Plan</Title>
-    <Table DataSource="_incomePlanner.ExactSubTotals" Context="tableContext">
+    <Table DataSource="_incomePlanner.ExactSavingsPlanSubTotals" Context="tableContext">
         <Column Title="Name" @bind-Field="@tableContext.Name" Sortable/>
         <Column Title="Amount" TData="decimal?" DataIndex="Amount.Exact" Format="$0.00" Sortable/>
         <SaverIdColumn Title="Saver" TableContext="tableContext" TTableContext="SavingsPlanRunningTotal" Accounts="_accounts"/>
@@ -82,7 +82,7 @@ else
     </Table>
 
     <Title Level="4">Relative Savings Plan</Title>
-    <Table DataSource="_incomePlanner.PercentSubTotals" Context="tableContext">
+    <Table DataSource="_incomePlanner.PercentSavingsPlanSubTotals" Context="tableContext">
         <Column Title="Name" @bind-Field="@tableContext.Name" Sortable/>
         <Column Title="Amount (%)" TData="decimal?" DataIndex="Amount.Percent" Format="0%" Sortable/>
         <Column Title="Amount ($)" TData="decimal?" DataIndex="Amount.Percent" Sortable>

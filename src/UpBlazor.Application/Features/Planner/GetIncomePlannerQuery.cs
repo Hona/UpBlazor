@@ -93,8 +93,8 @@ public class GetIncomePlannerQueryHandler : IRequestHandler<GetIncomePlannerQuer
             }
         }
 
-        RoundAllSavingsPlanRunningTotal(output.ExactSubTotals);
-        RoundAllSavingsPlanRunningTotal(output.PercentSubTotals);
+        RoundAllSavingsPlanRunningTotal(output.ExactSavingsPlanSubTotals);
+        RoundAllSavingsPlanRunningTotal(output.PercentSavingsPlanSubTotals);
         RoundAllSavingsPlanRunningTotal(output.IncomeExpenseSubTotals);
         RoundAllSavingsPlanRunningTotal(output.ProRataExpenseSubTotals);
     }
@@ -115,12 +115,12 @@ public class GetIncomePlannerQueryHandler : IRequestHandler<GetIncomePlannerQuer
                 unbudgetedMoney = 0;
             }
 
-            foreach (var exactSaving in output.ExactSubTotals.Where(x => x.SaverId == account.Id))
+            foreach (var exactSaving in output.ExactSavingsPlanSubTotals.Where(x => x.SaverId == account.Id))
             {
                 total += exactSaving.Amount.Exact.Value;
             }
 
-            foreach (var percentSaving in output.PercentSubTotals.Where(x => x.SaverId == account.Id))
+            foreach (var percentSaving in output.PercentSavingsPlanSubTotals.Where(x => x.SaverId == account.Id))
             {
                 total += request.Income.ExactMoney * percentSaving.Amount.Percent.Value;
             }
@@ -132,25 +132,25 @@ public class GetIncomePlannerQueryHandler : IRequestHandler<GetIncomePlannerQuer
     private static void GetPercentSubTotals(GetIncomePlannerQuery request, IncomePlannerDto output,
         IReadOnlyList<SavingsPlan> savingsPlans)
     {
-        output.PercentSubTotals = new List<SavingsPlanRunningTotal>();
+        output.PercentSavingsPlanSubTotals = new List<SavingsPlanRunningTotal>();
 
         foreach (var savingsPlan in savingsPlans.Where(x => x.Amount.Percent.HasValue))
         {
             output.UnbudgetedMoney -= request.Income.ExactMoney * savingsPlan.Amount.Percent.Value;
 
-            output.PercentSubTotals.Add(new SavingsPlanRunningTotal(savingsPlan, output.UnbudgetedMoney));
+            output.PercentSavingsPlanSubTotals.Add(new SavingsPlanRunningTotal(savingsPlan, output.UnbudgetedMoney));
         }
     }
 
     private static void GetExactSubTotals(IncomePlannerDto output, IReadOnlyList<SavingsPlan> savingsPlans)
     {
-        output.ExactSubTotals = new List<SavingsPlanRunningTotal>();
+        output.ExactSavingsPlanSubTotals = new List<SavingsPlanRunningTotal>();
 
         foreach (var savingsPlan in savingsPlans.Where(x => x.Amount.Exact.HasValue))
         {
             output.UnbudgetedMoney -= savingsPlan.Amount.Exact.Value;
 
-            output.ExactSubTotals.Add(new SavingsPlanRunningTotal(savingsPlan, output.UnbudgetedMoney));
+            output.ExactSavingsPlanSubTotals.Add(new SavingsPlanRunningTotal(savingsPlan, output.UnbudgetedMoney));
         }
     }
 

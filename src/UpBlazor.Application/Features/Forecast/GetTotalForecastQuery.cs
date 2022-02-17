@@ -117,7 +117,9 @@ public class GetTotalForecastQueryHandler : IRequestHandler<GetTotalForecastQuer
                 var isTransactionalAccount = accounts[0].Id == account.Id;
 
                 // Start with yesterday's balance
-                var balance = yesterdaysBalances.First(x => x.UpAccountId == account.Id);
+                var balance = yesterdaysBalances
+                    .First(x => x.UpAccountId == account.Id)
+                    .Clone();
 
                 // Then - add any incomes
                 foreach (var todaysIncome in todaysIncomes)

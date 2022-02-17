@@ -12,4 +12,5 @@ public class ForecastDto
     public Guid? RecurringExpenseId { get; set; }
     public string UpAccountId { get; set; }
     public int SortPriority { get; set; }
+    public ForecastDto Clone() => (ForecastDto)MemberwiseClone();
 }

@@ -22,8 +22,14 @@ else
                             @account.Attributes.DisplayName
                         </TabTemplate>
                         <ChildContent>
-                            <Table DataSource="_transactionsOut.Where(x => x.Relationships.Account.Data.Id == account.Id)"
-                                   Title="Transactions Out 🔻">
+                            @{
+                                var transactionsOut = _transactionsOut
+                                    .Where(x => x.Relationships.Account.Data.Id == account.Id)
+                                    .ToList();
+                            }
+                            <Table DataSource="transactionsOut"
+                                   Title="Transactions Out 🔻"
+                                   OnPageIndexChange="async args => await HandlePageChange(args, transactionsOut.Count)">
                                 <Column Title="Date" DataIndex="Attributes.CreatedAt" TData="DateTime" Format="dd/MM/yyyy"/>
                                 <Column Title="Description" DataIndex="Attributes.Description" TData="string"/>
                                 <Column Title="Message" DataIndex="Attributes.Message" TData="string"/>
@@ -38,7 +44,12 @@ else
                                 </Column>
                             </Table>
 
-                            <Table DataSource="_transactionsIn.Where(x => x.Relationships.Account.Data.Id == account.Id)"
+                            @{
+                                var transactionsIn = _transactionsIn
+                                    .Where(x => x.Relationships.Account.Data.Id == account.Id)
+                                    .ToList();
+                            }
+                            <Table DataSource="transactionsIn"
                                    Title="Transactions In 🟢">
                                 <Column Title="Date" DataIndex="Attributes.CreatedAt" TData="DateTime" Format="dd/MM/yyyy"/>
                                 <Column Title="Description" DataIndex="Attributes.Description" TData="string"/>
@@ -59,7 +70,7 @@ else
 {
     private bool _loading;
     
-    private IReadOnlyList<TransactionResource> _transactions;
+    private UpResponse<PaginatedDataResponse<TransactionResource>> _transactions;
     private IReadOnlyList<AccountResource> _accounts;
     
     private List<TransactionResource> _transactionsIn;
@@ -74,14 +85,16 @@ else
     {
         _loading = true;
         
-        _transactions = await _mediator.Send(new GetUpTransactionsQuery(AccountId));
+        _transactions = await _mediator.Send(new GetUpTransactionsPagedQuery(AccountId));
         _accounts = await _mediator.Send(new GetUpAccountsQuery());
         
         _transactionsOut = _transactions
+            .Response.Data
             .Where(x => x.Attributes.Amount.ValueInBaseUnits < 0)
             .ToList();
         
         _transactionsIn = _transactions
+            .Response.Data
             .Where(x => x.Attributes.Amount.ValueInBaseUnits >= 0)
             .ToList();
         
@@ -92,5 +105,26 @@ else
         }
 
         _loading = false;
+    }
+
+    private async Task LoadMoreAsync()
+    {
+        _transactions = await _transactions.Response.GetNextPageAsync();
+
+        _transactionsOut.AddRange(_transactions
+            .Response.Data
+            .Where(x => x.Attributes.Amount.ValueInBaseUnits < 0));
+
+        _transactionsIn.AddRange(_transactions
+            .Response.Data
+            .Where(x => x.Attributes.Amount.ValueInBaseUnits >= 0));
+    }
+
+    private async Task HandlePageChange(PaginationEventArgs obj, int totalItems)
+    {
+        if (obj.Page >= Math.Ceiling((decimal)totalItems / obj.PageSize))
+        {
+            await LoadMoreAsync();
+        }
     }
 }

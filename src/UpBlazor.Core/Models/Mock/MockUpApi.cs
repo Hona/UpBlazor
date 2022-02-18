@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Up.NET.Api;
 using Up.NET.Api.Accounts;
@@ -94,6 +95,14 @@ namespace UpBlazor.Core.Models.Mock
         public Task<UpResponse<PaginatedDataResponse<CategoriesResource>>> GetCategoriesAsync(string parentId = null) => throw new NotImplementedException();
 
         public Task<UpResponse<PaginatedDataResponse<CategoriesResource>>> GetCategoryAsync(string id) => throw new NotImplementedException();
+
+        public Task<UpResponse<T>> SendRequestAsync<T>(HttpMethod httpMethod, string relativeUrl, Dictionary<string, string> queryParameters = null,
+            object content = null, bool urlIsAbsolute = false) where T : class =>
+            throw new NotImplementedException();
+
+        public Task<UpResponse<PaginatedDataResponse<T>>> SendPaginatedRequestAsync<T>(HttpMethod httpMethod, string relativeUrl, Dictionary<string, string> queryParameters = null,
+            object content = null, bool urlIsAbsolute = false) where T : class =>
+            throw new NotImplementedException();
 
         public Task<UpResponse<PaginatedDataResponse<TagResource>>> GetTagsAsync(int? pageSize = null) => throw new NotImplementedException();
 

@@ -1,0 +1,67 @@
+﻿@using Marten
+@inject IDocumentStore _documentStore
+
+<Table DataSource="_tests"
+       Loading="_loading">
+    <Column @bind-Field="context.Name" />
+    <Column @bind-Field="context.Value" />
+    <ActionColumn>
+        <Space>
+            <SpaceItem>
+                <EditTest Value="context" OnTestEdited="async () => await ReloadAsync()"/>
+            </SpaceItem>
+            <SpaceItem>
+                <Button Danger OnClick="async () => await DeleteAsync(context)">
+                    Delete
+                </Button>
+            </SpaceItem>
+        </Space>
+    </ActionColumn>
+</Table>
+
+@code
+{
+    private IReadOnlyList<Test> _tests;
+
+    private bool _loading;
+
+    protected override async Task OnInitializedAsync() => await ReloadAsync();
+
+    public async Task ReloadAsync(bool forceReload = false)
+    {
+        _loading = true;
+
+        if (forceReload)
+        {
+            StateHasChanged();
+        }
+
+        await using var session = _documentStore.QuerySession();
+
+        _tests = await session.Query<Test>()
+            .ToListAsync();
+
+        await Task.Delay(1200);
+
+        _loading = false;
+
+        if (forceReload)
+        {
+            StateHasChanged();
+        }
+    }
+
+    private async Task DeleteAsync(Test model)
+    {
+        _loading = true;
+
+        await using var session = _documentStore.LightweightSession();
+
+        session.Delete(model);
+        await session.SaveChangesAsync();
+
+        await Task.Delay(500);
+
+        await ReloadAsync();
+    }
+}

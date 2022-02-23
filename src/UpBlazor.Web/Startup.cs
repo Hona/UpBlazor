@@ -17,6 +17,7 @@ using UpBlazor.Core.Repositories;
 using UpBlazor.Application.Services;
 using UpBlazor.Infrastructure.Repositories;
 using UpBlazor.Infrastructure.Services;
+using UpBlazor.Web.Pages.Budget.Test;
 using Weasel.Postgresql;
 
 namespace UpBlazor.Web
@@ -38,7 +39,7 @@ namespace UpBlazor.Web
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddApplication();
-            
+
             services.AddRazorPages();
             services.AddServerSideBlazor();
             services.AddAntDesign();
@@ -122,6 +123,8 @@ namespace UpBlazor.Web
                     .Identity(x => x.MartenId);
                 options.Schema.For<NormalizedAggregate>()
                     .Identity(x => x.UserId);
+                options.Schema.For<Test>()
+                    .Identity(x => x.Name);
             });
 
             services.AddSingleton<IUpUserTokenRepository, UpUserTokenRepository>();

@@ -1,0 +1,57 @@
+﻿@using Marten
+
+@inject IDocumentStore _documentStore
+
+<Card>
+
+    <h3>Create new Test</h3>
+
+    <Form Model="_model"
+          OnFinish="@HandleCreate"
+          Loading="@_loading">
+        <FormItem Label="Name">
+            <InputText @bind-Value="_model.Name" />
+        </FormItem>
+        <FormItem Label="Value">
+            <AntDesign.InputNumber @bind-Value="_model.Value" />
+        </FormItem>
+        <FormItem>
+            <Button Type="@ButtonType.Primary" HtmlType="submit">
+                Submit
+            </Button>
+        </FormItem>
+    </Form>
+
+</Card>
+
+@code
+{
+    [Parameter]
+    public EventCallback OnTestCreated { get; set; }
+
+    private Test _model = new();
+
+    private bool _loading;
+
+    private async Task HandleCreate(EditContext obj)
+    {
+        _loading = true;
+
+        var model = (Test)obj.Model;
+
+        await using var session = _documentStore.LightweightSession();
+        session.Store(model);
+
+        await session.SaveChangesAsync();
+
+        await Task.Delay(1200);
+
+        _loading = false;
+        _model = new();
+
+        if (OnTestCreated.HasDelegate)
+        {
+            await OnTestCreated.InvokeAsync();
+        }
+    }
+}

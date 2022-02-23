@@ -1,0 +1,58 @@
+﻿@using Marten
+@inject IDocumentStore _documentStore
+
+<Button OnClick="() => _visible = true">Edit</Button>
+
+<Modal Visible="_visible">
+    <Form Model="Value"
+          OnFinish="@HandleEdit"
+          OnFinishFailed="() => _visible = false"
+              Loading="@_loading">
+            <FormItem Label="Name">
+                <InputText @bind-Value="Value.Name" />
+            </FormItem>
+            <FormItem Label="Value">
+                <AntDesign.InputNumber @bind-Value="Value.Value" />
+            </FormItem>
+            <FormItem>
+                <Button Type="@ButtonType.Primary" HtmlType="submit">
+                    Submit
+                </Button>
+            </FormItem>
+        </Form>
+</Modal>
+
+@code {
+    [Parameter]
+    public Test Value { get; set; }
+
+    [Parameter]
+    public EventCallback OnTestEdited { get; set; }
+
+    private bool _visible;
+
+    private bool _loading;
+
+
+    private async Task HandleEdit(EditContext obj)
+    {
+        _loading = true;
+
+        var model = (Test)obj.Model;
+
+        await using var sesson = _documentStore.LightweightSession();
+        sesson.Store(model);
+
+        await sesson.SaveChangesAsync();
+        await Task.Delay(500);
+
+        _loading = false;
+        _visible = false;
+
+        if (OnTestEdited.HasDelegate)
+        {
+            await OnTestEdited.InvokeAsync();
+        }
+    }
+
+}

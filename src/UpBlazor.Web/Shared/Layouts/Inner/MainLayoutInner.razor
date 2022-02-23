@@ -4,9 +4,9 @@
 
 <Layout Style="min-height: 100vh; max-width: 100vw;">
     <Sider Theme="SiderTheme.Dark"
-           Collapsible 
-           Collapsed="_siderCollapsed" OnCollapse="collapsed => _siderCollapsed = collapsed" 
-           Breakpoint="BreakpointType.Md" 
+           Collapsible
+           Collapsed="_siderCollapsed" OnCollapse="collapsed => _siderCollapsed = collapsed"
+           Breakpoint="BreakpointType.Md"
            OnBreakpoint="collapsed => _siderCollapsed = collapsed"
     >
         <a target="_blank" @onclick='() => _navigationManager.NavigateTo("/home")' style="display: flex; justify-content: center; align-items: flex-end; padding: 0 0.75rem">
@@ -43,6 +43,10 @@
                     <MenuItem OnClick='() => _navigationManager.NavigateTo("/budget/goals")'
                               RouterMatch="NavLinkMatch.All" RouterLink="/budget/goals">
                         <span>Goals</span>
+                    </MenuItem>
+                    <MenuItem OnClick='() => _navigationManager.NavigateTo("/budget/test")'
+                              RouterMatch="NavLinkMatch.All" RouterLink="/budget/test">
+                        <span>Test</span>
                     </MenuItem>
                 </ChildContent>
             </SubMenu>
@@ -106,7 +110,7 @@
                             <span>Component Explorer</span>
                         </MenuItem>
                     </ChildContent>
-                </SubMenu>            
+                </SubMenu>
                 </RequireAdmin>
         </Menu>
     </Sider>
@@ -163,7 +167,7 @@
 
     private bool _siderCollapsed;
     private ErrorBoundary _errorBoundary;
-    
+
     protected override void OnParametersSet()
     {
         _errorBoundary?.Recover();

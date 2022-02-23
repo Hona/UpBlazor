@@ -1,0 +1,16 @@
+﻿@page "/budget/test"
+
+<CreateTest OnTestCreated="HandleTestCreated"/>
+
+<Divider />
+
+<TestTable @ref="_table" />
+
+@code {
+    private TestTable _table;
+
+    private async Task HandleTestCreated()
+    {
+        await _table.ReloadAsync(true);
+    }
+}

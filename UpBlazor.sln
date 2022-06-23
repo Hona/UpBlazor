@@ -17,6 +17,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UpBlazor.Infrastructure", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UpBlazor.Application", "src\UpBlazor.Application\UpBlazor.Application.csproj", "{44D69664-A128-471D-AB81-B3F937D0FFA3}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UpBlazor.WebApi", "src\UpBlazor.WebApi\UpBlazor.WebApi.csproj", "{405C5882-13F4-4BC1-BD66-0DF400BE6400}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,7 @@ Global
 		{038DC65B-D021-4EDA-AA7E-D56E25A14AB0} = {67E16A27-C84B-47A2-9B81-FE641E10E8A7}
 		{F38E3D53-78F5-4857-B8FE-90AD1BBB421D} = {67E16A27-C84B-47A2-9B81-FE641E10E8A7}
 		{44D69664-A128-471D-AB81-B3F937D0FFA3} = {67E16A27-C84B-47A2-9B81-FE641E10E8A7}
+		{405C5882-13F4-4BC1-BD66-0DF400BE6400} = {67E16A27-C84B-47A2-9B81-FE641E10E8A7}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{5CF8AE7C-7806-4854-B411-6EA384550521}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -45,5 +48,9 @@ Global
 		{44D69664-A128-471D-AB81-B3F937D0FFA3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{44D69664-A128-471D-AB81-B3F937D0FFA3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{44D69664-A128-471D-AB81-B3F937D0FFA3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{405C5882-13F4-4BC1-BD66-0DF400BE6400}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{405C5882-13F4-4BC1-BD66-0DF400BE6400}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{405C5882-13F4-4BC1-BD66-0DF400BE6400}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{405C5882-13F4-4BC1-BD66-0DF400BE6400}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

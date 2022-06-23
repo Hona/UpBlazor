@@ -5,6 +5,7 @@ using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.AspNetCore.Http;
 using Up.NET.Api;
 using UpBlazor.Application.Exceptions;
 using UpBlazor.Core.Models.Mock;
@@ -14,7 +15,7 @@ namespace UpBlazor.Application.Services
 {
     public class CurrentUserService : ICurrentUserService
     {
-        private readonly AuthenticationStateProvider _authenticationStateProvider;
+        private readonly HttpContext _httpContext;
         private readonly IUpUserTokenRepository _upUserTokenRepository;
         private readonly IRegisteredUserRepository _registeredUserRepository;
 
@@ -22,9 +23,9 @@ namespace UpBlazor.Application.Services
 
         private IUpApi _upApi;
 
-        public CurrentUserService(AuthenticationStateProvider authenticationStateProvider, IUpUserTokenRepository upUserTokenRepository, IRegisteredUserRepository registeredUserRepository)
+        public CurrentUserService(IHttpContextAccessor httpContextAccessor, IUpUserTokenRepository upUserTokenRepository, IRegisteredUserRepository registeredUserRepository)
         {
-            _authenticationStateProvider = authenticationStateProvider;
+            _httpContext = httpContextAccessor.HttpContext;
             _upUserTokenRepository = upUserTokenRepository;
             _registeredUserRepository = registeredUserRepository;
         }
@@ -78,9 +79,7 @@ namespace UpBlazor.Application.Services
                 };
             }
 
-            var authState = await _authenticationStateProvider.GetAuthenticationStateAsync();
-
-            var user = authState.User;
+            var user = _httpContext.User;
 
             if (user?.Identity?.IsAuthenticated ?? false)
             {

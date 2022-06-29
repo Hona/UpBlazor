@@ -14,7 +14,7 @@ namespace UpBlazor.WebApi.Controllers
 
         [HttpGet]
         [AllowAnonymous]
-        public IActionResult Signin([FromQuery] string @return = "/home")
+        public IActionResult Signin([FromQuery] string? @return = "/home")
         {
             if (HttpContext.User.Identity is { IsAuthenticated: true })
             {

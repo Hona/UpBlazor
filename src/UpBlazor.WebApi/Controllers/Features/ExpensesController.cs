@@ -7,7 +7,7 @@ using UpBlazor.Core.Models;
 namespace UpBlazor.WebApi.Controllers.Features;
 
 [ApiController]
-[Route("expenses")]
+[Route("api/[controller]")]
 [Authorize]
 public class ExpensesController : Controller
 {

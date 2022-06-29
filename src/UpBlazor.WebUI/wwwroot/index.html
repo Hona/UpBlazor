@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Up Blazor</title>
+    <link rel="manifest" href="manifest.json">
+
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+
+    <link rel="apple-touch-icon" href="apple/apple-touch-icon-iphone-60x60.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="apple/apple-touch-icon-ipad-76x76.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="apple/apple-touch-icon-iphone-retina-120x120.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="apple/apple-touch-icon-ipad-retina-152x152.png">
+
+    <link href="UpBlazor.WebUI.styles.css" rel="stylesheet"/>
+    <link href="_content/AntDesign/css/ant-design-blazor.css" rel="stylesheet" />
+    <script src="_content/AntDesign/js/ant-design-blazor.js"></script>
+    <link href="css/app.css" rel="stylesheet"/>
+
+    <script src="https://unpkg.com/@@antv/g2plot@1.1.28/dist/g2plot.js"></script>
+    <script src="_content/AntDesign.Charts/ant-design-charts-blazor.js"></script>
+</head>
+
+<body>
+    <div id="app">
+        <div class="ant-layout ant-layout-sider" id="upblazor-splash">
+            <div>
+                <img src="/img/up-logo-light-transparent-bg.svg" style="max-height: 30vh; aspect-ratio: 1/1"/>
+            </div>
+            <h1 style="color: #fff; padding: 1rem">Blazor</h1>
+            <div id="loading"></div>
+        </div>
+    </div>
+
+    <div id="blazor-error-ui">
+        An unhandled error has occurred.
+        <a href="" class="reload">Reload</a>
+        <a class="dismiss">🗙</a>
+    </div>
+    <script src="_framework/blazor.webassembly.js"></script>
+</body>
+
+</html>

@@ -7,6 +7,7 @@ using MediatR;
 using Up.NET.Api.Accounts;
 using UpBlazor.Application.Features.Up;
 using UpBlazor.Application.Services;
+using UpBlazor.Core.Exceptions;
 using UpBlazor.Core.Models;
 using UpBlazor.Core.Models.Enums;
 using UpBlazor.Core.Repositories;
@@ -22,9 +23,10 @@ public class GetIncomePlannerQueryHandler : IRequestHandler<GetIncomePlannerQuer
     private readonly INormalizedAggregateRepository _normalizedAggregateRepository;
     private readonly IRecurringExpenseRepository _recurringExpenseRepository;
     private readonly ISavingsPlanRepository _savingsPlanRepository;
+    private readonly IIncomeRepository _incomeRepository;
     private readonly IMediator _mediator;
 
-    public GetIncomePlannerQueryHandler(IExpenseRepository expenseRepository, ICurrentUserService currentUserService, INormalizedAggregateRepository normalizedAggregateRepository, IRecurringExpenseRepository recurringExpenseRepository, ISavingsPlanRepository savingsPlanRepository, IMediator mediator)
+    public GetIncomePlannerQueryHandler(IExpenseRepository expenseRepository, ICurrentUserService currentUserService, INormalizedAggregateRepository normalizedAggregateRepository, IRecurringExpenseRepository recurringExpenseRepository, ISavingsPlanRepository savingsPlanRepository, IMediator mediator, IIncomeRepository incomeRepository)
     {
         _expenseRepository = expenseRepository;
         _currentUserService = currentUserService;
@@ -32,12 +34,21 @@ public class GetIncomePlannerQueryHandler : IRequestHandler<GetIncomePlannerQuer
         _recurringExpenseRepository = recurringExpenseRepository;
         _savingsPlanRepository = savingsPlanRepository;
         _mediator = mediator;
+        _incomeRepository = incomeRepository;
     }
 
     public async Task<IncomePlannerDto> Handle(GetIncomePlannerQuery request, CancellationToken cancellationToken)
     {
         // TODO: Should this be 4 separate queries?
         var userId = await _currentUserService.GetUserIdAsync(cancellationToken);
+
+        var incomes = await _incomeRepository.GetAllByUserIdAsync(userId, cancellationToken);
+
+        if (incomes.All(x => x.Id != request.Income.Id))
+        {
+            throw new BadRequestException("Income not found");
+        }
+        
         var expenses = await _expenseRepository.GetAllByUserIdAsync(userId, cancellationToken);
         var normalizedAggregate = await _normalizedAggregateRepository.GetByUserIdAsync(userId, cancellationToken);
         var recurringExpenses = await _recurringExpenseRepository.GetAllByUserIdAsync(userId, cancellationToken);
@@ -101,7 +112,7 @@ public class GetIncomePlannerQueryHandler : IRequestHandler<GetIncomePlannerQuer
 
     private static void GetFinalBudget(GetIncomePlannerQuery request, IncomePlannerDto output, IReadOnlyList<AccountResource> accounts)
     {
-        output.FinalBudget = new Dictionary<AccountResource, decimal>();
+        output.FinalBudget = new Dictionary<string, decimal>();
 
         var unbudgetedMoney = output.UnbudgetedMoney;
 
@@ -125,7 +136,7 @@ public class GetIncomePlannerQueryHandler : IRequestHandler<GetIncomePlannerQuer
                 total += request.Income.ExactMoney * percentSaving.Amount.Percent.Value;
             }
 
-            output.FinalBudget[account] = total;
+            output.FinalBudget[account.Id] = total;
         }
     }
 

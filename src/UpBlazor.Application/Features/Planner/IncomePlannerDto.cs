@@ -13,5 +13,5 @@ public class IncomePlannerDto
 
     public decimal UnbudgetedMoney { get; set; }
 
-    public Dictionary<AccountResource, decimal> FinalBudget { get; set; }
+    public Dictionary<string, decimal> FinalBudget { get; set; }
 }

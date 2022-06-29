@@ -10,6 +10,51 @@
     <ItemGroup>
       <_ContentIncludedByDefault Remove="wwwroot\css\bootstrap\bootstrap.min.css" />
       <_ContentIncludedByDefault Remove="wwwroot\css\bootstrap\bootstrap.min.css.map" />
+      <_ContentIncludedByDefault Remove="wwwroot\img\banner\form-components.png" />
+      <_ContentIncludedByDefault Remove="wwwroot\img\banner\graph.png" />
+      <_ContentIncludedByDefault Remove="wwwroot\img\banner\notifications.png" />
+      <_ContentIncludedByDefault Remove="wwwroot\img\banner\responsive-sider.png" />
+      <_ContentIncludedByDefault Remove="wwwroot\img\banner\status-with-form.png" />
+      <_ContentIncludedByDefault Remove="wwwroot\img\banner\table.png" />
+      <_ContentIncludedByDefault Remove="wwwroot\img\up-logo-light-transparent-bg.svg" />
+      <_ContentIncludedByDefault Remove="wwwroot\img\up-logo-transparent.svg" />
+      <_ContentIncludedByDefault Remove="Pages\Error.cshtml" />
+      <_ContentIncludedByDefault Remove="Pages\_Host.cshtml" />
+      <_ContentIncludedByDefault Remove="Pages\AccessDenied.razor" />
+      <_ContentIncludedByDefault Remove="Pages\Admin\ComponentExplorer\Demos\ExpenseSourceInputDemo.razor" />
+      <_ContentIncludedByDefault Remove="Pages\Admin\ComponentExplorer\Demos\UserDropdownDemo.razor" />
+      <_ContentIncludedByDefault Remove="Pages\Admin\ComponentExplorer\Index.razor" />
+      <_ContentIncludedByDefault Remove="Pages\Admin\Notifications\CreateNotificationButton.razor" />
+      <_ContentIncludedByDefault Remove="Pages\Admin\Notifications\Index.razor" />
+      <_ContentIncludedByDefault Remove="Pages\Admin\Users\Index.razor" />
+      <_ContentIncludedByDefault Remove="Pages\Budget\Expenses\CreateExpense.razor" />
+      <_ContentIncludedByDefault Remove="Pages\Budget\Expenses\ExpensesTable.razor" />
+      <_ContentIncludedByDefault Remove="Pages\Budget\Expenses\Index.razor" />
+      <_ContentIncludedByDefault Remove="Pages\Budget\Expenses\RecurringExpensesTable.razor" />
+      <_ContentIncludedByDefault Remove="Pages\Budget\Goals\CreateGoal.razor" />
+      <_ContentIncludedByDefault Remove="Pages\Budget\Goals\GoalsTable.razor" />
+      <_ContentIncludedByDefault Remove="Pages\Budget\Goals\Index.razor" />
+      <_ContentIncludedByDefault Remove="Pages\Budget\Income\CreateIncome.razor" />
+      <_ContentIncludedByDefault Remove="Pages\Budget\Income\IncomeTable.razor" />
+      <_ContentIncludedByDefault Remove="Pages\Budget\Income\Index.razor" />
+      <_ContentIncludedByDefault Remove="Pages\Budget\SavingsPlan\CreateSavingsPlan.razor" />
+      <_ContentIncludedByDefault Remove="Pages\Budget\SavingsPlan\Index.razor" />
+      <_ContentIncludedByDefault Remove="Pages\Budget\SavingsPlan\SavingsPlanTable.razor" />
+      <_ContentIncludedByDefault Remove="Pages\Budget\SavingsPlan\SingleSavingsPlan.razor" />
+      <_ContentIncludedByDefault Remove="Pages\Home.razor" />
+      <_ContentIncludedByDefault Remove="Pages\Insights\Analytics\Index.razor" />
+      <_ContentIncludedByDefault Remove="Pages\Insights\Forecast\Index.razor" />
+      <_ContentIncludedByDefault Remove="Pages\Insights\Planner\Index.razor" />
+      <_ContentIncludedByDefault Remove="Pages\Insights\Planner\SingleIncomePlanner.razor" />
+      <_ContentIncludedByDefault Remove="Pages\Insights\Transactions\Index.razor" />
+      <_ContentIncludedByDefault Remove="Pages\Landing\Index.razor" />
+      <_ContentIncludedByDefault Remove="Pages\Notifications.razor" />
+      <_ContentIncludedByDefault Remove="Pages\Settings\AccessToken\Index.razor" />
+      <_ContentIncludedByDefault Remove="Pages\Settings\TwoUp\ConnectWithPlayer2.razor" />
+      <_ContentIncludedByDefault Remove="Pages\Settings\TwoUp\Index.razor" />
+      <_ContentIncludedByDefault Remove="Pages\Settings\TwoUp\TwoUpConnectRequests.razor" />
+      <_ContentIncludedByDefault Remove="Pages\Settings\TwoUp\TwoUpTable.razor" />
+      <_ContentIncludedByDefault Remove="Pages\SignoutSuccess.razor" />
     </ItemGroup>
 
     <ItemGroup>
@@ -18,7 +63,6 @@
       <PackageReference Include="Humanizer.Core" Version="2.13.14" />
       <PackageReference Include="HUp.NET" Version="1.2.0" />
       <PackageReference Include="Marten" Version="4.3.0" />
-      <PackageReference Include="Microsoft.AspNetCore.Authentication.MicrosoftAccount" Version="6.0.0" />
       <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.14.0" />
       <PackageReference Include="Serilog" Version="2.10.0" />
       <PackageReference Include="Serilog.AspNetCore" Version="4.1.0" />
@@ -30,13 +74,6 @@
       <ProjectReference Include="..\UpBlazor.Application\UpBlazor.Application.csproj" />
       <ProjectReference Include="..\UpBlazor.Core\UpBlazor.Core.csproj" />
       <ProjectReference Include="..\UpBlazor.Infrastructure\UpBlazor.Infrastructure.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Content Include="wwwroot\.well-known\microsoft-identity-association.json">
-        <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-        <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-      </Content>
     </ItemGroup>
 
     <ItemGroup>

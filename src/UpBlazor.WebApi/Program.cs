@@ -7,15 +7,23 @@ using UpBlazor.Core.Models;
 using UpBlazor.Core.Repositories;
 using UpBlazor.Infrastructure.Repositories;
 using UpBlazor.Infrastructure.Services;
+using UpBlazor.WebApi;
 using Weasel.Postgresql;
 
 var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
 
-builder.Services.AddControllers();
+builder.Services.AddControllers(options =>
+{
+    options.Filters.Add<HttpResponseExceptionFilter>();
+});
 
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddRouting(options =>
+{
+    options.LowercaseUrls = true;
+});
+
+builder.Services.AddOpenApiDocument();
 
 services.AddApplication();
 
@@ -31,7 +39,7 @@ services.AddAuthentication(MicrosoftAccountDefaults.AuthenticationScheme)
 
 services.AddAuthorization(options =>
 {
-    options.AddPolicy(UpBlazor.WebApi.Constants.AllowedEmailAuthorizationPolicy, policy =>
+    options.AddPolicy(Constants.AllowedEmailAuthorizationPolicy, policy =>
     {
         policy.RequireAuthenticatedUser()
             .RequireClaim(ClaimTypes.Email)
@@ -40,7 +48,7 @@ services.AddAuthorization(options =>
             {
                 var emailAddress = context.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Email)?.Value;
                 var allowedEmails = builder.Configuration
-                    .GetSection(UpBlazor.WebApi.Constants.AllowedEmailAuthorizationPolicy)
+                    .GetSection(Constants.AllowedEmailAuthorizationPolicy)
                     .GetChildren()
                     .Select(x => x.Value)
                     .ToArray();
@@ -54,7 +62,7 @@ services.AddAuthorization(options =>
             });
     });
 
-    options.AddPolicy(UpBlazor.WebApi.Constants.AdminAuthorizationPolicy, policy =>
+    options.AddPolicy(Constants.AdminAuthorizationPolicy, policy =>
     {
         policy.RequireAuthenticatedUser()
             .RequireClaim(ClaimTypes.Email)
@@ -64,7 +72,7 @@ services.AddAuthorization(options =>
                     ?.Value;
 
                 var adminEmails = builder.Configuration
-                    .GetSection(UpBlazor.WebApi.Constants.AdminAuthorizationPolicy)
+                    .GetSection(Constants.AdminAuthorizationPolicy)
                     .GetChildren()
                     .Select(x => x.Value)
                     .ToArray();
@@ -121,8 +129,8 @@ var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseOpenApi();
+    app.UseSwaggerUi3();
 }
 
 app.UseAuthentication();

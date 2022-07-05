@@ -1,4 +1,4 @@
-﻿namespace UpBlazor.Web
+﻿namespace UpBlazor.WebApi
 {
     public static class Constants
     {

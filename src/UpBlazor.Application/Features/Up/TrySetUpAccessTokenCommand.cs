@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using UpBlazor.Application.Services;
+using UpBlazor.Core.Exceptions;
 using UpBlazor.Core.Models;
 using UpBlazor.Core.Repositories;
 
@@ -30,7 +31,7 @@ public class TrySetUpAccessTokenCommandHandler : IRequestHandler<TrySetUpAccessT
         if (!pingResponse.Success)
         {
             // Bad token
-            throw new Exception("You did not input a valid access token - did you copy and paste the whole token?");
+            throw new BadRequestException("You did not input a valid access token - did you copy and paste the whole token?");
         }
 
         var userId = await _currentUserService.GetUserIdAsync(cancellationToken);

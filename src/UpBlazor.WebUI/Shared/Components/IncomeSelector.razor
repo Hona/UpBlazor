@@ -1,5 +1,4 @@
-﻿@using UpBlazor.Application.Features.Incomes
-@inject IMediator _mediator
+﻿@inject IncomesClient IncomesClient
 
 @if (_loading)
 {
@@ -38,7 +37,7 @@ else
     {
         _loading = true;
 
-        _incomes = await _mediator.Send(new GetIncomesQuery());
+        _incomes = await IncomesClient.GetIncomesAsync();
         
         if (SelectFirst)
         {

@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
+using UpBlazor.Application.Services;
+using UpBlazor.Core.Exceptions;
 using UpBlazor.Core.Models;
 using UpBlazor.Core.Repositories;
 
@@ -13,14 +16,27 @@ public record GetSavingsPlansQuery(Guid IncomeId) : IRequest<IReadOnlyList<Savin
 public class GetSavingsPlansQueryHandler : IRequestHandler<GetSavingsPlansQuery, IReadOnlyList<SavingsPlan>>
 {
     private readonly ISavingsPlanRepository _savingsPlanRepository;
-
-    public GetSavingsPlansQueryHandler(ISavingsPlanRepository savingsPlanRepository)
+    private readonly IIncomeRepository _incomeRepository;
+    private readonly ICurrentUserService _currentUserService;
+    
+    public GetSavingsPlansQueryHandler(ISavingsPlanRepository savingsPlanRepository, IIncomeRepository incomeRepository, ICurrentUserService currentUserService)
     {
         _savingsPlanRepository = savingsPlanRepository;
+        _incomeRepository = incomeRepository;
+        _currentUserService = currentUserService;
     }
 
     public async Task<IReadOnlyList<SavingsPlan>> Handle(GetSavingsPlansQuery request, CancellationToken cancellationToken)
     {
+        var userId = await _currentUserService.GetUserIdAsync(cancellationToken);
+
+        var userIncomes = await _incomeRepository.GetAllByUserIdAsync(userId, cancellationToken);
+
+        if (userIncomes.All(x => x.Id != request.IncomeId))
+        {
+            throw new BadRequestException("Income not found");
+        }
+        
         var output = await _savingsPlanRepository.GetAllByIncomeIdAsync(request.IncomeId, cancellationToken);
         return output;
     }

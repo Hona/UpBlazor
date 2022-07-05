@@ -132,7 +132,7 @@ public class GetTotalForecastQueryHandler : IRequestHandler<GetTotalForecastQuer
                     var incomePlanner = incomePlanners[todaysIncome];
 
                     balance.balance += incomePlanner.FinalBudget
-                        .First(x => x.Key.Id == account.Id)
+                        .First(x => x.Key == account.Id)
                         .Value;
 
                     // Income planner's final budget already has deducted the recurring expenses on a day average.

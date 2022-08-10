@@ -138,7 +138,7 @@ namespace UpBlazor.ApiClient
         public virtual async System.Threading.Tasks.Task<FileResponse> SignoutAsync(System.Threading.CancellationToken cancellationToken)
         {
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/signout");
+            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/authentication/signout");
 
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -208,7 +208,7 @@ namespace UpBlazor.ApiClient
         public virtual async System.Threading.Tasks.Task<FileResponse> SwitchUserAsync(System.Threading.CancellationToken cancellationToken)
         {
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/switch-user");
+            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/authentication/switch-user");
 
             var client_ = _httpClient;
             var disposeClient_ = false;

@@ -20,9 +20,9 @@ jobs:
     - name: Restore dependencies
       run: dotnet restore
     - name: Build
-      run: dotnet build --no-Restore
+      run: dotnet build --no-restore
       env:
-        ASPNETCORE_ConnectionStrings__Marten: "User ID = user;Password=asdf;Server=postgres;Port=5432;Database=upblazor;Integrated Security=true;Pooling=false"
+        ASPNETCORE_ConnectionStrings--Marten: "User ID = user;Password=asdf;Server=postgres;Port=5432;Database=upblazor;Integrated Security=true;Pooling=false"
 
     - name: Test
       run: dotnet test --no-build --verbosity normal

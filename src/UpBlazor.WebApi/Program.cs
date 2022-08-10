@@ -46,6 +46,8 @@ services.AddAuthentication(MicrosoftAccountDefaults.AuthenticationScheme)
         options.ClientSecret = builder.Configuration["Authentication:Microsoft:ClientSecret"];
         options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
         options.AuthorizationEndpoint = MicrosoftAccountDefaults.AuthorizationEndpoint + "?prompt=select_account";
+        
+        options.CallbackPath = "/api/signin-microsoft";
     });
 
 services.AddAuthorization(options =>

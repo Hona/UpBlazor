@@ -9,24 +9,6 @@ on:
 jobs:
   build:
 
-    runs-on: ubuntu-latest
-
-    steps:
-    - uses: actions/checkout@v2
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: 6.0.x
-    - name: Restore dependencies
-      run: dotnet restore
-    - name: Build
-      run: dotnet build --no-restore
-      env:
-        ConnectionStrings__Marten: "User ID = postgres;Password=postgres;Server=postgres;Port=5432;Database=postgres;"
-
-    - name: Test
-      run: dotnet test --no-build --verbosity normal
-
     services:
       # Label used to access the service container
       postgres:
@@ -41,3 +23,21 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 6.0.x
+    - name: Restore dependencies
+      run: dotnet restore
+    - name: Build
+      run: dotnet build --no-restore
+      env:
+        ConnectionStrings__Marten: "Server=postgres;Port=5432;Database=postgres;User Id=postgres;Password=postgres;"
+
+    - name: Test
+      run: dotnet test --no-build --verbosity normal

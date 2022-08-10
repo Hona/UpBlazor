@@ -9,6 +9,8 @@ services:
     restart: unless-stopped
     ports:
       - 9994:80
+    depends_on:
+      - api
   api:
     build:
       dockerfile: src/UpBlazor.WebApi/Dockerfile
@@ -21,6 +23,8 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
       - ConnectionStrings__Marten=User ID = okr;Password=o32342134k4r%Y#%Y345yRasdf;Server=postgres;Port=5432;Database=okr_db;Integrated Security=true;Pooling=true
+    depends_on:
+      - postgres
   postgres:
     image: postgres:latest
     container_name: UpBlazorPostgres

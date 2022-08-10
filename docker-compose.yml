@@ -2,18 +2,23 @@ version: "3.8"
 services:
   frontend:
     build:
-      dockerfile: src/UpBlazor.Web/Dockerfile
+      dockerfile: src/UpBlazor.WebUI/Dockerfile
       context: .
     image: upblazor-frontend
     container_name: UpBlazorFrontend
     restart: unless-stopped
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Production
-      - ASPNETCORE_ConnectionStrings__Marten=User ID = okr;Password=o32342134k4r%Y#%Y345yRasdf;Server=postgres;Port=5432;Database=okr_db;Integrated Security=true;Pooling=true
     volumes:
       - ./config/appsettings.json:/app/appsettings.json
-    ports:
-      - 5001:80
+  api:
+    build:
+      dockerfile: src/UpBlazor.WebApi/Dockerfile
+      context: .
+    image: upblazor-api
+    container_name: UpBlazorApi
+    restart: unless-stopped
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ConnectionStrings__Marten=User ID = okr;Password=o32342134k4r%Y#%Y345yRasdf;Server=postgres;Port=5432;Database=okr_db;Integrated Security=true;Pooling=true
   postgres:
     image: postgres:latest
     container_name: UpBlazorPostgres
@@ -23,3 +28,7 @@ services:
       - POSTGRES_DB=okr_db
     volumes:
       - ./data:/var/lib/postgresql/data
+  proxy:
+    image: nginx
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf

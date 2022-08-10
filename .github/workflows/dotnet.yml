@@ -36,6 +36,7 @@ jobs:
         env:
           POSTGRES_USER: user
           POSTGRES_PASSWORD: asdf
+          POSTGRES_DB: upblazor
         # Set health checks to wait until postgres has started
         options: >-
           --health-cmd pg_isready

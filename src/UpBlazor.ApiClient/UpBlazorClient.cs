@@ -5058,7 +5058,7 @@ namespace UpBlazor.ApiClient
         public Money Amount { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("paidByDate")]
-        public System.DateTimeOffset PaidByDate { get; set; }
+        public System.DateTime PaidByDate { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("fromIncomeId")]
         public System.Guid? FromIncomeId { get; set; }
@@ -5097,7 +5097,7 @@ namespace UpBlazor.ApiClient
         public Money Money { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("paidByDate")]
-        public System.DateTimeOffset PaidByDate { get; set; }
+        public System.DateTime PaidByDate { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("fromSaverId")]
         public string FromSaverId { get; set; }
@@ -5187,7 +5187,7 @@ namespace UpBlazor.ApiClient
         public string Name { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("date")]
-        public System.DateTimeOffset Date { get; set; }
+        public System.DateTime Date { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("amount")]
         public decimal Amount { get; set; }
@@ -5205,7 +5205,7 @@ namespace UpBlazor.ApiClient
         public string Name { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("date")]
-        public System.DateTimeOffset Date { get; set; }
+        public System.DateTime Date { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("amount")]
         public decimal Amount { get; set; }
@@ -5223,7 +5223,7 @@ namespace UpBlazor.ApiClient
         public string Name { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("startDate")]
-        public System.DateTimeOffset StartDate { get; set; }
+        public System.DateTime StartDate { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("exactMoney")]
         public decimal ExactMoney { get; set; }
@@ -5266,7 +5266,7 @@ namespace UpBlazor.ApiClient
         public string Name { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("startDate")]
-        public System.DateTimeOffset StartDate { get; set; }
+        public System.DateTime StartDate { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("exactMoney")]
         public decimal ExactMoney { get; set; }
@@ -5354,7 +5354,7 @@ namespace UpBlazor.ApiClient
         public System.Guid Id { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("createdAt")]
-        public System.DateTimeOffset CreatedAt { get; set; }
+        public System.DateTime CreatedAt { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("title")]
         public string Title { get; set; }
@@ -5381,10 +5381,10 @@ namespace UpBlazor.ApiClient
         public string GivenName { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("createdAt")]
-        public System.DateTimeOffset CreatedAt { get; set; }
+        public System.DateTime CreatedAt { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("updatedAt")]
-        public System.DateTimeOffset? UpdatedAt { get; set; }
+        public System.DateTime? UpdatedAt { get; set; }
 
     }
 
@@ -5463,7 +5463,7 @@ namespace UpBlazor.ApiClient
         public Money Amount { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("startDate")]
-        public System.DateTimeOffset StartDate { get; set; }
+        public System.DateTime StartDate { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("fromSaverId")]
         public string FromSaverId { get; set; }
@@ -5484,7 +5484,7 @@ namespace UpBlazor.ApiClient
         public string Name { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("startDate")]
-        public System.DateTimeOffset StartDate { get; set; }
+        public System.DateTime StartDate { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("interval")]
         [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter))]
@@ -5561,7 +5561,7 @@ namespace UpBlazor.ApiClient
         public string RequesteeId { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("createdDate")]
-        public System.DateTimeOffset CreatedDate { get; set; }
+        public System.DateTime CreatedDate { get; set; }
 
     }
 
@@ -5623,7 +5623,7 @@ namespace UpBlazor.ApiClient
         public MoneyObject Balance { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("createdAt")]
-        public System.DateTimeOffset CreatedAt { get; set; }
+        public System.DateTime CreatedAt { get; set; }
 
     }
 
@@ -5757,10 +5757,10 @@ namespace UpBlazor.ApiClient
         public MoneyObject ForeignAmount { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("settledAt")]
-        public System.DateTimeOffset? SettledAt { get; set; }
+        public System.DateTime? SettledAt { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("createdAt")]
-        public System.DateTimeOffset CreatedAt { get; set; }
+        public System.DateTime CreatedAt { get; set; }
 
     }
 
@@ -5937,10 +5937,10 @@ namespace UpBlazor.ApiClient
         public string GivenName { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("createdAt")]
-        public System.DateTimeOffset CreatedAt { get; set; }
+        public System.DateTime CreatedAt { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("updatedAt")]
-        public System.DateTimeOffset? UpdatedAt { get; set; }
+        public System.DateTime? UpdatedAt { get; set; }
 
         [System.Text.Json.Serialization.JsonPropertyName("token")]
         [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter))]

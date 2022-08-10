@@ -11,7 +11,7 @@ COPY ["src/UpBlazor.Core/UpBlazor.Core.csproj", "UpBlazor.Core/"]
 COPY ["src/UpBlazor.Infrastructure/UpBlazor.Infrastructure.csproj", "UpBlazor.Infrastructure/"]
 RUN dotnet restore "src/UpBlazor.WebApi/UpBlazor.WebApi.csproj"
 COPY . .
-WORKDIR "/src/UpBlazor.WebApi"
+WORKDIR "/src/src/UpBlazor.WebApi"
 RUN dotnet build "UpBlazor.WebApi.csproj" -c Release -o /app/build
 
 FROM build AS publish

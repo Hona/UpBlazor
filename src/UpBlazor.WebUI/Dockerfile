@@ -10,7 +10,7 @@ COPY ["src/UpBlazor.ApiClient/UpBlazor.ApiClient.csproj", "UpBlazor.ApiClient/"]
 COPY ["src/UpBlazor.Core/UpBlazor.Core.csproj", "UpBlazor.Core/"]
 RUN dotnet restore "src/UpBlazor.WebUI/UpBlazor.WebUI.csproj"
 COPY . .
-WORKDIR "/src/UpBlazor.WebUI"
+WORKDIR "/src/src/UpBlazor.WebUI"
 RUN dotnet build "UpBlazor.WebUI.csproj" -c Release -o /app/build
 
 FROM build AS publish

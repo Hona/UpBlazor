@@ -22,7 +22,7 @@ jobs:
     - name: Build
       run: dotnet build --no-restore
       env:
-        ConnectionStrings__Marten: "User ID = user;Password=asdf;Server=postgres;Port=5432;Database=upblazor;Integrated Security=true;Pooling=false"
+        ConnectionStrings__Marten: "User ID = postgres;Password=postgres;Server=postgres;Port=5432;Database=postgres;"
 
     - name: Test
       run: dotnet test --no-build --verbosity normal
@@ -34,15 +34,10 @@ jobs:
         image: postgres
         # Provide the password for postgres
         env:
-          POSTGRES_USER: user
-          POSTGRES_PASSWORD: asdf
-          POSTGRES_DB: upblazor
+          POSTGRES_PASSWORD: postgres
         # Set health checks to wait until postgres has started
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
-        ports:
-          # Maps tcp port 5432 on service container to the host
-          - 5432:5432

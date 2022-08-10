@@ -143,6 +143,13 @@ app.UseForwardedHeaders(new ForwardedHeadersOptions()
     ForwardedHeaders = ForwardedHeaders.XForwardedProto | ForwardedHeaders.XForwardedHost 
 });
 
+app.Use(async (context, next) =>
+{
+    context.Request.Protocol = "https";
+    
+    await next(context);
+});
+
 app.UseCors(options =>
 {
     options.AllowAnyHeader()

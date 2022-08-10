@@ -75,7 +75,7 @@ public class NotificationsController : Controller
         {
             Id = id
         }));
-        
+
         return Ok(output);
     }
 

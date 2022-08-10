@@ -23,7 +23,6 @@ builder.Services.AddControllers(options =>
     {
         // Serialise enums as string
         options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
-        options.JsonSerializerOptions.Converters.Add(new JsonMicrosoftDateTimeOffsetConverter());
     });
 
 builder.Services.AddRouting(options =>

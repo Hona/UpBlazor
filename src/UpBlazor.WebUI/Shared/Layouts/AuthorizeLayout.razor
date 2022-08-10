@@ -1,0 +1,12 @@
+@inherits LayoutComponentBase
+
+<AuthorizeView Policy="AllowedEmails">
+    <Authorized>
+        <MainLayoutInner>
+            @Body
+        </MainLayoutInner>
+    </Authorized>
+    <NotAuthorized>
+        <RedirectToLogin/>
+    </NotAuthorized>
+</AuthorizeView>

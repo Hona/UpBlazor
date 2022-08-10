@@ -1,0 +1,22 @@
+﻿@layout MainLayout
+@page "/access-denied"
+
+@inject NavigationManager _navigationManager
+
+<Result
+    Status="error"
+    Title="Access Denied"
+    SubTitle="Please check you are signing in as an authorized user (based on your microsoft email address). Please contact Luke if you believe you should have access."
+>
+    <Extra>
+        <Template>
+            <Button Type="primary" OnClick="@(() => NavigateTo("/home"))">Home</Button>
+            <Button OnClick="@(() => NavigateTo("/signout"))">Signout</Button>
+        </Template>
+    </Extra>
+</Result>
+
+@code
+{
+    private void NavigateTo(string uri) => _navigationManager.NavigateTo(uri, true);
+}

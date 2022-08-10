@@ -1,0 +1,64 @@
+@page "/home"
+
+@inject NavigationManager _navigationManager
+@inject UpClient _upClient
+
+@if (_loading)
+{
+    <Spin />
+}
+else
+{
+    <div style="display: flex; justify-content: center; align-items: center; flex-wrap: wrap">
+        @foreach (var transactionAccount in _accounts.Where(x => x.Attributes.AccountType == AccountType.Transactional))
+        {
+            <div @onclick='() => _navigationManager.NavigateTo($"/insights/transactions/{transactionAccount.Id}")'>
+                <Card Title="@transactionAccount.Attributes.DisplayName"
+                      Bordered="@true"
+                      Hoverable="@true"
+                      Style="margin: 1rem">
+                    <Statistic Prefix="$" 
+                               Precision="2" 
+                               Value="@decimal.Parse(transactionAccount.Attributes.Balance.Value)" 
+                               TValue="decimal"/>
+                </Card>
+            </div>
+        }
+    </div>
+
+    <Title Level="4">Savers</Title>
+
+    <div style="display: flex; justify-content: center; align-items: center; flex-wrap: wrap">
+        @foreach (var saver in _accounts.Where(x => x.Attributes.AccountType == AccountType.Saver))
+        {
+            <div @onclick='() => _navigationManager.NavigateTo($"/insights/transactions/{saver.Id}")'>
+                <Card Title="@saver.Attributes.DisplayName"
+                      Bordered="@true"
+                      Hoverable="@true"
+                      Style="margin: 1rem">
+                    <Statistic Prefix="$" 
+                               Precision="2" 
+                               Value="@decimal.Parse(saver.Attributes.Balance.Value)" 
+                               TValue="decimal"/>
+                </Card>
+            </div>
+        }
+    </div>
+}
+
+@code
+{
+    private bool _loading;
+    private IReadOnlyList<AccountResource> _accounts;
+
+    protected override async Task OnInitializedAsync() => await ReloadAsync();
+
+    private async Task ReloadAsync()
+    {
+        _loading = true;
+        
+        _accounts = await _upClient.GetAccountsAsync();
+        
+        _loading = false;
+    }
+}

@@ -1,0 +1,90 @@
+﻿@using Humanizer
+
+@inject TwoUpClient TwoUpClient
+
+@if (_loading)
+{
+    <Spin />
+}
+else if (_requests.Any())
+{
+    <Card>
+        <AntList Bordered DataSource="@_requests" Size="large">
+            <Header>
+                <Title Level="4">
+                    Pending Requests
+                </Title>
+            </Header>
+            <ChildContent Context="item">
+                <ListItem>
+                    <Space Style="padding-right: 1rem">
+                        <SpaceItem>
+                            <Text>@item.RequesterName</Text>
+                        </SpaceItem>
+                        <SpaceItem>
+                            @item.RequesterMessage
+                        </SpaceItem>
+                    </Space>
+                    <Space>
+                        <SpaceItem>
+                            @((DateTime.Now - item.CreatedDate).Humanize() + " ago")
+                        </SpaceItem>
+                        <SpaceItem>
+                            <Button Loading="_acceptRequestLoading" OnClick="async () => await AcceptRequestAsync(item)">Accept</Button>
+                        </SpaceItem>
+                        <SpaceItem>
+                            <Button Loading="_acceptRequestLoading" OnClick="async () => await IgnoreRequestAsync(item)" Danger>Ignore</Button>
+                        </SpaceItem>
+                    </Space>
+                </ListItem>
+            </ChildContent>
+        </AntList>
+    </Card>
+        
+    <Divider />
+}
+
+@code
+{
+    private bool _acceptRequestLoading;
+    private bool _loading;
+
+    private IReadOnlyList<TwoUpRequest> _requests;
+
+    protected override async Task OnInitializedAsync() => await ReloadAsync();
+
+    private async Task ReloadAsync()
+    {
+        _loading = true;
+        
+        _requests = await TwoUpClient.GetRequestsAsync();
+
+        _loading = false;
+    }
+    
+    private async Task AcceptRequestAsync(TwoUpRequest request)
+    {
+        _acceptRequestLoading = true;
+
+        await TwoUpClient.AcceptRequestAsync(new TwoUpViewModel
+        {
+            RequesteeId = request.RequesteeId,
+            RequesterId = request.RequesterId
+        });
+        
+        _acceptRequestLoading = false;
+
+        await ReloadAsync();
+    }
+    
+    private async Task IgnoreRequestAsync(TwoUpRequest request)
+    {
+        _acceptRequestLoading = true;
+
+        await TwoUpClient.IgnoreRequestAsync(request.RequesterId);
+
+        _acceptRequestLoading = false;
+
+        await ReloadAsync();
+    }
+}

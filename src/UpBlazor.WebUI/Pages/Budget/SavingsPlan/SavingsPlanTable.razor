@@ -1,0 +1,61 @@
+﻿@inject SavingsPlanClient SavingsPlanClient
+@inject UpClient UpClient
+
+<Title Level="3">Income</Title>
+<Table DataSource="_savingsPlans" Loading="_loading">
+     <Column Title="Name" @bind-Field="@context.Name" Sortable/>
+     <Column Title="Exact" TData="decimal?" DataIndex="Amount.Exact" Format="$0.00" Sortable/>
+     <Column Title="Relative" TData="decimal?" DataIndex="Amount.Percent" Format="0%" Sortable/>
+     <SaverIdColumn Title="Saver" SaverId="@context.SaverId" Accounts="_accounts"/>
+     <ActionColumn>
+          <Space>
+               <SpaceItem>
+                    <Button Danger OnClick="async () => await DeleteAsync(context)">Remove</Button>
+               </SpaceItem>
+          </Space>
+     </ActionColumn>
+</Table>
+
+@code
+{
+     [Parameter]
+     public Income Income { get; set; }
+
+     private bool _loading;
+
+     private IReadOnlyList<SavingsPlan> _savingsPlans;
+     private IReadOnlyList<AccountResource> _accounts;
+
+     protected override async Task OnParametersSetAsync() => await ReloadAsync();
+
+     internal async Task ReloadAsync(bool forceReload = false)
+     {
+          _loading = true;
+          
+          if (forceReload)
+          {
+               StateHasChanged();
+          }
+
+          _savingsPlans = await SavingsPlanClient.GetSavingsPlansAsync(Income.Id);
+          _accounts = await UpClient.GetAccountsAsync();
+
+          _loading = false;
+          
+          if (forceReload)
+          {
+               StateHasChanged();
+          }
+     }
+
+     private async Task DeleteAsync(SavingsPlan savingsPlan)
+     {
+          _loading = true;
+
+          await SavingsPlanClient.DeleteSavingsPlanAsync(savingsPlan.Id);
+
+          _loading = false;
+
+          await ReloadAsync();
+     }
+}

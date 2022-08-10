@@ -1,0 +1,73 @@
+﻿@page "/admin/users"
+@layout AdminAuthorizeLayout
+
+@inject UsersClient UsersClient
+
+<Title Level="3">Users</Title>
+
+@if (_loading)
+{
+    <Spin />
+}
+else if (_allUsers is null || !_allUsers.Any())
+{
+    <Text>No users found.</Text>
+}
+else
+{
+    <Card>
+        <Statistic Value="_allUsers.Count" Title="Total Users"/>
+    </Card>
+
+    <Divider/>
+
+    <Table DataSource="_allUsers">
+        <Column @bind-Field="@context.Id"/>
+        <Column @bind-Field="@context.Email" 
+                Sortable/>
+        <Column @bind-Field="@context.GivenName"
+                Title="Given Name"
+                Sortable/>
+        <Column @bind-Field="@context.Token"
+                Title="Token"
+                Sortable>
+            @switch (context.Token)
+            {
+                case TokenType.NotSet:
+                    <Tag>None</Tag>
+                    break;
+                case TokenType.Demo:
+                    <Tag PresetColor="PresetColor.Volcano">Demo</Tag>
+                    break;
+                case TokenType.Real:
+                    <Tag PresetColor="PresetColor.Green">Real</Tag>
+                    break;
+            }
+        </Column>
+        <Column Title="Created At" 
+                @bind-Field="@context.CreatedAt" 
+                Format="dd/MM/yyyy hh:mm tt" 
+                Sortable/>
+        <Column Title="Updated At" 
+                @bind-Field="@context.UpdatedAt" 
+                Format="dd/MM/yyyy hh:mm tt" 
+                Sortable/>
+    </Table>
+}
+
+@code
+{
+    private bool _loading;
+    private IReadOnlyList<RegisteredUserDto> _allUsers;
+
+    protected override async Task OnInitializedAsync() => await ReloadAsync();
+
+    private async Task ReloadAsync()
+    {
+        _loading = true;
+
+        _allUsers = await UsersClient.GetAllAsync();
+        
+        _loading = false;
+    }
+}

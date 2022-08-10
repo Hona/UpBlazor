@@ -1,0 +1,35 @@
+﻿@inject UpClient _upClient
+
+<Select DataSource="_accounts" TItem="AccountResource" TItemValue="AccountResource"
+        LabelName="@($"{nameof(AccountResource.Attributes)}.{nameof(AccountResource.Attributes.DisplayName)}")"
+        @bind-Value="BoundContainer"
+        Placeholder="Select a saver..."
+        Loading="_loading"/>
+
+@code
+{
+    [Parameter]
+    public EventCallback<AccountResource> SelectedSaverChanged { get; set; }
+
+    [Parameter]
+    public AccountResource SelectedSaver { get; set; }
+
+    private AccountResource BoundContainer
+    {
+        get => SelectedSaver;
+        set => SelectedSaverChanged.InvokeAsync(value);
+    }
+
+    private IReadOnlyList<AccountResource> _accounts;
+
+    private bool _loading;
+    
+    protected override async Task OnInitializedAsync()
+    {
+        _loading = true;
+
+        _accounts = await _upClient.GetAccountsAsync();
+
+        _loading = false;
+    }
+}

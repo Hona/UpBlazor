@@ -1,0 +1,73 @@
+﻿@using System.ComponentModel.DataAnnotations
+@inject SavingsPlanClient SavingsPlanClient
+
+<Card Title="New Savings Plan">
+    <Form Model="_request"
+          LabelColSpan="4"
+          WrapperColSpan="20"
+          OnFinish="async () => await OnFormFinishAsync()"
+          Loading="_loading"
+          Context="formContext">
+        <FormItem Label="Name">
+            <Input DebounceMilliseconds="int.MaxValue" @bind-Value="@formContext.Name"/>
+        </FormItem>
+        <FormItem Label="Amount">
+            <InputGroup>
+                <MoneyInput @bind-Amount="@formContext.Amount"/>
+            </InputGroup>
+        </FormItem>
+        <FormItem Label="Saver">
+            <SaverSelector SelectedSaverChanged="x => _request.SaverId = x.Id"/>
+        </FormItem>
+        <FormItem WrapperColOffset="4" WrapperColSpan="20">
+            <Button Type="primary" HtmlType="submit">
+                Submit
+            </Button>
+        </FormItem>
+    </Form>
+</Card>
+
+@code
+{
+    [Parameter]
+    public Income Income { get; set; }
+    
+    [Parameter]
+    public EventCallback OnNewSavingsPlan { get; set; }
+    
+    private SavingsPlanRequest _request = new();
+
+    private bool _loading;
+    
+    private async Task OnFormFinishAsync()
+    {
+        _loading = true;
+
+        await SavingsPlanClient.CreateSavingsPlanAsync(new CreateSavingsPlanCommand
+        {
+            Name = _request.Name,
+            Amount = _request.Amount,
+            SaverId = _request.SaverId
+        });
+        
+        _request = new SavingsPlanRequest();
+        _loading = false;
+
+        if (OnNewSavingsPlan.HasDelegate)
+        {
+            await OnNewSavingsPlan.InvokeAsync();
+        }
+    }
+
+    private class SavingsPlanRequest
+    {
+        [Required]
+        public string Name { get; set; }
+
+        [Required]
+        public Money Amount { get; set; } = new();
+        
+        [Required]
+        public string SaverId { get; set; }
+    }
+}

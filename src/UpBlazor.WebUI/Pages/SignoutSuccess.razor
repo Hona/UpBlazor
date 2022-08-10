@@ -1,0 +1,16 @@
+﻿@layout MainLayout
+
+@page "/signout/success"
+
+@inject NavigationManager _navigationManager
+
+<Result
+    Status="success"
+    Title="Success"
+    SubTitle="You are now signed out.">
+    <Extra>
+        <Template>
+            <Button OnClick="@(() => _navigationManager.NavigateTo("/home"))">Sign In</Button>
+        </Template>
+    </Extra>
+</Result>

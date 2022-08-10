@@ -1,0 +1,92 @@
+﻿@page "/notifications"
+
+
+@inject NavigationManager _navigationManager
+@inject NotificationsClient _notificationsClient
+@inject TwoUpClient _twoUpClient
+
+<Title Level="3">Notifications</Title>
+
+<Card Style="width: 100%">
+    @if (_loading)
+    {
+        <Spin />
+    }
+    else
+    {
+        @if (!_twoUpRequests.Any() && !_unreadNotifications.Any())
+        {
+            <Result Icon="smile-outline"
+                    Title="All clear!"/>
+        }
+        else
+        {
+            @foreach (var response in _twoUpRequests)
+            {
+                <Alert Type="@AlertType.Info"
+                       ShowIcon="@true" Style="margin-bottom: 1.5rem">
+                    <MessageTemplate>
+                        <div style="display: flex; justify-content: space-between; align-items: center">
+                            <span>
+                                2Up Requested from @response.RequesterName
+                            </span>
+                            <Button OnClick='() => _navigationManager.NavigateTo("/settings/two-up")'>Review</Button>
+                        </div>
+                    </MessageTemplate>
+                    <ChildContent>
+                        "@response.RequesterMessage"
+                    </ChildContent>
+                </Alert>
+            }
+            
+            @foreach (var notification in _unreadNotifications)
+            {
+                <Alert Type="@AlertType.Info"
+                       ShowIcon="@true">
+                    <MessageTemplate>
+                        <div style="display: flex; justify-content: space-between; align-items: center">
+                            <span>
+                                @notification.Title
+                            </span>
+                            <Button OnClick="async () => await MarkAsRead(notification)">Done</Button>
+                        </div>
+                    </MessageTemplate>
+                    <ChildContent>
+                        "@notification.Description" - <Text Code>@notification.Author</Text>
+                    </ChildContent>
+                </Alert>
+            }
+        }
+    }
+</Card>
+
+@code
+{
+    private IReadOnlyList<ApiClient.Notification> _unreadNotifications;
+    private IReadOnlyList<TwoUpRequest> _twoUpRequests;
+
+    private bool _loading;
+
+    protected override async Task OnInitializedAsync() => await ReloadAsync();
+
+    private async Task ReloadAsync()
+    {
+        _loading = true;
+
+        _unreadNotifications = await _notificationsClient.GetAllNotificationsAsync(false);
+        _twoUpRequests = await _twoUpClient.GetRequestsAsync();
+        
+        _loading = false;
+    }
+
+    private async Task MarkAsRead(ApiClient.Notification notification)
+    {
+        _loading = true;
+
+        await _notificationsClient.ReadNotificationAsync(notification.Id);
+        
+        await ReloadAsync();
+
+        _loading = false;
+    }
+}

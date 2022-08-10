@@ -1,0 +1,64 @@
+﻿@inject ExpensesClient ExpensesClient
+@inject IncomesClient IncomesClient
+@inject UpClient UpClient
+
+<Title Level="3">Expenses</Title>
+
+<Table DataSource="_expenses" Loading="_loading">
+    <Column Title="Name" @bind-Field="@context.Name" Sortable/>
+    <Column Title="Exact" TData="decimal?" DataIndex="Money.Exact" Format="$0.00" Sortable/>
+    <Column Title="Relative" TData="decimal?" DataIndex="Money.Percent" Format="0%" Sortable/>
+    <Column Title="Paid By" @bind-Field="@context.PaidByDate" Format="dd/MM/yyyy" Sortable/>
+    <SaverIdColumn Title="From Saver" SaverId="@context.Id.ToString()" Accounts="_accounts"/>
+    <IncomeIdColumn Title="From Income" IncomeId="@context.Id" Incomes="_incomes"/>
+    <ActionColumn>
+        <Space>
+            <SpaceItem>
+                <Button Danger OnClick="async () => await DeleteAsync(context)">Remove</Button>
+            </SpaceItem>
+        </Space>
+    </ActionColumn>
+</Table>
+
+@code
+{
+    private bool _loading;
+
+    private IReadOnlyList<Expense> _expenses;
+    private IReadOnlyList<Income> _incomes;
+    private IReadOnlyList<AccountResource> _accounts;
+
+    protected override async Task OnInitializedAsync() => await ReloadAsync();
+
+    internal async Task ReloadAsync(bool forceReload = false)
+    {
+        _loading = true;
+        
+        if (forceReload)
+        {
+            StateHasChanged();
+        }
+
+        _expenses = await ExpensesClient.GetExpensesAsync();
+        _incomes = await IncomesClient.GetIncomesAsync();
+        _accounts = await UpClient.GetAccountsAsync();
+
+        _loading = false;
+
+        if (forceReload)
+        {
+            StateHasChanged();
+        }
+    }
+    
+    private async Task DeleteAsync(Expense expense)
+    {
+        _loading = true;
+
+        await ExpensesClient.DeleteExpenseAsync(expense.Id);
+
+        _loading = false;
+
+        await ReloadAsync();
+    }
+}

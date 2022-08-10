@@ -1,0 +1,65 @@
+﻿@inject NotificationsClient NotificationsClient
+
+<Form Model="@_createNotification"
+          OnFinish="HandleOk"
+          OnFinishFailed="HandleCancel"
+          LabelColSpan="4"
+          WrapperColSpan="20"
+          Loading="_formLoading">
+    <FormItem Label="Title">
+        <Input @bind-Value="@context.Title" 
+               DebounceMilliseconds="int.MaxValue"/>
+    </FormItem>
+    <FormItem Label="Description">
+        <TextArea @bind-Value="@context.Description" 
+                  MinRows="3" 
+                  DebounceMilliseconds="int.MaxValue"/>
+    </FormItem>
+    <FormItem WrapperColOffset="4" 
+              WrapperColSpan="20">
+        <Button Type="@ButtonType.Primary" 
+                HtmlType="submit">
+            Create
+        </Button>
+    </FormItem>
+</Form>
+
+@code {
+    private bool _formLoading;
+    private CreateNotification _createNotification = new();
+    
+    [Parameter]
+    public EventCallback OnNotificationCreated { get; set; }
+
+    private async Task HandleOk()
+    {
+        _formLoading = true;
+
+        await NotificationsClient.CreateNotificationAsync(new CreateNotificationCommand
+        {
+            Title = _createNotification.Title,
+            Description = _createNotification.Description
+        });
+        
+        _formLoading = false;
+        
+        if (OnNotificationCreated.HasDelegate)
+        {
+            await OnNotificationCreated.InvokeAsync();
+        }
+
+        _createNotification = new CreateNotification();
+    }
+    
+    private void HandleCancel()
+    {
+        _createNotification = new CreateNotification();
+        _formLoading = false;
+    }
+
+    private class CreateNotification
+    {
+        public string Title { get; set; }
+        public string Description { get; set; }
+    }
+}

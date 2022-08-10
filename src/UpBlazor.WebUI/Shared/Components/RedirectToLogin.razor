@@ -1,0 +1,24 @@
+﻿@using Microsoft.AspNetCore.Components.Authorization
+@inject NavigationManager _navigationManager
+
+@inject IConfiguration Configuration
+
+@code 
+{
+    [CascadingParameter]
+    private Task<AuthenticationState> AuthenticationStateTask { get; set; }
+    
+    protected override async Task OnInitializedAsync()
+    {
+        var authenticationState = await AuthenticationStateTask;
+        var user = authenticationState.User;
+        
+        if (user.Identity?.IsAuthenticated ?? false)
+        {
+            _navigationManager.NavigateTo("/access-denied");
+            return;
+        }
+        
+        _navigationManager.NavigateTo( Configuration["ApiUri"] + $"/api/Authentication/signin?return={Uri.EscapeDataString(_navigationManager.ToBaseRelativePath(_navigationManager.Uri))}", true);
+    }
+}

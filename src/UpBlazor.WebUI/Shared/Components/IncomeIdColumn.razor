@@ -1,0 +1,18 @@
+﻿<Column Title="@Title" TData="string">
+    @{
+        var income = Incomes.FirstOrDefault(x => x.Id == IncomeId);
+    }
+    @(income?.ToString() ?? string.Empty)
+</Column>
+
+@code
+{
+    [Parameter]
+    public Guid? IncomeId { get; set; }
+
+    [Parameter]
+    public string? Title { get; set; }
+    
+    [Parameter]
+    public IReadOnlyList<Income> Incomes { get; set; }
+}

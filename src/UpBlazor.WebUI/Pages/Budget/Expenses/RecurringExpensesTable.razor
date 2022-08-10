@@ -1,0 +1,62 @@
+﻿@inject RecurringExpensesClient RecurringExpensesClient
+@inject UpClient UpClient
+
+<Title Level="3">Recurring Expenses</Title>
+<Table DataSource="_recurringExpenses" Loading="_loading">
+    <Column Title="Name" @bind-Field="@context.Name" Sortable/>
+    <Column Title="Exact" TData="decimal?" DataIndex="Money.Exact" Format="$0.00" Sortable/>
+    <Column Title="Relative" TData="decimal?" DataIndex="Money.Percent" Format="0%" Sortable/>
+    <Column Title="Start Date" @bind-Field="@context.StartDate" Format="dd/MM/yyyy" Sortable/>
+    <Column Title="Interval Units" @bind-Field="@context.IntervalUnits" Sortable/>
+    <Column Title="Interval" @bind-Field="@context.Interval" Sortable/>
+    <SaverIdColumn Title="From Saver" SaverId="@context.SaverId" Accounts="_accounts"/>
+    <ActionColumn>
+        <Space>
+            <SpaceItem>
+                <Button Danger OnClick="async () => await DeleteAsync(context)">Remove</Button>
+            </SpaceItem>
+        </Space>
+    </ActionColumn>
+</Table>
+
+
+@code
+{
+    private bool _loading;
+
+    private IReadOnlyList<RecurringExpense> _recurringExpenses;
+    private IReadOnlyList<AccountResource> _accounts;
+
+    protected override async Task OnInitializedAsync() => await ReloadAsync();
+
+    internal async Task ReloadAsync(bool forceReload = false)
+    {
+        _loading = true;
+        
+        if (forceReload)
+        {
+            StateHasChanged();
+        }
+
+        _recurringExpenses = await RecurringExpensesClient.GetRecurringExpensesAsync();
+        _accounts = await UpClient.GetAccountsAsync();
+        
+        _loading = false;
+        
+        if (forceReload)
+        {
+            StateHasChanged();
+        }
+    }
+    
+    private async Task DeleteAsync(RecurringExpense expense)
+    {
+        _loading = true;
+
+        await RecurringExpensesClient.DeleteRecurringExpenseAsync(expense.Id);
+
+        _loading = false;
+
+        await ReloadAsync();
+    }
+}

@@ -1,0 +1,56 @@
+﻿@using System.Security.Claims
+
+@inject NavigationManager _navigationManager
+@inject NotificationsClient _notificationsClient
+
+<AuthorizeView>
+    <Authorized>
+        <div style="margin: 0 1.75rem;">
+            <a href="/notifications">
+                <Badge Count="_unreadNotifications">
+                    <Icon Style="font-size: 150%" Type="notification"/>
+                </Badge>
+            </a>
+        </div>
+        <Dropdown Placement="@Placement.BottomLeft">
+            <Overlay>
+                <Menu>
+                    <MenuItem OnClick='() => _navigationManager.NavigateTo("/signout", true)'>
+                        Sign out
+                    </MenuItem>
+                    <MenuDivider/>
+                    <MenuItem OnClick='() => _navigationManager.NavigateTo("/settings/up-access-token", true)'>
+                        Settings
+                    </MenuItem>
+                </Menu>
+            </Overlay>
+            <ChildContent>
+                <AntDesign.Button Icon="user" Loading="_loading">
+                    <span style="padding-left: 0.25rem">
+                        @(context.User.Identity?.Name ?? "User")
+                    </span>
+                </AntDesign.Button>
+            </ChildContent>
+        </Dropdown>
+    </Authorized>
+    <NotAuthorized>
+        <Button Type="primary" OnClick='() => _navigationManager.NavigateTo("/signin", true)' Loading="true">Sign in</Button>
+    </NotAuthorized>
+</AuthorizeView>
+
+@code
+{
+    private string _givenName;
+
+    private bool _loading;
+    private int _unreadNotifications;
+    
+    protected override async Task OnInitializedAsync()
+    {
+        _loading = true;
+
+        _unreadNotifications = await _notificationsClient.GetUnreadNotificationsCountAsync();
+        
+        _loading = false;
+    }
+}

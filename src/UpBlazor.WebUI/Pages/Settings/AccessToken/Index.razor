@@ -1,0 +1,142 @@
+﻿@page "/settings/up-access-token"
+
+@using System.ComponentModel
+@using System.ComponentModel.DataAnnotations
+
+@inject UpClient UpClient
+
+@if (_loading)
+{
+    <Spin />
+}
+else if (IsSet)
+{
+
+    if (_pingResponse == null)
+    {
+        <Result Status="error" Title="Could not access your account"/>
+    }
+    else
+    {
+        <Result Status="success" Title="Valid account access!" SubTitle="@($"Ping Status: {_pingResponse.Meta.StatusEmoji}")">
+            <SubTitleTemplate>
+                Ping Status: @_pingResponse.Meta.StatusEmoji
+            </SubTitleTemplate>
+        </Result>
+    }
+}
+else
+{
+    <Result Status="warning" Title="No access token has been set" SubTitle="Please follow the instructions below">
+        <Extra>
+            <Button Type="primary"><a href="https://api.up.com.au/getting_started" target="_blank" style="color: #fff">Get Access Token</a></Button>
+        </Extra>
+    </Result>
+}
+
+<Divider />
+
+<Form Model="@_setAccessToken"
+      LabelColSpan="4"
+      WrapperColSpan="20"
+      OnFinish="OnFinishAsync"
+      Style="width: 100%"
+      ValidateMessages="_errorMessages"
+      Loading="_formLoading">
+    <FormItem>
+        <Input DebounceMilliseconds="int.MaxValue" @bind-Value="@context.Value" />
+        <Text>Want to try it out? Use 'up:demo'</Text>
+    </FormItem>
+    <FormItem WrapperColOffset="4" WrapperColSpan="20">
+        <Button Type="@ButtonType.Primary" HtmlType="submit">
+            Save
+        </Button>
+        <Popover Title="Title" Trigger="@(new[] { Trigger.Click })">
+            <ContentTemplate>
+                Are you sure? <Button Danger Size="small" OnClick="OnClearAccessTokenClickAsync">Yes</Button>
+            </ContentTemplate>
+            <ChildContent>
+                <AntDesign.Button Danger Type="text">
+                    Clear Token
+                </AntDesign.Button>
+            </ChildContent>
+        </Popover>
+    </FormItem>
+</Form>
+
+@code
+{
+    private bool _loading;
+    private bool _formLoading;
+
+    private bool IsSet => _pingResponse != null;
+    
+    private FormValidateErrorMessages _errorMessages;
+    private PingResponse? _pingResponse;
+
+    private readonly SetAccessToken _setAccessToken = new();
+
+    protected override async Task OnInitializedAsync() => await ReloadAsync();
+
+    private async Task ReloadAsync()
+    {
+        _loading = true;
+
+        try
+        {
+            _pingResponse = await UpClient.PingAsync(false);
+        }
+        catch
+        {
+            _pingResponse = null;
+        }
+
+        _loading = false;
+    }
+    
+    private async Task OnFinishAsync(EditContext editContext)
+    {
+        _formLoading = true;
+
+        try
+        {
+            await UpClient.TrySetTokenAsync(_setAccessToken.Value);
+            
+            // Success
+            _errorMessages = null;
+            _setAccessToken.Value = string.Empty;
+        }
+        catch (Exception e)
+        {
+            _errorMessages = new FormValidateErrorMessages
+            {
+                Required = e.Message
+            };
+            _setAccessToken.Value = string.Empty;
+
+            _formLoading = false;
+            return;
+        }
+
+        _formLoading = false;
+
+        await ReloadAsync();
+    }
+
+    private async Task OnClearAccessTokenClickAsync()
+    {
+        _loading = true;
+
+        await UpClient.ClearTokenAsync();
+
+        _loading = false;
+        
+        await ReloadAsync();
+    }
+
+    private class SetAccessToken
+    {
+        [Required, DisplayName("API Access Token")]
+        public string Value { get; set; }
+    }
+}

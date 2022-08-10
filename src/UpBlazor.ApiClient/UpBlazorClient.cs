@@ -63,7 +63,7 @@ namespace UpBlazor.ApiClient
         public virtual async System.Threading.Tasks.Task<FileResponse> SigninAsync(string @return, System.Threading.CancellationToken cancellationToken)
         {
             var urlBuilder_ = new System.Text.StringBuilder();
-            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/signin?");
+            urlBuilder_.Append(BaseUrl != null ? BaseUrl.TrimEnd('/') : "").Append("/api/authentication/signin?");
             if (@return != null)
             {
                 urlBuilder_.Append(System.Uri.EscapeDataString("return") + "=").Append(System.Uri.EscapeDataString(ConvertToString(@return, System.Globalization.CultureInfo.InvariantCulture))).Append("&");

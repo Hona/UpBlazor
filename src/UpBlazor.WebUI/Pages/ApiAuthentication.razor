@@ -1,4 +1,4 @@
-﻿@page "/authentication/logged-in/{UserName}/{ExpiresDate}/{ReturnUri}"
+﻿@page "/authentication/logged-in/{UserName}/{ExpiresDate}/{ReturnUri}/{ClaimsRaw}"
 
 @layout EmptyLayout
 
@@ -17,6 +17,9 @@
     
     [Parameter]
     public string ReturnUri { get; set; }
+    
+    [Parameter]
+    public string ClaimsRaw { get; set; }
 
     protected override async Task OnParametersSetAsync()
     {
@@ -33,11 +36,7 @@
         {
             await LocalStorageService.SetItemAsync(LocalStorageKeys.LoggedIn, ExpiresDate);
             await LocalStorageService.SetItemAsync(LocalStorageKeys.UserName, UserName);
-            await LocalStorageService.SetItemAsync(LocalStorageKeys.Claims, new string[]
-            {
-                "allowedEmails",
-                "admin"
-            });
+            await LocalStorageService.SetItemAsync(LocalStorageKeys.Claims, ClaimsRaw.Split(','));
         }
         
         NavigationManager.NavigateTo(ReturnUri);

@@ -2,6 +2,8 @@
 
 @inject UpClient _upClient
 
+@inject NavigationManager NavigationManager
+
 <div style="display: flex; justify-content: center; align-items: center; width: 100%">
     @if (_loading)
     {
@@ -30,10 +32,24 @@
 {
     private bool _loading;
     private PingResponse? _response;
+    
+    private string _previousUrl = "/";
 
     protected override async Task OnInitializedAsync()
     {
+        NavigationManager.LocationChanged += NavigationManagerOnLocationChanged;
+
+        await RefreshAsync();
+    }
+
+    private async Task RefreshAsync(bool triggerStateChanges = false)
+    {
         _loading = true;
+
+        if (triggerStateChanges)
+        {
+            StateHasChanged();
+        }
 
         try
         {
@@ -45,5 +61,20 @@
         }
         
         _loading = false;
+
+        if (triggerStateChanges)
+        {
+            StateHasChanged();
+        }
+    }
+    
+    private void NavigationManagerOnLocationChanged(object? sender, LocationChangedEventArgs e)
+    {
+        if (_previousUrl.Contains("settings", StringComparison.OrdinalIgnoreCase))
+        {
+            RefreshAsync(true);
+        }
+
+        _previousUrl = e.Location;
     }
 }

@@ -19,6 +19,6 @@
             return;
         }
         
-        _navigationManager.NavigateTo( Configuration["ApiUri"] + $"/api/signin?return={Uri.EscapeDataString(_navigationManager.ToBaseRelativePath(_navigationManager.Uri))}", true);
+        _navigationManager.NavigateTo( Configuration["ApiUri"] + $"/api/Authentication/signin?return={Uri.EscapeDataString(_navigationManager.ToBaseRelativePath(_navigationManager.Uri))}", true);
     }
 }

@@ -56,7 +56,7 @@ else
     private async Task ReloadAsync()
     {
         _loading = true;
-
+        
         _accounts = await _upClient.GetAccountsAsync();
         
         _loading = false;

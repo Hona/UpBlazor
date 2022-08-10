@@ -1,0 +1,15 @@
+﻿@page "/signout"
+@using Blazored.LocalStorage
+
+@inject NavigationManager NavigationManager
+@inject IConfiguration Configuration
+@inject ILocalStorageService LocalStorageService
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        await LocalStorageService.ClearAsync();
+        
+        NavigationManager.NavigateTo( Configuration["ApiUri"] + "/api/Authentication/signout", true);
+    }
+}

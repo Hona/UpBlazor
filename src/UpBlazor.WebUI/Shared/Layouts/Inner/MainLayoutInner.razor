@@ -1,4 +1,5 @@
 ﻿@using System.Security.Claims
+@using Microsoft.AspNetCore.Http
 @inject NavigationManager _navigationManager
 
 <Layout Style="min-height: 100vh; max-width: 100vw;">
@@ -123,7 +124,8 @@
                     @ChildContent
                 </ChildContent>
                 <ErrorContent>
-                    @if (context is null)
+                    @if (context is ApiException {StatusCode: StatusCodes.Status403Forbidden} apiException && 
+                         apiException.Response.Contains("Up access token is not set", StringComparison.OrdinalIgnoreCase))
                     {
                         <Result Status="error" Title="No Access Token" SubTitle="You have not set your Up API access token, please add it in the settings">
                             <Extra>

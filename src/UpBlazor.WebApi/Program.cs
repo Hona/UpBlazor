@@ -145,11 +145,10 @@ app.UseForwardedHeaders(new ForwardedHeadersOptions()
 
 if (app.Environment.IsProduction())
 {
-    app.Use(async (context, next) =>
+    app.Use((context, next) =>
     {
-        context.Request.Protocol = "https";
-    
-        await next(context);
+        context.Request.Scheme = "https";
+        return next(context);
     });
 }
 

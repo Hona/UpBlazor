@@ -8,7 +8,7 @@ WORKDIR /src
 COPY ["src/UpBlazor.WebUI/UpBlazor.WebUI.csproj", "UpBlazor.WebUI/"]
 COPY ["src/UpBlazor.ApiClient/UpBlazor.ApiClient.csproj", "UpBlazor.ApiClient/"]
 COPY ["src/UpBlazor.Core/UpBlazor.Core.csproj", "UpBlazor.Core/"]
-RUN dotnet restore "src/UpBlazor.WebUI/UpBlazor.WebUI.csproj"
+RUN dotnet restore "UpBlazor.WebUI/UpBlazor.WebUI.csproj"
 COPY . .
 WORKDIR "/src/src/UpBlazor.WebUI"
 RUN dotnet build "UpBlazor.WebUI.csproj" -c Release -o /app/build

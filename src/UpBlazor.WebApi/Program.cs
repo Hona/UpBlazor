@@ -3,6 +3,7 @@ using System.Text.Json.Serialization;
 using Marten;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.MicrosoftAccount;
+using Microsoft.AspNetCore.HttpOverrides;
 using UpBlazor.Application;
 using UpBlazor.Core.Models;
 using UpBlazor.Core.Repositories;
@@ -136,6 +137,11 @@ services.AddAuthorization();
 services.AddHttpContextAccessor();
 
 var app = builder.Build();
+
+app.UseForwardedHeaders(new ForwardedHeadersOptions()
+{
+    ForwardedHeaders = ForwardedHeaders.XForwardedProto | ForwardedHeaders.XForwardedHost 
+});
 
 app.UseCors(options =>
 {

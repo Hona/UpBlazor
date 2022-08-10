@@ -7,41 +7,42 @@
 else
 {
     <Select DataSource="_incomes"
-            @bind-Value="BoundContainer"
-            Placeholder="Select an income...">
+            Value="SelectedIncome"
+            ValueChanged="SelectedIncomeChanged"
+            Placeholder="Select an income..."
+            LabelName="@nameof(Income.Name)">
     </Select>
 }
 
 @code
 {
     [Parameter]
-    public Income SelectedIncome { get; set; }
+    public Income? SelectedIncome { get; set; }
 
     [Parameter]
-    public EventCallback<Income> SelectedIncomeChanged { get; set; }
+    public EventCallback<Income?> SelectedIncomeChanged { get; set; }
 
     [Parameter]
     public bool SelectFirst { get; set; } = true;
     
-    private IReadOnlyList<Income> _incomes;
+    private IReadOnlyList<Income>? _incomes;
 
     private bool _loading;
-
-    private Income BoundContainer
-    {
-        get => SelectedIncome;
-        set => SelectedIncomeChanged.InvokeAsync(value);
-    }
-
-    protected override async Task OnInitializedAsync()
+    
+    protected override async Task OnParametersSetAsync()
     {
         _loading = true;
 
-        _incomes = await IncomesClient.GetIncomesAsync();
+        _incomes ??= await IncomesClient.GetIncomesAsync();
         
         if (SelectFirst)
         {
-            BoundContainer = _incomes.FirstOrDefault();
+            var selectedIncome = _incomes.FirstOrDefault();
+
+            if (selectedIncome != SelectedIncome)
+            {
+                SelectedIncome = selectedIncome;
+            }
         }
         
         _loading = false;

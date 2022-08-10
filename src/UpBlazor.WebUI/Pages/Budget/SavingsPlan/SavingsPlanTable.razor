@@ -1,13 +1,12 @@
-﻿@using UpBlazor.Application.Features.SavingsPlans
-@using UpBlazor.Application.Features.Up
-@inject IMediator _mediator
+﻿@inject SavingsPlanClient SavingsPlanClient
+@inject UpClient UpClient
 
 <Title Level="3">Income</Title>
 <Table DataSource="_savingsPlans" Loading="_loading">
      <Column Title="Name" @bind-Field="@context.Name" Sortable/>
      <Column Title="Exact" TData="decimal?" DataIndex="Amount.Exact" Format="$0.00" Sortable/>
      <Column Title="Relative" TData="decimal?" DataIndex="Amount.Percent" Format="0%" Sortable/>
-     <SaverIdColumn Title="Saver" TableContext="context"  Accounts="_accounts" TTableContext="SavingsPlan"/>
+     <SaverIdColumn Title="Saver" SaverId="@context.SaverId" Accounts="_accounts"/>
      <ActionColumn>
           <Space>
                <SpaceItem>
@@ -38,8 +37,8 @@
                StateHasChanged();
           }
 
-          _savingsPlans = await _mediator.Send(new GetSavingsPlansQuery(Income.Id));
-          _accounts = await _mediator.Send(new GetUpAccountsQuery());
+          _savingsPlans = await SavingsPlanClient.GetSavingsPlansAsync(Income.Id);
+          _accounts = await UpClient.GetAccountsAsync();
 
           _loading = false;
           
@@ -53,7 +52,7 @@
      {
           _loading = true;
 
-          await _mediator.Send(new DeleteSavingsPlanCommand(savingsPlan));
+          await SavingsPlanClient.DeleteSavingsPlanAsync(savingsPlan.Id);
 
           _loading = false;
 

@@ -1,5 +1,4 @@
-﻿@using UpBlazor.Application.Features.TwoUp
-@inject IMediator _mediator
+﻿@inject TwoUpClient TwoUpClient
 
 <Title Level="3">2Up Players</Title>
 <Table DataSource="_twoUpConnections" Loading="_loading" Context="tableContext">
@@ -26,7 +25,7 @@
     {
         _loading = true;
 
-        _twoUpConnections = await _mediator.Send(new GetAllTwoUpConnectionsForCurrentUserQuery());
+        _twoUpConnections = await TwoUpClient.GetConnectionsAsync();
         
         _loading = false;
     }
@@ -35,7 +34,7 @@
     {
         _loading = true;
 
-        await _mediator.Send(new RemoveTwoUpConnectionCommand(userId));
+        await TwoUpClient.RemoveConnectionAsync(userId);
 
         await ReloadAsync();
 

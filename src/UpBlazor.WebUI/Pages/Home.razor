@@ -1,8 +1,7 @@
 @page "/home"
-@using UpBlazor.Application.Features.Up
 
 @inject NavigationManager _navigationManager
-@inject IMediator _mediator
+@inject UpClient _upClient
 
 @if (_loading)
 {
@@ -58,7 +57,7 @@ else
     {
         _loading = true;
 
-        _accounts = await _mediator.Send(new GetUpAccountsQuery());
+        _accounts = await _upClient.GetAccountsAsync();
         
         _loading = false;
     }

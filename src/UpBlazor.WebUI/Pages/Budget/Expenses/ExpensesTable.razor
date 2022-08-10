@@ -1,7 +1,6 @@
-﻿@using UpBlazor.Application.Features.Expenses
-@using UpBlazor.Application.Features.Incomes
-@using UpBlazor.Application.Features.Up
-@inject IMediator _mediator
+﻿@inject ExpensesClient ExpensesClient
+@inject IncomesClient IncomesClient
+@inject UpClient UpClient
 
 <Title Level="3">Expenses</Title>
 
@@ -10,8 +9,8 @@
     <Column Title="Exact" TData="decimal?" DataIndex="Money.Exact" Format="$0.00" Sortable/>
     <Column Title="Relative" TData="decimal?" DataIndex="Money.Percent" Format="0%" Sortable/>
     <Column Title="Paid By" @bind-Field="@context.PaidByDate" Format="dd/MM/yyyy" Sortable/>
-    <SaverIdColumn Title="From Saver" TableContext="context" TTableContext="Expense" Accounts="_accounts"/>
-    <IncomeIdColumn Title="From Income" TableContext="context" TTableContext="Expense" Incomes="_incomes"/>
+    <SaverIdColumn Title="From Saver" SaverId="@context.Id.ToString()" Accounts="_accounts"/>
+    <IncomeIdColumn Title="From Income" IncomeId="@context.Id" Incomes="_incomes"/>
     <ActionColumn>
         <Space>
             <SpaceItem>
@@ -40,9 +39,9 @@
             StateHasChanged();
         }
 
-        _expenses = await _mediator.Send(new GetExpensesQuery());
-        _incomes = await _mediator.Send(new GetIncomesQuery());
-        _accounts = await _mediator.Send(new GetUpAccountsQuery());
+        _expenses = await ExpensesClient.GetExpensesAsync();
+        _incomes = await IncomesClient.GetIncomesAsync();
+        _accounts = await UpClient.GetAccountsAsync();
 
         _loading = false;
 
@@ -56,7 +55,7 @@
     {
         _loading = true;
 
-        await _mediator.Send(new DeleteExpenseCommand(expense));
+        await ExpensesClient.DeleteExpenseAsync(expense.Id);
 
         _loading = false;
 

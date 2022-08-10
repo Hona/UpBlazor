@@ -1,10 +1,9 @@
 ﻿@page "/notifications"
-@using Notification = UpBlazor.Core.Models.Notification
-@using UpBlazor.Application.Features.Notifications
-@using UpBlazor.Application.Features.TwoUp
+
 
 @inject NavigationManager _navigationManager
-@inject IMediator _mediator
+@inject NotificationsClient _notificationsClient
+@inject TwoUpClient _twoUpClient
 
 <Title Level="3">Notifications</Title>
 
@@ -63,7 +62,7 @@
 
 @code
 {
-    private IReadOnlyList<Notification> _unreadNotifications;
+    private IReadOnlyList<ApiClient.Notification> _unreadNotifications;
     private IReadOnlyList<TwoUpRequest> _twoUpRequests;
 
     private bool _loading;
@@ -74,17 +73,17 @@
     {
         _loading = true;
 
-        _unreadNotifications = await _mediator.Send(new GetAllNotificationsForCurrentUserQuery());
-        _twoUpRequests = await _mediator.Send(new GetAllTwoUpRequestsForCurrentUserQuery());
+        _unreadNotifications = await _notificationsClient.GetAllNotificationsAsync(false);
+        _twoUpRequests = await _twoUpClient.GetRequestsAsync();
         
         _loading = false;
     }
 
-    private async Task MarkAsRead(Notification notification)
+    private async Task MarkAsRead(ApiClient.Notification notification)
     {
         _loading = true;
-        
-        await _mediator.Send(new ReadNotificationCommand(notification));
+
+        await _notificationsClient.ReadNotificationAsync(notification.Id);
         
         await ReloadAsync();
 

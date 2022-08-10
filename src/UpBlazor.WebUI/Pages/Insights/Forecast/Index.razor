@@ -1,9 +1,9 @@
 ﻿@page "/insights/forecast"
-@using UpBlazor.Application.Features.Forecast
-@using UpBlazor.Application.Features.Normalized
+
 @using AntDesign.Charts
 
-@inject IMediator _mediator
+@inject ForecastClient ForecastClient
+@inject NormalizedClient NormalizedClient
 
 @if (_loading)
 {
@@ -49,11 +49,11 @@ else
         // TODO: Let the user input this
         var totalDays = 365 * 2;
 
-        await _mediator.Send(new UpdateNormalizedAggregateCommand());
-        
-        _incomeForecastData = await _mediator.Send(new GetIncomeForecastQuery(totalDays));
-        _expensesForecastData = await _mediator.Send(new GetExpenseForecastQuery(totalDays));
-        _totalForecastData = await _mediator.Send(new GetTotalForecastQuery(totalDays, _expensesForecastData));
+        await NormalizedClient.UpdateAsync();
+
+        _incomeForecastData = await ForecastClient.GetIncomeForecastAsync(totalDays);
+        _expensesForecastData = await ForecastClient.GetExpenseForecastAsync(totalDays);
+        _totalForecastData = await ForecastClient.GetTotalsForecastAsync(totalDays);
         
         _loading = false;
     }

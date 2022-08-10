@@ -1,7 +1,6 @@
 ﻿@using Humanizer
-@using UpBlazor.Application.Features.TwoUp
 
-@inject IMediator _mediator
+@inject TwoUpClient TwoUpClient
 
 @if (_loading)
 {
@@ -58,7 +57,7 @@ else if (_requests.Any())
     {
         _loading = true;
         
-        _requests = await _mediator.Send(new GetAllTwoUpRequestsForCurrentUserQuery());
+        _requests = await TwoUpClient.GetRequestsAsync();
 
         _loading = false;
     }
@@ -67,7 +66,11 @@ else if (_requests.Any())
     {
         _acceptRequestLoading = true;
 
-        await _mediator.Send(new AcceptTwoUpRequestCommand(request));
+        await TwoUpClient.AcceptRequestAsync(new TwoUpViewModel
+        {
+            RequesteeId = request.RequesteeId,
+            RequesterId = request.RequesterId
+        });
         
         _acceptRequestLoading = false;
 
@@ -78,7 +81,7 @@ else if (_requests.Any())
     {
         _acceptRequestLoading = true;
 
-        await _mediator.Send(new IgnoreTwoUpRequestCommand(request));
+        await TwoUpClient.IgnoreRequestAsync(request.RequesterId);
 
         _acceptRequestLoading = false;
 

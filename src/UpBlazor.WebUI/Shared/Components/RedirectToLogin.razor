@@ -1,6 +1,8 @@
 ﻿@using Microsoft.AspNetCore.Components.Authorization
 @inject NavigationManager _navigationManager
 
+@inject IConfiguration Configuration
+
 @code 
 {
     [CascadingParameter]
@@ -17,6 +19,6 @@
             return;
         }
         
-        _navigationManager.NavigateTo($"/signin?return=/{_navigationManager.ToBaseRelativePath(_navigationManager.Uri)}", true);
+        _navigationManager.NavigateTo( Configuration["ApiUri"] + $"/api/signin?return={Uri.EscapeDataString(_navigationManager.ToBaseRelativePath(_navigationManager.Uri))}", true);
     }
 }

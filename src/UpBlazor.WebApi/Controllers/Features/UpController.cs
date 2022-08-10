@@ -2,6 +2,7 @@
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Up.NET.Api.Accounts;
 using Up.NET.Api.Transactions;
 using Up.NET.Api.Utilities;
 using UpBlazor.Application.Features.Up;
@@ -60,7 +61,7 @@ public class UpController : Controller
     }
 
     [HttpGet("accounts")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(List<AccountResource>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAccounts()
     {
         var output = await _mediator.Send(new GetUpAccountsQuery());

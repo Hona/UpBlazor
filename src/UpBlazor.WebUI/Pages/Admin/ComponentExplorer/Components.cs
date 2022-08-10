@@ -1,4 +1,4 @@
-﻿namespace UpBlazor.Web.Pages.Admin.ComponentExplorer;
+﻿namespace UpBlazor.WebUI.Pages.Admin.ComponentExplorer;
 
 public enum Components
 {

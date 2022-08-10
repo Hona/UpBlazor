@@ -57,7 +57,7 @@ public class TwoUpController : Controller
     }
     
     [HttpGet("connections")]
-    [ProducesResponseType(typeof(IEnumerable<TwoUp>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(IEnumerable<RegisteredUser>), StatusCodes.Status200OK)]
     public async Task<IActionResult> GetConnections()
     {
         var connections = await _mediator.Send(new GetAllTwoUpConnectionsForCurrentUserQuery());

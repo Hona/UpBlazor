@@ -1,8 +1,7 @@
 @inherits LayoutComponentBase
 
-<AuthorizeView Policy="@Constants.AllowedEmailAuthorizationPolicy">
+<AuthorizeView Policy="AllowedEmails">
     <Authorized>
-        <RegisterUser />
         <MainLayoutInner>
             @Body
         </MainLayoutInner>

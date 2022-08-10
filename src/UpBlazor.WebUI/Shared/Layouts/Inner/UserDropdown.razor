@@ -1,8 +1,7 @@
 ﻿@using System.Security.Claims
-@using UpBlazor.Application.Features.Notifications
-@inject ICurrentUserService _currentUserService
+
 @inject NavigationManager _navigationManager
-@inject IMediator _mediator
+@inject NotificationsClient _notificationsClient
 
 <AuthorizeView>
     <Authorized>
@@ -31,7 +30,7 @@
             <ChildContent>
                 <AntDesign.Button Icon="user" Loading="_loading">
                     <span style="padding-left: 0.25rem">
-                        @(_givenName ?? "User")
+                        @(context.User.Identity?.Name ?? "User")
                     </span>
                 </AntDesign.Button>
             </ChildContent>
@@ -53,8 +52,7 @@
     {
         _loading = true;
 
-        _givenName = await _currentUserService.GetGivenNameAsync();
-        _unreadNotifications = await _mediator.Send(new GetUnreadNotificationCountQuery());
+        _unreadNotifications = await _notificationsClient.GetUnreadNotificationsCountAsync();
         
         _loading = false;
     }

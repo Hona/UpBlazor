@@ -1,8 +1,9 @@
 ﻿@page "/settings/up-access-token"
-@using UpBlazor.Application.Features.Up
-@using UpBlazor.Application.Exceptions
 
-@inject IMediator _mediator
+@using System.ComponentModel
+@using System.ComponentModel.DataAnnotations
+
+@inject UpClient UpClient
 
 @if (_loading)
 {
@@ -10,21 +11,16 @@
 }
 else if (IsSet)
 {
+
     if (_pingResponse == null)
     {
-        <div style="width: 100%; height: 200px; display: flex; justify-content: center; align-items: center;">
-            <Spin Tip="Testing existing API access..."/>
-        </div>
-    }
-    else if (!_pingResponse.Success)
-    {
-        <Result Status="error" Title="Could not access your account" SubTitle="@string.Join(Environment.NewLine, _pingResponse.Errors.Select(x => x.Detail))"/>
+        <Result Status="error" Title="Could not access your account"/>
     }
     else
     {
-        <Result Status="success" Title="Valid account access!" SubTitle="@($"Ping Status: {_pingResponse.Response.Meta.StatusEmoji}")">
+        <Result Status="success" Title="Valid account access!" SubTitle="@($"Ping Status: {_pingResponse.Meta.StatusEmoji}")">
             <SubTitleTemplate>
-                Ping Status: @_pingResponse.Response.Meta.StatusEmoji
+                Ping Status: @_pingResponse.Meta.StatusEmoji
             </SubTitleTemplate>
         </Result>
     }
@@ -76,7 +72,7 @@ else
     private bool IsSet => _pingResponse != null;
     
     private FormValidateErrorMessages _errorMessages;
-    private UpResponse<PingResponse> _pingResponse;
+    private PingResponse? _pingResponse;
 
     private readonly SetAccessToken _setAccessToken = new();
 
@@ -88,9 +84,9 @@ else
 
         try
         {
-            _pingResponse = await _mediator.Send(new GetUpPingQuery(true));
+            _pingResponse = await UpClient.PingAsync(false);
         }
-        catch (UpApiAccessTokenNotSetException)
+        catch
         {
             _pingResponse = null;
         }
@@ -104,7 +100,7 @@ else
 
         try
         {
-            await _mediator.Send(new TrySetUpAccessTokenCommand(_setAccessToken.Value));
+            await UpClient.TrySetTokenAsync(_setAccessToken.Value);
             
             // Success
             _errorMessages = null;
@@ -131,7 +127,7 @@ else
     {
         _loading = true;
 
-        await _mediator.Send(new ClearUpAccessTokenCommand());
+        await UpClient.ClearTokenAsync();
 
         _loading = false;
         

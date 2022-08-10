@@ -1,6 +1,5 @@
-﻿@using UpBlazor.Application.Features.RecurringExpenses
-@using UpBlazor.Application.Features.Up
-@inject IMediator _mediator
+﻿@inject RecurringExpensesClient RecurringExpensesClient
+@inject UpClient UpClient
 
 <Title Level="3">Recurring Expenses</Title>
 <Table DataSource="_recurringExpenses" Loading="_loading">
@@ -10,7 +9,7 @@
     <Column Title="Start Date" @bind-Field="@context.StartDate" Format="dd/MM/yyyy" Sortable/>
     <Column Title="Interval Units" @bind-Field="@context.IntervalUnits" Sortable/>
     <Column Title="Interval" @bind-Field="@context.Interval" Sortable/>
-    <SaverIdColumn Title="From Saver" TableContext="context" TTableContext="RecurringExpense" Accounts="_accounts"/>
+    <SaverIdColumn Title="From Saver" SaverId="@context.SaverId" Accounts="_accounts"/>
     <ActionColumn>
         <Space>
             <SpaceItem>
@@ -39,8 +38,8 @@
             StateHasChanged();
         }
 
-        _recurringExpenses = await _mediator.Send(new GetRecurringExpensesQuery());
-        _accounts = await _mediator.Send(new GetUpAccountsQuery());
+        _recurringExpenses = await RecurringExpensesClient.GetRecurringExpensesAsync();
+        _accounts = await UpClient.GetAccountsAsync();
         
         _loading = false;
         
@@ -54,7 +53,7 @@
     {
         _loading = true;
 
-        await _mediator.Send(new DeleteRecurringExpenseCommand(expense));
+        await RecurringExpensesClient.DeleteRecurringExpenseAsync(expense.Id);
 
         _loading = false;
 

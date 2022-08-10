@@ -11,102 +11,101 @@ using UpBlazor.Application.Exceptions;
 using UpBlazor.Core.Models.Mock;
 using UpBlazor.Core.Repositories;
 
-namespace UpBlazor.Application.Services
+namespace UpBlazor.Application.Services;
+
+public class CurrentUserService : ICurrentUserService
 {
-    public class CurrentUserService : ICurrentUserService
+    private readonly HttpContext _httpContext;
+    private readonly IUpUserTokenRepository _upUserTokenRepository;
+    private readonly IRegisteredUserRepository _registeredUserRepository;
+
+    private string _impersonationUserId;
+
+    private IUpApi _upApi;
+
+    public CurrentUserService(IHttpContextAccessor httpContextAccessor, IUpUserTokenRepository upUserTokenRepository, IRegisteredUserRepository registeredUserRepository)
     {
-        private readonly HttpContext _httpContext;
-        private readonly IUpUserTokenRepository _upUserTokenRepository;
-        private readonly IRegisteredUserRepository _registeredUserRepository;
+        _httpContext = httpContextAccessor.HttpContext;
+        _upUserTokenRepository = upUserTokenRepository;
+        _registeredUserRepository = registeredUserRepository;
+    }
 
-        private string _impersonationUserId;
-
-        private IUpApi _upApi;
-
-        public CurrentUserService(IHttpContextAccessor httpContextAccessor, IUpUserTokenRepository upUserTokenRepository, IRegisteredUserRepository registeredUserRepository)
+    public async Task<IUpApi> GetApiAsync(string overrideToken = null, bool forceReload = false, CancellationToken cancellationToken = default)
+    {
+        if (!forceReload && string.IsNullOrWhiteSpace(overrideToken) && _upApi != null)
         {
-            _httpContext = httpContextAccessor.HttpContext;
-            _upUserTokenRepository = upUserTokenRepository;
-            _registeredUserRepository = registeredUserRepository;
-        }
-
-        public async Task<IUpApi> GetApiAsync(string overrideToken = null, bool forceReload = false, CancellationToken cancellationToken = default)
-        {
-            if (!forceReload && string.IsNullOrWhiteSpace(overrideToken) && _upApi != null)
-            {
-                return _upApi;
-            }
-
-            var userId = await GetUserIdAsync(cancellationToken);
-
-            var userToken = await _upUserTokenRepository.GetByUserIdAsync(userId, cancellationToken);
-
-            if (!string.IsNullOrWhiteSpace(overrideToken) && userToken != null)
-            {
-                userToken.AccessToken = overrideToken;
-            }
-
-            var accessToken = userToken?.AccessToken ?? overrideToken;
-
-            _upApi = accessToken switch
-            {
-                null => throw new UpApiAccessTokenNotSetException(),
-                MockUpApi.MockUpToken => new MockUpApi(),
-                _ => new UpApi(accessToken)
-            };
-
             return _upApi;
         }
 
-        public async Task<string> GetUserIdAsync(CancellationToken cancellationToken = default)
+        var userId = await GetUserIdAsync(cancellationToken);
+
+        var userToken = await _upUserTokenRepository.GetByUserIdAsync(userId, cancellationToken);
+
+        if (!string.IsNullOrWhiteSpace(overrideToken) && userToken != null)
         {
-            var claims = await GetClaimsAsync(cancellationToken);
-            return claims?.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value ??
-                   throw new InvalidOperationException("Logged in user must have a ID claim");
+            userToken.AccessToken = overrideToken;
         }
 
-        public async Task<IEnumerable<Claim>> GetClaimsAsync(CancellationToken cancellationToken = default)
+        var accessToken = userToken?.AccessToken ?? overrideToken;
+
+        _upApi = accessToken switch
         {
-            if (!string.IsNullOrWhiteSpace(_impersonationUserId))
+            null => throw new UpApiAccessTokenNotSetException(),
+            MockUpApi.MockUpToken => new MockUpApi(),
+            _ => new UpApi(accessToken)
+        };
+
+        return _upApi;
+    }
+
+    public async Task<string> GetUserIdAsync(CancellationToken cancellationToken = default)
+    {
+        var claims = await GetClaimsAsync(cancellationToken);
+        return claims?.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value ??
+               throw new InvalidOperationException("Logged in user must have a ID claim");
+    }
+
+    public async Task<IEnumerable<Claim>> GetClaimsAsync(CancellationToken cancellationToken = default)
+    {
+        if (!string.IsNullOrWhiteSpace(_impersonationUserId))
+        {
+            var cachedUser = await _registeredUserRepository.GetByIdAsync(_impersonationUserId, cancellationToken);
+
+            return new List<Claim>
             {
-                var cachedUser = await _registeredUserRepository.GetByIdAsync(_impersonationUserId, cancellationToken);
-
-                return new List<Claim>
-                {
-                    new(ClaimTypes.Email, cachedUser.Email),
-                    new(ClaimTypes.NameIdentifier, cachedUser.Id),
-                    new(ClaimTypes.GivenName, cachedUser.GivenName)
-                };
-            }
-
-            var user = _httpContext.User;
-
-            if (user?.Identity?.IsAuthenticated ?? false)
-            {
-                return user.Claims;
-            }
-
-            return null;
+                new(ClaimTypes.Email, cachedUser.Email),
+                new(ClaimTypes.NameIdentifier, cachedUser.Id),
+                new(ClaimTypes.GivenName, cachedUser.GivenName)
+            };
         }
 
-        public async Task<string> GetGivenNameAsync(CancellationToken cancellationToken = default)
+        var user = _httpContext.User;
+
+        if (user?.Identity?.IsAuthenticated ?? false)
         {
-            var claims = await GetClaimsAsync(cancellationToken);
-
-            return claims?.FirstOrDefault(x => x.Type == ClaimTypes.GivenName)?.Value;
+            return user.Claims;
         }
 
-        public bool IsImpersonating => !string.IsNullOrWhiteSpace(_impersonationUserId);
-        public void Impersonate(string userId)
-        {
-            _impersonationUserId = userId;
-            _upApi = null;
-        }
+        return null;
+    }
 
-        public void ResetImpersonation()
-        {
-            _impersonationUserId = null;
-            _upApi = null;
-        }
+    public async Task<string> GetGivenNameAsync(CancellationToken cancellationToken = default)
+    {
+        var claims = await GetClaimsAsync(cancellationToken);
+
+        return claims?.FirstOrDefault(x => x.Type == ClaimTypes.GivenName)?.Value;
+    }
+
+    public bool IsImpersonating => !string.IsNullOrWhiteSpace(_impersonationUserId);
+    public void Impersonate(string userId)
+    {
+        _impersonationUserId = userId;
+        _upApi = null;
+    }
+
+    public void ResetImpersonation()
+    {
+        _impersonationUserId = null;
+        _upApi = null;
     }
 }

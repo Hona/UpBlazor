@@ -1,7 +1,5 @@
-﻿@using UpBlazor.Core.Models.Enums
-@using UpBlazor.Application.Features.SavingsPlans
-
-@inject IMediator _mediator
+﻿@using System.ComponentModel.DataAnnotations
+@inject SavingsPlanClient SavingsPlanClient
 
 <Card Title="New Savings Plan">
     <Form Model="_request"
@@ -45,7 +43,12 @@
     {
         _loading = true;
 
-        await _mediator.Send(new CreateSavingsPlanCommand(Income.Id, _request.Name, _request.SaverId, _request.Amount));
+        await SavingsPlanClient.CreateSavingsPlanAsync(new CreateSavingsPlanCommand
+        {
+            Name = _request.Name,
+            Amount = _request.Amount,
+            SaverId = _request.SaverId
+        });
         
         _request = new SavingsPlanRequest();
         _loading = false;

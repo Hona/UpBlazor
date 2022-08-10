@@ -1,8 +1,6 @@
-﻿@using UpBlazor.Core.Models.Enums
-@using System.Text.RegularExpressions
-@using UpBlazor.Application.Features.Incomes
-
-@inject IMediator _mediator
+﻿@using System.Text.RegularExpressions
+@using System.ComponentModel.DataAnnotations
+@inject IncomesClient IncomesClient
 
 <Card Title="New Income">
     <Form Model="_request" 
@@ -46,8 +44,15 @@
     {
         _loading = true;
 
-        await _mediator.Send(new CreateIncomeCommand(_request.Name, _request.StartDate, _request.ExactMoney, _request.Interval, _request.IntervalUnits));
-        
+        await IncomesClient.CreateIncomeAsync(new CreateIncomeCommand()
+        {
+            Name = _request.Name,
+            ExactMoney = _request.ExactMoney,
+            StartDate = _request.StartDate,
+            Interval = _request.Interval,
+            IntervalUnits = _request.IntervalUnits
+        });
+                
         _request = new();
         _loading = false;
 

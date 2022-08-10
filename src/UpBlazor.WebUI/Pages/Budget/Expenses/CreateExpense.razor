@@ -1,10 +1,7 @@
-﻿@using UpBlazor.Core.Models.Enums
-@using UpBlazor.Web.Pages.Insights
-@using UpBlazor.Application.Features.RecurringExpenses
-@using UpBlazor.Application.Features.Expenses
-@using Marten
-
-@inject IMediator _mediator
+﻿@using System.ComponentModel
+@using System.ComponentModel.DataAnnotations
+@inject ExpensesClient ExpensesClient
+@inject RecurringExpensesClient RecurringExpensesClient
 
 <Card Title="New Expense">
     <Form Model="_request" 
@@ -90,11 +87,25 @@
                 throw new Exception("This path shouldn't be possible");
             }
 
-            await _mediator.Send(new CreateRecurringExpenseCommand(_request.Name, _request.Interval.Value, _request.IntervalUnits.Value, _request.Amount, _request.PaidByDate, _expenseSourceInput.Value.SaverId));
+            await RecurringExpensesClient.CreateRecurringExpenseAsync(new CreateRecurringExpenseCommand
+            {
+                Amount = _request.Amount,
+                Interval = _request.Interval.Value,
+                IntervalUnits = _request.IntervalUnits.Value,
+                Name = _request.Name,
+                StartDate = _request.PaidByDate,
+                FromSaverId = _expenseSourceInput.Value.SaverId
+            });
         }
         else
         {
-            await _mediator.Send(new CreateExpenseCommand(_request.Name, _request.Amount, _request.PaidByDate, _expenseSourceInput.Value.IncomeId, _expenseSourceInput.Value.SaverId));
+            await ExpensesClient.CreateExpenseAsync(new CreateExpenseCommand
+            {
+                Amount = _request.Amount,
+                Name = _request.Name,
+                PaidByDate = _request.PaidByDate,
+                FromSaverId = _expenseSourceInput.Value.SaverId
+            });
         }
 
         _request = new ExpenseRequest();

@@ -1,5 +1,4 @@
-﻿@using UpBlazor.Application.Features.Up
-@inject IMediator _mediator
+﻿@inject UpClient _upClient
 
 <Select DataSource="_accounts" TItem="AccountResource" TItemValue="AccountResource"
         LabelName="@($"{nameof(AccountResource.Attributes)}.{nameof(AccountResource.Attributes.DisplayName)}")"
@@ -29,7 +28,7 @@
     {
         _loading = true;
 
-        _accounts = await _mediator.Send(new GetUpAccountsQuery());
+        _accounts = await _upClient.GetAccountsAsync();
 
         _loading = false;
     }

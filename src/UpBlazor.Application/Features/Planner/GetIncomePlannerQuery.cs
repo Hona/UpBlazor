@@ -51,6 +51,12 @@ public class GetIncomePlannerQueryHandler : IRequestHandler<GetIncomePlannerQuer
         
         var expenses = await _expenseRepository.GetAllByUserIdAsync(userId, cancellationToken);
         var normalizedAggregate = await _normalizedAggregateRepository.GetByUserIdAsync(userId, cancellationToken);
+
+        if (normalizedAggregate is null)
+        {
+            throw new ArgumentNullException(nameof(normalizedAggregate));
+        }
+        
         var recurringExpenses = await _recurringExpenseRepository.GetAllByUserIdAsync(userId, cancellationToken);
         var savingsPlans = await _savingsPlanRepository.GetAllByIncomeIdAsync(request.Income.Id, cancellationToken);
 

@@ -1,10 +1,7 @@
 ﻿@page "/admin/users"
-@using UpBlazor.Application.Features.Users
-
 @layout AdminAuthorizeLayout
 
-@inject ICurrentUserService _currentUserService
-@inject IMediator _mediator
+@inject UsersClient UsersClient
 
 <Title Level="3">Users</Title>
 
@@ -24,10 +21,6 @@ else
 
     <Divider/>
 
-    <Card>
-        <Button OnClick="() => _currentUserService.ResetImpersonation()">Reset Impersonation</Button>
-    </Card>
-
     <Table DataSource="_allUsers">
         <Column @bind-Field="@context.Id"/>
         <Column @bind-Field="@context.Email" 
@@ -40,13 +33,13 @@ else
                 Sortable>
             @switch (context.Token)
             {
-                case RegisteredUserDto.TokenType.NotSet:
+                case TokenType.NotSet:
                     <Tag>None</Tag>
                     break;
-                case RegisteredUserDto.TokenType.Demo:
+                case TokenType.Demo:
                     <Tag PresetColor="PresetColor.Volcano">Demo</Tag>
                     break;
-                case RegisteredUserDto.TokenType.Real:
+                case TokenType.Real:
                     <Tag PresetColor="PresetColor.Green">Real</Tag>
                     break;
             }
@@ -59,9 +52,6 @@ else
                 @bind-Field="@context.UpdatedAt" 
                 Format="dd/MM/yyyy hh:mm tt" 
                 Sortable/>
-        <ActionColumn>
-            <Button OnClick="() => _currentUserService.Impersonate(context.Id)">Impersonate</Button>
-        </ActionColumn>
     </Table>
 }
 
@@ -76,7 +66,7 @@ else
     {
         _loading = true;
 
-        _allUsers = await _mediator.Send(new GetAllUsersQuery());
+        _allUsers = await UsersClient.GetAllAsync();
         
         _loading = false;
     }

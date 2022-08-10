@@ -1,7 +1,4 @@
-﻿@using Notification = UpBlazor.Core.Models.Notification
-@using UpBlazor.Application.Features.Notifications
-
-@inject IMediator _mediator
+﻿@inject NotificationsClient NotificationsClient
 
 <Form Model="@_createNotification"
           OnFinish="HandleOk"
@@ -37,9 +34,13 @@
     private async Task HandleOk()
     {
         _formLoading = true;
-        
-        await _mediator.Send(new CreateNotificationCommand(_createNotification.Title, _createNotification.Description));
 
+        await NotificationsClient.CreateNotificationAsync(new CreateNotificationCommand
+        {
+            Title = _createNotification.Title,
+            Description = _createNotification.Description
+        });
+        
         _formLoading = false;
         
         if (OnNotificationCreated.HasDelegate)

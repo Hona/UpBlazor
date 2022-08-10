@@ -1,7 +1,6 @@
-﻿@using UpBlazor.Application.Features.Planner
-@using UpBlazor.Application.Features.Up
-
-@inject IMediator _mediator
+﻿@inject UpClient UpClient
+@inject PlannerClient PlannerClient
+@inject NormalizedClient NormalizedClient
 
 @if (_loading)
 {
@@ -44,7 +43,7 @@ else
                 </span>
             }
         </Column>
-        <SaverIdColumn Title="Saver" TableContext="tableContext" TTableContext="SavingsPlanRunningTotal" Accounts="_accounts"/>
+        <SaverIdColumn Title="Saver" SaverId="@tableContext.SaverId" Accounts="_accounts"/>
         <Column Title="Remaining Balance" Format="$0.00" @bind-Field="@tableContext.RunningTotal"/>
     </Table>
 
@@ -69,7 +68,7 @@ else
                 </span>
             }
         </Column>
-        <SaverIdColumn Title="Saver" TableContext="tableContext" TTableContext="SavingsPlanRunningTotal" Accounts="_accounts"/>
+        <SaverIdColumn Title="Saver" SaverId="@tableContext.SaverId" Accounts="_accounts"/>
         <Column Title="Remaining Balance" Format="$0.00" @bind-Field="@tableContext.RunningTotal"/>
     </Table>
 
@@ -77,7 +76,7 @@ else
     <Table DataSource="_incomePlanner.ExactSavingsPlanSubTotals" Context="tableContext">
         <Column Title="Name" @bind-Field="@tableContext.Name" Sortable/>
         <Column Title="Amount" TData="decimal?" DataIndex="Amount.Exact" Format="$0.00" Sortable/>
-        <SaverIdColumn Title="Saver" TableContext="tableContext" TTableContext="SavingsPlanRunningTotal" Accounts="_accounts"/>
+        <SaverIdColumn Title="Saver" SaverId="@tableContext.SaverId" Accounts="_accounts"/>
         <Column Title="Remaining Balance" Format="$0.00" @bind-Field="@tableContext.RunningTotal"/>
     </Table>
 
@@ -91,7 +90,7 @@ else
             }
             $@exactAmount.ToString("F2")
         </Column>
-        <SaverIdColumn Title="Saver" TableContext="tableContext" TTableContext="SavingsPlanRunningTotal" Accounts="_accounts"/>
+        <SaverIdColumn Title="Saver" SaverId="@tableContext.SaverId" Accounts="_accounts"/>
         <Column Title="Remaining Balance" Format="$0.00" @bind-Field="@tableContext.RunningTotal"/>
     </Table>
 
@@ -110,7 +109,7 @@ else
             @foreach (var (account, totalAmount) in _incomePlanner.FinalBudget)
             {
                 <SpaceItem>
-                    <Card Style="min-width: 300px" Title="@account.Attributes.DisplayName">
+                    <Card Style="min-width: 300px" Title="@_accounts.First(x => x.Id == account).Attributes.DisplayName">
                         <Progress Percent="@((double) (totalAmount / Income.ExactMoney * 100))" Format='x => x.ToString("F1") + "%"' Status="@ProgressStatus.Normal"/>
                         <span>
                             $@totalAmount.ToString("F2")
@@ -143,9 +142,10 @@ else
 
         _loading = true;
 
-        _incomePlanner = await _mediator.Send(new GetIncomePlannerQuery(Income));
-        _accounts = await _mediator.Send(new GetUpAccountsQuery());
-
+        await NormalizedClient.UpdateAsync();
+        _incomePlanner = await PlannerClient.GetIncomePlannerAsync(Income.Id, false);
+        _accounts = await UpClient.GetAccountsAsync();
+        
         _cachedIncomeId = Income.Id;
 
         _loading = false;

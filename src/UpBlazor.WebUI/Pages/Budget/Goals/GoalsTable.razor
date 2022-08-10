@@ -1,6 +1,5 @@
-﻿@using UpBlazor.Application.Features.Goals
-@using UpBlazor.Application.Features.Up
-@inject IMediator _mediator
+﻿@inject GoalsClient GoalsClient
+@inject UpClient UpClient
 
 @if (_loading)
 {
@@ -48,9 +47,9 @@ else
             StateHasChanged();
         }
 
-        _goals = await _mediator.Send(new GetGoalsQuery());
-        _accounts = await _mediator.Send(new GetUpAccountsQuery());
-        
+        _goals = await GoalsClient.GetGoalsAsync();
+        _accounts = await UpClient.GetAccountsAsync();
+
         _loading = false;
         
         if (forceReload)
@@ -63,7 +62,7 @@ else
     {
         _loading = true;
 
-        await _mediator.Send(new DeleteGoalCommand(goal));
+        await GoalsClient.DeleteGoalAsync(goal.Id);
         
         _loading = false;
 

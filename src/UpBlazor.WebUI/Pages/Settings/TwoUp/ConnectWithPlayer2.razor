@@ -1,5 +1,6 @@
-﻿@using UpBlazor.Application.Features.TwoUp
-@inject IMediator _mediator;
+﻿@using System.ComponentModel
+@using System.ComponentModel.DataAnnotations
+@inject TwoUpClient TwoUpClient
 
 <Card Title="Connect with your Player 2">
     <Form Model="_connectRequest" 
@@ -31,7 +32,7 @@
     {
         _loading = true;
 
-        await _mediator.Send(new CreateTwoUpRequestCommand(_connectRequest.Email, _connectRequest.Message));
+        await TwoUpClient.RequestTwoUpAsync(_connectRequest.Email, _connectRequest.Message);
         
         _loading = false;
     }

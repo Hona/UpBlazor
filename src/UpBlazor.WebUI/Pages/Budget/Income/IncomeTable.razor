@@ -1,5 +1,4 @@
-﻿@using UpBlazor.Application.Features.Incomes
-@inject IMediator _mediator
+﻿@inject IncomesClient IncomesClient
 
 @if (_loading)
 {
@@ -42,7 +41,7 @@ else
             StateHasChanged();
         }
 
-        _incomes = await _mediator.Send(new GetIncomesQuery());
+        _incomes = await IncomesClient.GetIncomesAsync();
         
         _loading = false;
         
@@ -56,7 +55,7 @@ else
     {
         _loading = true;
 
-        await _mediator.Send(new DeleteIncomeCommand(income));
+        await IncomesClient.DeleteIncomeAsync(income.Id);
         
         _loading = false;
 

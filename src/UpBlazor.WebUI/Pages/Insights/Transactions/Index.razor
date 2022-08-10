@@ -1,9 +1,6 @@
 ﻿@page "/insights/transactions/{AccountId?}"
-@using Up.NET.Api.Transactions
-@using UpBlazor.Application.Features.Up
 
-@inject IMediator _mediator
-
+@inject UpClient UpClient
 @if (_loading)
 {
     <Spin />
@@ -70,7 +67,7 @@ else
 {
     private bool _loading;
     
-    private UpResponse<PaginatedDataResponse<TransactionResource>> _transactions;
+    private UpPaginatedViewModelOfTransactionResource _transactions;
     private IReadOnlyList<AccountResource> _accounts;
     
     private List<TransactionResource> _transactionsIn;
@@ -84,17 +81,17 @@ else
     private async Task ReloadAsync()
     {
         _loading = true;
-        
-        _transactions = await _mediator.Send(new GetUpTransactionsPagedQuery(AccountId));
-        _accounts = await _mediator.Send(new GetUpAccountsQuery());
+
+        _transactions = await UpClient.GetTransactionsAsync(AccountId);
+        _accounts = await UpClient.GetAccountsAsync();
         
         _transactionsOut = _transactions
-            .Response.Data
+            .Data
             .Where(x => x.Attributes.Amount.ValueInBaseUnits < 0)
             .ToList();
         
         _transactionsIn = _transactions
-            .Response.Data
+            .Data
             .Where(x => x.Attributes.Amount.ValueInBaseUnits >= 0)
             .ToList();
         
@@ -109,20 +106,20 @@ else
 
     private async Task LoadMoreAsync()
     {
-        _transactions = await _transactions.Response.GetNextPageAsync();
+        _transactions = await UpClient.GetTransactionsPaginationLinkAsync(_transactions.Links.Next);
 
         _transactionsOut.AddRange(_transactions
-            .Response.Data
+            .Data
             .Where(x => x.Attributes.Amount.ValueInBaseUnits < 0));
 
         _transactionsIn.AddRange(_transactions
-            .Response.Data
+            .Data
             .Where(x => x.Attributes.Amount.ValueInBaseUnits >= 0));
     }
 
     private async Task HandlePageChange(PaginationEventArgs obj, int totalItems)
     {
-        if (obj.Page >= Math.Ceiling((decimal)totalItems / obj.PageSize))
+        if (_transactions?.Links?.HasNext is true && obj.Page >= Math.Ceiling((decimal)totalItems / obj.PageSize))
         {
             await LoadMoreAsync();
         }

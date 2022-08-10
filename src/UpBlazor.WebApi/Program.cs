@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using System.Text.Json.Serialization;
 using Marten;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.MicrosoftAccount;
@@ -16,7 +17,12 @@ var services = builder.Services;
 builder.Services.AddControllers(options =>
 {
     options.Filters.Add<HttpResponseExceptionFilter>();
-});
+})
+    .AddJsonOptions(options =>
+    {
+        // Serialise enums as string
+        options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+    });
 
 builder.Services.AddRouting(options =>
 {
@@ -28,7 +34,10 @@ builder.Services.AddOpenApiDocument();
 services.AddApplication();
 
 services.AddAuthentication(MicrosoftAccountDefaults.AuthenticationScheme)
-    .AddCookie(options => { options.AccessDeniedPath = "/access-denied"; })
+    .AddCookie(options =>
+    {
+        options.AccessDeniedPath = "/access-denied";
+    })
     .AddMicrosoftAccount(options =>
     {
         options.ClientId = builder.Configuration["Authentication:Microsoft:ClientId"];
@@ -126,6 +135,14 @@ services.AddAuthorization();
 services.AddHttpContextAccessor();
 
 var app = builder.Build();
+
+app.UseCors(options =>
+{
+    options.AllowAnyHeader()
+        .AllowAnyMethod()
+        .AllowCredentials()
+        .WithOrigins(builder.Configuration["UiUri"]);
+});
 
 if (app.Environment.IsDevelopment())
 {

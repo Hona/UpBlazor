@@ -1,7 +1,6 @@
-﻿@using UpBlazor.Application.Features.Up
-@using UpBlazor.Application.Exceptions
-@inject IMediator _mediator
-@inject ICurrentUserService _currentUserService
+﻿@using Up.NET.Models
+
+@inject UpClient _upClient
 
 <div style="display: flex; justify-content: center; align-items: center; width: 100%">
     @if (_loading)
@@ -12,17 +11,13 @@
     {
         <AuthorizeView>
             <Authorized>
-                @if (_response is { Success: false })
+                @if (_response is null)
                 {
                     <span>❌</span>
                 }
-                else if (_response is null)
-                {
-                    /* No access token set - this is handled by the error boundary; should throw an exception */
-                }
                 else
                 {
-                    <span>@_response.Response.Meta.StatusEmoji</span>
+                    <span>@_response.Meta.StatusEmoji</span>
                 }
             </Authorized>
             <NotAuthorized />
@@ -34,7 +29,7 @@
 @code
 {
     private bool _loading;
-    private UpResponse<PingResponse> _response;
+    private PingResponse? _response;
 
     protected override async Task OnInitializedAsync()
     {
@@ -42,20 +37,12 @@
 
         try
         {
-            var upApi = await _currentUserService.GetApiAsync();
+            _response = await _upClient.PingAsync(false);
         }
-        catch (UpApiAccessTokenNotSetException)
+        catch
         {
-            _loading = false;
-            return;
+            _response = null;
         }
-        catch (InvalidOperationException e)
-        {
-            // User is not logged in - this isn't valid here
-            throw new InvalidOperationException("Tried loading the footer when not logged in", e);
-        }
-        
-        _response = await _mediator.Send(new GetUpPingQuery());
         
         _loading = false;
     }

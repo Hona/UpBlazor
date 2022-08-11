@@ -33,16 +33,21 @@ else
     
     <Space Direction="DirectionVHType.Vertical" Style="width: 100%">
         <SpaceItem>
-            <Card Title="Day Summary">
+            <Card Title="Summary">
                 <DatePicker @bind-Value="_daySummaryDate" DisabledDate="@(date => date <= DateTime.Today || date >= DateTime.Today.AddDays((int)_days))" />
             
                 @if (_daySummaryDate.HasValue)
                 {
                     var today = DateOnly.FromDateTime(_daySummaryDate.Value);
                     var yesterday = DateOnly.FromDateTime(_daySummaryDate.Value.AddDays(-1));
+                    var beginning = DateOnly.FromDateTime(DateTime.Today);
                     
                     var yesterdayIncome = _incomeForecastData
                         .Where(x => DateOnly.ParseExact(x.Cycle, "dd/MM/yyyy") == yesterday)
+                        .Sum(x => x.Balance);
+                    
+                    var beginningIncome = _incomeForecastData
+                        .Where(x => DateOnly.ParseExact(x.Cycle, "dd/MM/yyyy") == beginning)
                         .Sum(x => x.Balance);
                     
                     var todayIncome = _incomeForecastData
@@ -53,11 +58,17 @@ else
                         .Where(x => DateOnly.ParseExact(x.Cycle, "dd/MM/yyyy") == yesterday)
                         .Sum(x => x.Balance);
                     
+                    var beginningExpense = _expensesForecastData
+                        .Where(x => DateOnly.ParseExact(x.Cycle, "dd/MM/yyyy") == beginning)
+                        .Sum(x => x.Balance);
+                    
                     var todayExpense = _expensesForecastData
                         .Where(x => DateOnly.ParseExact(x.Cycle, "dd/MM/yyyy") == today)
                         .Sum(x => x.Balance);
                     
                     <Divider />
+                    
+                    <Paragraph>Delta - Prior Day</Paragraph>
                     
                     <Space Size="@("middle")">
                         <SpaceItem>
@@ -65,6 +76,19 @@ else
                         </SpaceItem>
                         <SpaceItem>
                             <Statistic Title="Money Out ⬇️" ValueStyle="color: #cf1322;" Value="@(todayExpense - yesterdayExpense)" Prefix="$" Precision="2"/>
+                        </SpaceItem>
+                    </Space>
+                    
+                    <Divider />
+                    
+                    <Paragraph>Delta - From Now</Paragraph>
+                    
+                    <Space Size="@("middle")">
+                        <SpaceItem>
+                            <Statistic Title="Money In ⬆️" ValueStyle="color: #3f8600;" Value="@(todayIncome - beginningIncome)" Prefix="$" Precision="2"/>
+                        </SpaceItem>
+                        <SpaceItem>
+                            <Statistic Title="Money Out ⬇️" ValueStyle="color: #cf1322;" Value="@(todayExpense - beginningExpense)" Prefix="$" Precision="2"/>
                         </SpaceItem>
                     </Space>
                     

@@ -1,6 +1,7 @@
 ﻿@page "/insights/forecast"
 
 @using AntDesign.Charts
+@using System.Globalization
 
 @inject ForecastClient ForecastClient
 @inject NormalizedClient NormalizedClient
@@ -11,7 +12,80 @@
 }
 else
 {
+    <AntDesign.Row>
+        <AntDesign.Col Span="12">
+            <Text>
+                Days Calculated
+            </Text>
+            <Slider TValue="double" Min="20" Max="3000" @bind-Value="@_days"/>
+        </AntDesign.Col>
+        <AntDesign.Col Style="align-self: flex-end" Span="4">
+            <AntDesign.InputNumber Min="20" Max="3000" Style="margin:0 16px;" @bind-Value="@_days" TValue="double"/>
+        </AntDesign.Col>
+        <AntDesign.Col Style="align-self: flex-end; display: flex; justify-content: flex-end" Span="4" Push="4">
+            <Button OnClick="HandleLoadClick">
+                Load
+            </Button>
+        </AntDesign.Col>
+    </AntDesign.Row>
+    
+    
+    
     <Space Direction="DirectionVHType.Vertical" Style="width: 100%">
+        <SpaceItem>
+            <Card Title="Day Summary">
+                <DatePicker @bind-Value="_daySummaryDate" DisabledDate="@(date => date <= DateTime.Today || date >= DateTime.Today.AddDays((int)_days))" />
+            
+                @if (_daySummaryDate.HasValue)
+                {
+                    var today = DateOnly.FromDateTime(_daySummaryDate.Value);
+                    var yesterday = DateOnly.FromDateTime(_daySummaryDate.Value.AddDays(-1));
+                    
+                    var yesterdayIncome = _incomeForecastData
+                        .Where(x => DateOnly.ParseExact(x.Cycle, "dd/MM/yyyy") == yesterday)
+                        .Sum(x => x.Balance);
+                    
+                    var todayIncome = _incomeForecastData
+                        .Where(x => DateOnly.ParseExact(x.Cycle, "dd/MM/yyyy") == today)
+                        .Sum(x => x.Balance);
+                    
+                    var yesterdayExpense = _expensesForecastData
+                        .Where(x => DateOnly.ParseExact(x.Cycle, "dd/MM/yyyy") == yesterday)
+                        .Sum(x => x.Balance);
+                    
+                    var todayExpense = _expensesForecastData
+                        .Where(x => DateOnly.ParseExact(x.Cycle, "dd/MM/yyyy") == today)
+                        .Sum(x => x.Balance);
+                    
+                    <Divider />
+                    
+                    <Space Size="@("middle")">
+                        <SpaceItem>
+                            <Statistic Title="Money In ⬆️" ValueStyle="color: #3f8600;" Value="@(todayIncome - yesterdayIncome)" Prefix="$" Precision="2"/>
+                        </SpaceItem>
+                        <SpaceItem>
+                            <Statistic Title="Money Out ⬇️" ValueStyle="color: #cf1322;" Value="@(todayExpense - yesterdayExpense)" Prefix="$" Precision="2"/>
+                        </SpaceItem>
+                    </Space>
+                    
+                    <Divider />
+
+                    var accountTotals = _totalForecastData
+                        .Where(x => DateOnly.ParseExact(x.Cycle, "dd/MM/yyyy") == today)
+                        .ToList();
+                    
+                    <Space Size="@("middle")">
+                        @foreach (var accountTotal in accountTotals)
+                        {
+                            <SpaceItem>
+                                <Statistic Title="@accountTotal.AccountName" Value="@accountTotal.Balance" Prefix="$" Precision="2" />
+                            </SpaceItem>
+                        }
+                    </Space>
+                }
+            </Card>
+        </SpaceItem>
+        
         <SpaceItem>
             <Card Title="Total Income">
                 <Area Config="_forecastConfig" Data="@_incomeForecastData"/>
@@ -40,20 +114,21 @@ else
     private IReadOnlyList<ForecastDto> _expensesForecastData;
     private IReadOnlyList<ForecastDto> _totalForecastData;
 
+    private double _days = 365 * 2;
+
+    private DateTime? _daySummaryDate;
+    
     protected override async Task OnInitializedAsync() => await ReloadAsync();
 
     private async Task ReloadAsync()
     {
         _loading = true;
 
-        // TODO: Let the user input this
-        var totalDays = 365 * 2;
-
         await NormalizedClient.UpdateAsync();
 
-        _incomeForecastData = await ForecastClient.GetIncomeForecastAsync(totalDays);
-        _expensesForecastData = await ForecastClient.GetExpenseForecastAsync(totalDays);
-        _totalForecastData = await ForecastClient.GetTotalsForecastAsync(totalDays);
+        _incomeForecastData = await ForecastClient.GetIncomeForecastAsync((int)_days);
+        _expensesForecastData = await ForecastClient.GetExpenseForecastAsync((int)_days);
+        _totalForecastData = await ForecastClient.GetTotalsForecastAsync((int)_days);
 
         _loading = false;
     }
@@ -101,5 +176,10 @@ else
         }
         
         public Slider slider { get; set; }
+    }
+
+    private async Task HandleLoadClick()
+    {
+        await ReloadAsync();
     }
 }

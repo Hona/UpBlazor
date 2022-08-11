@@ -2,6 +2,8 @@
 @using Microsoft.AspNetCore.Http
 @inject NavigationManager _navigationManager
 
+@implements IDisposable
+
 <Layout Style="min-height: 100vh; max-width: 100vw;">
     <Sider Theme="SiderTheme.Dark"
            Collapsible 
@@ -133,6 +135,10 @@
                             </Extra>
                         </Result>
                     }
+                    else if (context is AuthenticationExpiredException)
+                    {
+                        <RedirectToSignout />
+                    }
                     else
                     {
                         <Result Status="500">
@@ -163,10 +169,20 @@
     public RenderFragment ChildContent { get; set; }
 
     private bool _siderCollapsed;
-    private ErrorBoundary _errorBoundary;
-    
-    protected override void OnParametersSet()
+    private ErrorBoundary? _errorBoundary;
+
+    protected override void OnInitialized()
+    {
+        _navigationManager.LocationChanged += RecoverError;
+    }
+
+    private void RecoverError(object? sender, LocationChangedEventArgs e)
     {
         _errorBoundary?.Recover();
+    }
+
+    public void Dispose()
+    {
+        _navigationManager.LocationChanged -= RecoverError;
     }
 }

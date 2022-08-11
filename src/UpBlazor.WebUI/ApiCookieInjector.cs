@@ -23,15 +23,25 @@ public class ApiCookieInjector : DelegatingHandler
         {
             request.Headers.Add("x-upblazor-impersonate", _impersonationService.ActorUserId);
         }
-        
-        var response = await base.SendAsync(request, cancellationToken);
 
-        if (response.Headers.Location != null && response.StatusCode == HttpStatusCode.Found && response.Headers.Location.AbsoluteUri.Contains("login"))
+        try
         {
-            await _localStorageService.ClearAsync();
-            response.StatusCode = HttpStatusCode.Unauthorized;
-        }
+            var response = await base.SendAsync(request, cancellationToken);
+            
+            if (response.Headers.Location != null && response.StatusCode == HttpStatusCode.Found && response.Headers.Location.AbsoluteUri.Contains("login"))
+            {
+                await _localStorageService.ClearAsync();
+                response.StatusCode = HttpStatusCode.Unauthorized;
+            }
 
-        return response;
+            return response;
+        }
+        catch (HttpRequestException)
+        {
+            // For now assume this is auth expired redirecting with a 302
+
+            // The error boundary will catch this and redirect to the login page
+            throw new AuthenticationExpiredException();
+        }
     }
 }

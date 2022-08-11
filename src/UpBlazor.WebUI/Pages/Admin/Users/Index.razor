@@ -2,6 +2,7 @@
 @layout AdminAuthorizeLayout
 
 @inject UsersClient UsersClient
+@inject ImpersonationService ImpersonationService
 
 <Title Level="3">Users</Title>
 
@@ -15,6 +16,13 @@ else if (_allUsers is null || !_allUsers.Any())
 }
 else
 {
+    @if (ImpersonationService.IsImpersonating)
+    {
+        <Button OnClick="() => ImpersonationService.Clear()" Style="margin-bottom: 1rem;">
+            Clear Impersonation
+        </Button>
+    }
+
     <Card>
         <Statistic Value="_allUsers.Count" Title="Total Users"/>
     </Card>
@@ -52,6 +60,11 @@ else
                 @bind-Field="@context.UpdatedAt" 
                 Format="dd/MM/yyyy hh:mm tt" 
                 Sortable/>
+        <ActionColumn>
+            <Button OnClick="() => ImpersonationService.ActorUserId = context.Id">
+                Impersonate
+            </Button>
+        </ActionColumn>
     </Table>
 }
 

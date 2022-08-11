@@ -48,7 +48,7 @@ public class GetTotalForecastQueryHandler : IRequestHandler<GetTotalForecastQuer
         var incomePlanners = new Dictionary<Guid, IncomePlannerDto>();
         foreach (var income in incomes)
         {
-            var incomePlanner = await _mediator.Send(new GetIncomePlannerQuery(income, true), cancellationToken);
+            var incomePlanner = await _mediator.Send(new GetIncomePlannerQuery(income.Id, true), cancellationToken);
 
             incomePlanners[income.Id] = incomePlanner;
         }

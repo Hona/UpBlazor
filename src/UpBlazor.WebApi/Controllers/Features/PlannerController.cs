@@ -20,10 +20,7 @@ public class PlannerController : Controller
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> GetIncomePlanner(Guid id, [FromQuery] bool onlyUseSavingsPlans = false)
     {
-        var output = await _mediator.Send(new GetIncomePlannerQuery(new Income
-        {
-            Id = id
-        }, onlyUseSavingsPlans));
+        var output = await _mediator.Send(new GetIncomePlannerQuery(id, onlyUseSavingsPlans));
 
         return Ok(output);
     }

@@ -127,3 +127,11 @@
     .blazor-error-boundary::after {
         content: "An error has occurred."
     }
+
+.ant-statistic-content-value :not(:last-child) {
+    margin-right: -0.4rem;
+}
+
+.ant-table {
+    overflow-x: scroll;
+}

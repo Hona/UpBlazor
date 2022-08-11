@@ -21,6 +21,8 @@ builder.Services.AddAuthorizationCore(options =>
 builder.Services.AddScoped<AuthenticationStateProvider, ApiAuthenticationStateProvider>();
 builder.Services.AddBlazoredLocalStorage();
 
+builder.Services.AddSingleton<ImpersonationService>();
+
 builder.Services.AddScoped<string>(x => builder.Configuration["ApiUri"] ?? throw new InvalidOperationException());
 builder.Services.AddHttpClient<ExpensesClient>().AddHttpMessageHandler<ApiCookieInjector>();
 builder.Services.AddHttpClient<ForecastClient>().AddHttpMessageHandler<ApiCookieInjector>();

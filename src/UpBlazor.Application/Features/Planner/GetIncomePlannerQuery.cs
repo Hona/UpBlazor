@@ -14,7 +14,7 @@ using UpBlazor.Core.Repositories;
 
 namespace UpBlazor.Application.Features.Planner;
 
-public record GetIncomePlannerQuery(Income Income, bool OnlyUseSavingsPlans = false) : IRequest<IncomePlannerDto>;
+public record GetIncomePlannerQuery(Guid IncomeId, bool OnlyUseSavingsPlans = false) : IRequest<IncomePlannerDto>;
 
 public class GetIncomePlannerQueryHandler : IRequestHandler<GetIncomePlannerQuery, IncomePlannerDto>
 {
@@ -44,7 +44,8 @@ public class GetIncomePlannerQueryHandler : IRequestHandler<GetIncomePlannerQuer
 
         var incomes = await _incomeRepository.GetAllByUserIdAsync(userId, cancellationToken);
 
-        if (incomes.All(x => x.Id != request.Income.Id))
+        var income = incomes.FirstOrDefault(x => x.Id == request.IncomeId);
+        if (income is null)
         {
             throw new BadRequestException("Income not found");
         }
@@ -58,25 +59,25 @@ public class GetIncomePlannerQueryHandler : IRequestHandler<GetIncomePlannerQuer
         }
         
         var recurringExpenses = await _recurringExpenseRepository.GetAllByUserIdAsync(userId, cancellationToken);
-        var savingsPlans = await _savingsPlanRepository.GetAllByIncomeIdAsync(request.Income.Id, cancellationToken);
+        var savingsPlans = await _savingsPlanRepository.GetAllByIncomeIdAsync(income.Id, cancellationToken);
 
         var accounts = await _mediator.Send(new GetUpAccountsQuery(), cancellationToken);
 
         var output = new IncomePlannerDto
         {
-            UnbudgetedMoney = request.Income.ExactMoney
+            UnbudgetedMoney = income.ExactMoney
         };
 
         if (!request.OnlyUseSavingsPlans)
         {
-            GetIncomeExpenseSubTotals(request, output, expenses);
-            GetProRataExpenseSubTotals(request, output, normalizedAggregate, recurringExpenses);
+            GetIncomeExpenseSubTotals(income, output, expenses);
+            GetProRataExpenseSubTotals(income, output, normalizedAggregate, recurringExpenses);
         }
 
         GetExactSubTotals(output, savingsPlans);
-        GetPercentSubTotals(request, output, savingsPlans);
+        GetPercentSubTotals(income, output, savingsPlans);
 
-        GetFinalBudget(request, output, accounts);
+        GetFinalBudget(income, output, accounts);
 
         RoundAllValues(output);
 
@@ -116,7 +117,7 @@ public class GetIncomePlannerQueryHandler : IRequestHandler<GetIncomePlannerQuer
         RoundAllSavingsPlanRunningTotal(output.ProRataExpenseSubTotals);
     }
 
-    private static void GetFinalBudget(GetIncomePlannerQuery request, IncomePlannerDto output, IReadOnlyList<AccountResource> accounts)
+    private static void GetFinalBudget(Income income, IncomePlannerDto output, IReadOnlyList<AccountResource> accounts)
     {
         output.FinalBudget = new Dictionary<string, decimal>();
 
@@ -139,21 +140,21 @@ public class GetIncomePlannerQueryHandler : IRequestHandler<GetIncomePlannerQuer
 
             foreach (var percentSaving in output.PercentSavingsPlanSubTotals.Where(x => x.SaverId == account.Id))
             {
-                total += request.Income.ExactMoney * percentSaving.Amount.Percent.Value;
+                total += income.ExactMoney * percentSaving.Amount.Percent.Value;
             }
 
             output.FinalBudget[account.Id] = total;
         }
     }
 
-    private static void GetPercentSubTotals(GetIncomePlannerQuery request, IncomePlannerDto output,
+    private static void GetPercentSubTotals(Income income, IncomePlannerDto output,
         IReadOnlyList<SavingsPlan> savingsPlans)
     {
         output.PercentSavingsPlanSubTotals = new List<SavingsPlanRunningTotal>();
 
         foreach (var savingsPlan in savingsPlans.Where(x => x.Amount.Percent.HasValue))
         {
-            output.UnbudgetedMoney -= request.Income.ExactMoney * savingsPlan.Amount.Percent.Value;
+            output.UnbudgetedMoney -= income.ExactMoney * savingsPlan.Amount.Percent.Value;
 
             output.PercentSavingsPlanSubTotals.Add(new SavingsPlanRunningTotal(savingsPlan, output.UnbudgetedMoney));
         }
@@ -171,7 +172,7 @@ public class GetIncomePlannerQueryHandler : IRequestHandler<GetIncomePlannerQuer
         }
     }
 
-    private static void GetProRataExpenseSubTotals(GetIncomePlannerQuery request, IncomePlannerDto output,
+    private static void GetProRataExpenseSubTotals(Income income, IncomePlannerDto output,
         NormalizedAggregate normalizedAggregate, IReadOnlyList<RecurringExpense> recurringExpenses)
     {
         output.ProRataExpenseSubTotals = new List<SavingsPlanRunningTotal>();
@@ -180,7 +181,7 @@ public class GetIncomePlannerQueryHandler : IRequestHandler<GetIncomePlannerQuer
         {
             var originalRecurringExpense = recurringExpenses.First(x => x.Id == recurringExpense.RecurringExpenseId);
 
-            var proRataAmount = recurringExpense.Amount * request.Income.IntervalUnits * request.Income.Interval switch
+            var proRataAmount = recurringExpense.Amount * income.IntervalUnits * income.Interval switch
             {
                 Interval.Days => 1,
                 Interval.Weeks => 7,
@@ -194,12 +195,12 @@ public class GetIncomePlannerQueryHandler : IRequestHandler<GetIncomePlannerQuer
         }
     }
 
-    private static void GetIncomeExpenseSubTotals(GetIncomePlannerQuery request, IncomePlannerDto output,
+    private static void GetIncomeExpenseSubTotals(Income income, IncomePlannerDto output,
         IReadOnlyList<Expense> expenses)
     {
         output.IncomeExpenseSubTotals = new List<SavingsPlanRunningTotal>();
 
-        foreach (var incomeExpense in expenses.Where(x => x.FromIncomeId == request.Income.Id))
+        foreach (var incomeExpense in expenses.Where(x => x.FromIncomeId == income.Id))
         {
             if (incomeExpense.Money.Exact.HasValue)
             {
@@ -210,7 +211,7 @@ public class GetIncomePlannerQueryHandler : IRequestHandler<GetIncomePlannerQuer
 
             if (incomeExpense.Money.Percent.HasValue)
             {
-                output.UnbudgetedMoney -= request.Income.ExactMoney * incomeExpense.Money.Percent.Value;
+                output.UnbudgetedMoney -= income.ExactMoney * incomeExpense.Money.Percent.Value;
 
                 output.IncomeExpenseSubTotals.Add(new SavingsPlanRunningTotal(incomeExpense, output.UnbudgetedMoney));
             }

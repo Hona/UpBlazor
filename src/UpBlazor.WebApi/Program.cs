@@ -1,8 +1,11 @@
 using System.Security.Claims;
 using System.Text.Json.Serialization;
 using Marten;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.MicrosoftAccount;
+using Microsoft.AspNetCore.Authentication.OAuth;
+using Microsoft.AspNetCore.Authentication.OAuth.Claims;
 using Microsoft.AspNetCore.HttpOverrides;
 using UpBlazor.Application;
 using UpBlazor.Core.Models;
@@ -10,7 +13,7 @@ using UpBlazor.Core.Repositories;
 using UpBlazor.Infrastructure.Repositories;
 using UpBlazor.Infrastructure.Services;
 using UpBlazor.WebApi;
-using Weasel.Postgresql;
+using Weasel.Core;
 
 var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;

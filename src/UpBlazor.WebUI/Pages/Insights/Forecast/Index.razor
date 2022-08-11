@@ -14,19 +14,19 @@ else
     <Space Direction="DirectionVHType.Vertical" Style="width: 100%">
         <SpaceItem>
             <Card Title="Total Income">
-                <AntDesign.Charts.StackedArea Config="_forecastConfig" Data="@_incomeForecastData"/>
+                <Area Config="_forecastConfig" Data="@_incomeForecastData"/>
             </Card>
         </SpaceItem>
 
         <SpaceItem>
             <Card Title="Total Expenses">
-                <AntDesign.Charts.StackedArea Config="_forecastConfig" Data="@_expensesForecastData"/>
+                <Area Config="_forecastConfig" Data="@_expensesForecastData"/>
             </Card>
         </SpaceItem>
 
         <SpaceItem>
             <Card Title="Totals">
-                <AntDesign.Charts.StackedArea Config="_forecastConfig" Data="@_totalForecastData"/>
+                <Area Config="_forecastConfig" Data="@_totalForecastData"/>
             </Card>
         </SpaceItem>
     </Space>
@@ -35,7 +35,7 @@ else
 @code
 {
     private bool _loading;
-    
+
     private IReadOnlyList<ForecastDto> _incomeForecastData;
     private IReadOnlyList<ForecastDto> _expensesForecastData;
     private IReadOnlyList<ForecastDto> _totalForecastData;
@@ -54,15 +54,15 @@ else
         _incomeForecastData = await ForecastClient.GetIncomeForecastAsync(totalDays);
         _expensesForecastData = await ForecastClient.GetExpenseForecastAsync(totalDays);
         _totalForecastData = await ForecastClient.GetTotalsForecastAsync(totalDays);
-        
+
         _loading = false;
     }
-    
-    private readonly StackedAreaConfig _forecastConfig = new()
+
+    private readonly AreaConfig _forecastConfig = new()
     {
         XField = "cycle",
         YField = "balance",
-        StackField = "accountName",
+        SeriesField = "accountName",
         XAxis = new ValueCatTimeAxis
         {
             Visible = true,
@@ -70,19 +70,18 @@ else
             {
                 Visible = true,
                 AutoHide = true,
-                AutoRotate = true,
-                Rotate = -1,
-            }
+            },
         },
         Interactions = new[]
         {
-            new Interaction
+            new Interaction()
             {
+                Enable = true,
                 Type = "slider",
                 Cfg = new
                 {
                     start = 0,
-                    end = 0.4
+                    end = 0.2
                 }
             }
         }

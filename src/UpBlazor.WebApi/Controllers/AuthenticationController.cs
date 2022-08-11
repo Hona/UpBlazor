@@ -34,13 +34,13 @@ namespace UpBlazor.WebApi.Controllers
         {
             if (HttpContext.User.Identity is { IsAuthenticated: true })
             {
-                var expirationClaim = HttpContext.User.FindFirst(ClaimTypes.Expiration);
-
                 DateTime authExpires;
 
-                if (!string.IsNullOrWhiteSpace(expirationClaim?.Value))
+                // TODO: Use a better way to get the auth expires
+                if (!string.IsNullOrWhiteSpace(null))
                 {
-                    authExpires = DateTime.Parse(expirationClaim.Value);
+                    // Get date from exp claim - seconds from unix epoch
+                    authExpires = DateTime.UnixEpoch.AddSeconds(long.Parse(null));
                 }
                 else
                 {

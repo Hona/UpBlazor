@@ -19,8 +19,8 @@ public class CurrentUserService : ICurrentUserService
     private readonly IUpUserTokenRepository _upUserTokenRepository;
     private readonly IRegisteredUserRepository _registeredUserRepository;
 
-    private string _impersonationUserId;
-
+    private const string ImpersonationHeader = "x-upblazor-impersonate";
+    
     private IUpApi _upApi;
 
     public CurrentUserService(IHttpContextAccessor httpContextAccessor, IUpUserTokenRepository upUserTokenRepository, IRegisteredUserRepository registeredUserRepository)
@@ -67,9 +67,9 @@ public class CurrentUserService : ICurrentUserService
 
     public async Task<IEnumerable<Claim>> GetClaimsAsync(CancellationToken cancellationToken = default)
     {
-        if (!string.IsNullOrWhiteSpace(_impersonationUserId))
+        if (IsImpersonating())
         {
-            var cachedUser = await _registeredUserRepository.GetByIdAsync(_impersonationUserId, cancellationToken);
+            var cachedUser = await _registeredUserRepository.GetByIdAsync(ImpersonationUserId, cancellationToken);
 
             return new List<Claim>
             {
@@ -96,16 +96,7 @@ public class CurrentUserService : ICurrentUserService
         return claims?.FirstOrDefault(x => x.Type == ClaimTypes.GivenName)?.Value;
     }
 
-    public bool IsImpersonating => !string.IsNullOrWhiteSpace(_impersonationUserId);
-    public void Impersonate(string userId)
-    {
-        _impersonationUserId = userId;
-        _upApi = null;
-    }
-
-    public void ResetImpersonation()
-    {
-        _impersonationUserId = null;
-        _upApi = null;
-    }
+    public bool IsImpersonating() => _httpContext.Request.Headers.ContainsKey(ImpersonationHeader);
+    public string ImpersonationUserId => _httpContext.Request.Headers[ImpersonationHeader];
+    
 }

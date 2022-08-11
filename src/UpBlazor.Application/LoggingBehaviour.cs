@@ -8,7 +8,7 @@ using Microsoft.Extensions.Logging;
 
 namespace UpBlazor.Application;
 
-public class LoggingBehaviour<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
+public class LoggingBehaviour<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse> where TRequest : IRequest<TResponse>
 {
     private readonly ILogger<LoggingBehaviour<TRequest, TResponse>> _logger;
     

@@ -58,7 +58,7 @@ else
         _loading = false;
     }
 
-    private readonly AreaConfig _forecastConfig = new()
+    private readonly SliderAreaConfig _forecastConfig = new()
     {
         XField = "cycle",
         YField = "balance",
@@ -84,6 +84,22 @@ else
                     end = 0.2
                 }
             }
+        },
+        slider = new SliderAreaConfig.Slider()
+        {
+            start = 0,
+            end = 0.2
         }
     };
+
+    public class SliderAreaConfig : AreaConfig
+    {
+        public class Slider
+        {
+            public double start { get; set; }
+            public double end { get; set; }
+        }
+        
+        public Slider slider { get; set; }
+    }
 }

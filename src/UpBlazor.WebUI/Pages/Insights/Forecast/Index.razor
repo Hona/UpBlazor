@@ -170,6 +170,7 @@ else
                 Visible = true,
                 AutoHide = true,
             },
+            TickInterval = 7 * 4
         },
         Interactions = new[]
         {
@@ -188,7 +189,8 @@ else
         {
             start = 0,
             end = 0.2
-        }
+        },
+        startOnZero = true
     };
 
     public class SliderAreaConfig : AreaConfig
@@ -200,6 +202,8 @@ else
         }
         
         public Slider slider { get; set; }
+        
+        public bool startOnZero { get; set; }
     }
 
     private async Task HandleLoadClick()

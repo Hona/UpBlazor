@@ -41,6 +41,11 @@ services.AddAuthentication(MicrosoftAccountDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
         options.AccessDeniedPath = "/access-denied";
+
+        if (builder.Environment.IsProduction())
+        {
+            options.Cookie.Domain = builder.Configuration["UiUri"];
+        }
     })
     .AddMicrosoftAccount(options =>
     {
@@ -50,6 +55,11 @@ services.AddAuthentication(MicrosoftAccountDefaults.AuthenticationScheme)
         options.AuthorizationEndpoint = MicrosoftAccountDefaults.AuthorizationEndpoint + "?prompt=select_account";
         
         options.CallbackPath = "/api/signin-microsoft";
+        
+        if (builder.Environment.IsProduction())
+        {
+            options.CorrelationCookie.Domain = builder.Configuration["UiUri"];
+        }    
     });
 
 services.AddAuthorization(options =>

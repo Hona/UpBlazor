@@ -48,8 +48,17 @@ services.AddAuthentication(MicrosoftAccountDefaults.AuthenticationScheme)
         options.ClientSecret = builder.Configuration["Authentication:Microsoft:ClientSecret"];
         options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
         options.AuthorizationEndpoint = MicrosoftAccountDefaults.AuthorizationEndpoint + "?prompt=select_account";
-        
-        options.CallbackPath = "/api/signin-microsoft";
+
+        if (builder.Environment.IsProduction())
+        {
+            // In prod we have a reverse proxy
+            // authentication probably doesn't believe our forwarded headers
+            options.CallbackPath = builder.Configuration["UiUri"] + "/api/signin-microsoft";
+        }
+        else
+        {
+            options.CallbackPath = "/api/signin-microsoft";
+        }
     });
 
 services.AddAuthorization(options =>

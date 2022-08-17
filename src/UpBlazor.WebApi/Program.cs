@@ -162,6 +162,11 @@ if (app.Environment.IsProduction())
     });
 }
 
+app.UseCookiePolicy(new CookiePolicyOptions
+{
+    Secure = CookieSecurePolicy.Always
+});
+
 app.UseCors(options =>
 {
     options.AllowAnyHeader()

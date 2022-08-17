@@ -142,10 +142,14 @@ services.AddHttpContextAccessor();
 
 var app = builder.Build();
 
-app.UseForwardedHeaders(new ForwardedHeadersOptions()
+var forwardingOptions = new ForwardedHeadersOptions()
 {
-    ForwardedHeaders = ForwardedHeaders.XForwardedProto | ForwardedHeaders.XForwardedHost 
-});
+    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+};
+forwardingOptions.KnownNetworks.Clear(); // Loopback by default, this should be temporary
+forwardingOptions.KnownProxies.Clear(); // Update to include
+
+app.UseForwardedHeaders(forwardingOptions);
 
 if (app.Environment.IsProduction())
 {

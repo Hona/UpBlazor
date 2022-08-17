@@ -48,17 +48,8 @@ services.AddAuthentication(MicrosoftAccountDefaults.AuthenticationScheme)
         options.ClientSecret = builder.Configuration["Authentication:Microsoft:ClientSecret"];
         options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
         options.AuthorizationEndpoint = MicrosoftAccountDefaults.AuthorizationEndpoint + "?prompt=select_account";
-
-        if (builder.Environment.IsProduction())
-        {
-            // In prod we have a reverse proxy
-            // authentication probably doesn't believe our forwarded headers
-            options.CallbackPath = builder.Configuration["UiUri"] + "/api/signin-microsoft";
-        }
-        else
-        {
-            options.CallbackPath = "/api/signin-microsoft";
-        }
+        
+        options.CallbackPath = "/api/signin-microsoft";
     });
 
 services.AddAuthorization(options =>
@@ -165,6 +156,8 @@ if (app.Environment.IsProduction())
     app.Use((context, next) =>
     {
         context.Request.Scheme = "https";
+        context.Request.Host = new HostString("upblazor.com");
+        
         return next(context);
     });
 }

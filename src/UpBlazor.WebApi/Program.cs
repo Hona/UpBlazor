@@ -58,10 +58,9 @@ services.AddAuthentication(MicrosoftAccountDefaults.AuthenticationScheme)
         
         if (builder.Environment.IsProduction())
         {
-            options.CorrelationCookie.Domain = "upblazor.com";
-            options.CorrelationCookie.SameSite = SameSiteMode.Lax;
-            options.CorrelationCookie.IsEssential = true;
             options.CorrelationCookie.SecurePolicy = CookieSecurePolicy.Always;
+            options.CorrelationCookie.HttpOnly = true;
+            options.CorrelationCookie.SameSite = SameSiteMode.None;
         }    
     });
 

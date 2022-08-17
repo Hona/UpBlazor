@@ -144,7 +144,7 @@ var app = builder.Build();
 
 var forwardingOptions = new ForwardedHeadersOptions()
 {
-    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto | ForwardedHeaders.XForwardedHost
 };
 forwardingOptions.KnownNetworks.Clear(); // Loopback by default, this should be temporary
 forwardingOptions.KnownProxies.Clear(); // Update to include

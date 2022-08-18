@@ -42,11 +42,6 @@ services.AddAuthentication(MicrosoftAccountDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
         options.AccessDeniedPath = "/access-denied";
-
-        if (builder.Environment.IsProduction())
-        {
-            options.Cookie.Domain = builder.Configuration["UiUri"];
-        }
     })
     .AddMicrosoftAccount(options =>
     {

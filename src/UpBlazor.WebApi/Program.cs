@@ -58,9 +58,7 @@ services.AddAuthentication(MicrosoftAccountDefaults.AuthenticationScheme)
         
         if (builder.Environment.IsProduction())
         {
-            options.CorrelationCookie.SecurePolicy = CookieSecurePolicy.Always;
-            options.CorrelationCookie.HttpOnly = true;
-            options.CorrelationCookie.SameSite = SameSiteMode.None;
+            options.CorrelationCookie.SameSite = SameSiteMode.Lax;
         }    
     });
 

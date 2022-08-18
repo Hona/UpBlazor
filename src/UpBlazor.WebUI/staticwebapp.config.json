@@ -1,11 +1,5 @@
 {
     "navigationFallback": {
       "rewrite": "/index.html"
-    },
-    "forwardingGateway": {
-      "allowedForwardedHosts": [
-        "upblazor.com",
-        "www.upblazor.com"
-      ]
     }
   }

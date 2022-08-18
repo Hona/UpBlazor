@@ -55,11 +55,6 @@ services.AddAuthentication(MicrosoftAccountDefaults.AuthenticationScheme)
         options.AuthorizationEndpoint = MicrosoftAccountDefaults.AuthorizationEndpoint + "?prompt=select_account";
         
         options.CallbackPath = "/api/signin-microsoft";
-        
-        if (builder.Environment.IsProduction())
-        {
-            options.CorrelationCookie.SameSite = SameSiteMode.Lax;
-        }    
     });
 
 services.AddAuthorization(options =>
@@ -150,27 +145,21 @@ services.AddAuthorization();
 
 services.AddHttpContextAccessor();
 
+services.Configure<ForwardedHeadersOptions>(options =>
+{
+    options.ForwardedHeaders = ForwardedHeaders.XForwardedFor |
+                               ForwardedHeaders.XForwardedProto;
+    
+    // Only loopback proxies are allowed by default.
+    // Clear that restriction because forwarders are enabled by explicit 
+    // configuration.
+    options.KnownNetworks.Clear();
+    options.KnownProxies.Clear();
+});
+
 var app = builder.Build();
 
-var forwardingOptions = new ForwardedHeadersOptions()
-{
-    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto | ForwardedHeaders.XForwardedHost
-};
-forwardingOptions.KnownNetworks.Clear(); // Loopback by default, this should be temporary
-forwardingOptions.KnownProxies.Clear(); // Update to include
-
-app.UseForwardedHeaders(forwardingOptions);
-
-if (app.Environment.IsProduction())
-{
-    app.Use((context, next) =>
-    {
-        context.Request.Scheme = "https";
-        context.Request.Host = new HostString("upblazor.com");
-        
-        return next(context);
-    });
-}
+app.UseForwardedHeaders();
 
 app.UseCors(options =>
 {

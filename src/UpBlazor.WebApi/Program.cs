@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.MicrosoftAccount;
 using Microsoft.AspNetCore.Authentication.OAuth;
 using Microsoft.AspNetCore.Authentication.OAuth.Claims;
+using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.AspNetCore.HttpOverrides;
 using UpBlazor.Application;
 using UpBlazor.Core.Models;
@@ -155,6 +156,11 @@ services.Configure<ForwardedHeadersOptions>(options =>
     // configuration.
     options.KnownNetworks.Clear();
     options.KnownProxies.Clear();
+});
+
+services.AddHttpLogging(options =>
+{
+    options.LoggingFields = HttpLoggingFields.RequestPropertiesAndHeaders;
 });
 
 var app = builder.Build();

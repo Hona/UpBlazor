@@ -43,7 +43,7 @@ services.AddAuthentication(MicrosoftAccountDefaults.AuthenticationScheme)
     {
         options.AccessDeniedPath = "/access-denied";
 
-        options.Cookie.SameSite = SameSiteMode.Unspecified;
+        options.Cookie.SameSite = SameSiteMode.None;
     })
     .AddMicrosoftAccount(options =>
     {

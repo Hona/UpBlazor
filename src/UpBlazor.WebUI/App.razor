@@ -2,8 +2,11 @@
     <Router AppAssembly="@typeof(Program).Assembly" PreferExactMatches="@true">
         <Found Context="routeData">
             <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(AuthorizeLayout)">
+                <Authorizing>
+                    <p>Determining user session state...</p>
+                </Authorizing>
                 <NotAuthorized>
-                    <RedirectToLogin/>
+                    <RedirectToLogin />
                 </NotAuthorized>
             </AuthorizeRouteView>
         </Found>

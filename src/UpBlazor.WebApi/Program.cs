@@ -3,6 +3,7 @@ using System.Text.Json.Serialization;
 using Marten;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authentication.MicrosoftAccount;
 using Microsoft.AspNetCore.Authentication.OAuth;
 using Microsoft.AspNetCore.Authentication.OAuth.Claims;
@@ -38,48 +39,24 @@ builder.Services.AddOpenApiDocument();
 
 services.AddApplication();
 
-services.AddAuthentication(MicrosoftAccountDefaults.AuthenticationScheme)
-    .AddCookie(options =>
+builder.Services.AddAuthentication(options =>
     {
-        options.AccessDeniedPath = "/access-denied";
-
-        options.Cookie.SameSite = SameSiteMode.None;
+        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
     })
-    .AddMicrosoftAccount(options =>
+    .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, c =>
     {
-        options.ClientId = builder.Configuration["Authentication:Microsoft:ClientId"];
-        options.ClientSecret = builder.Configuration["Authentication:Microsoft:ClientSecret"];
-        options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-        options.AuthorizationEndpoint = MicrosoftAccountDefaults.AuthorizationEndpoint + "?prompt=select_account";
+        c.Authority = builder.Configuration["Auth0:Authority"];
         
-        options.CallbackPath = "/api/signin-microsoft";
+        c.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+        {
+            ValidAudience = builder.Configuration["Auth0:Audience"],
+            ValidIssuer = builder.Configuration["Auth0:Domain"]
+        };
     });
 
 services.AddAuthorization(options =>
 {
-    options.AddPolicy(Constants.AllowedEmailAuthorizationPolicy, policy =>
-    {
-        policy.RequireAuthenticatedUser()
-            .RequireClaim(ClaimTypes.Email)
-            .RequireClaim(ClaimTypes.GivenName)
-            .RequireAssertion(context =>
-            {
-                var emailAddress = context.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Email)?.Value;
-                var allowedEmails = builder.Configuration
-                    .GetSection(Constants.AllowedEmailAuthorizationPolicy)
-                    .GetChildren()
-                    .Select(x => x.Value)
-                    .ToArray();
-
-                if (!allowedEmails.Any())
-                {
-                    return true;
-                }
-
-                return allowedEmails.Any(x => x == emailAddress);
-            });
-    });
-
     options.AddPolicy(Constants.AdminAuthorizationPolicy, policy =>
     {
         policy.RequireAuthenticatedUser()

@@ -23,6 +23,16 @@ public class IncomesController : Controller
 
         return Ok(output);
     }
+
+    [HttpPut("{id:guid}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    public async Task<IActionResult> UpdateIncome(Guid id, [FromBody] Income income)
+    {
+        income.Id = id;
+        await _mediator.Send(new UpdateIncomeCommand(income));
+
+        return NoContent();
+    }
     
     [HttpDelete("{id:guid}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]

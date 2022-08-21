@@ -15,11 +15,11 @@
         <Dropdown Placement="@Placement.BottomLeft">
             <Overlay>
                 <Menu>
-                    <MenuItem OnClick='() => _navigationManager.NavigateTo("/signout", true)'>
+                    <MenuItem OnClick='() => _navigationManager.NavigateTo("/authentication/logout")'>
                         Sign out
                     </MenuItem>
                     <MenuDivider/>
-                    <MenuItem OnClick='() => _navigationManager.NavigateTo("/settings/up-access-token", true)'>
+                    <MenuItem OnClick='() => _navigationManager.NavigateTo("/settings/up-access-token")'>
                         Settings
                     </MenuItem>
                 </Menu>
@@ -34,7 +34,7 @@
         </Dropdown>
     </Authorized>
     <NotAuthorized>
-        <Button Type="primary" OnClick='() => _navigationManager.NavigateTo("/signin", true)' Loading="true">Sign in</Button>
+        <Button Type="primary" OnClick='() => _navigationManager.NavigateTo("/authentication/login", true)' Loading="true">Sign in</Button>
     </NotAuthorized>
 </AuthorizeView>
 

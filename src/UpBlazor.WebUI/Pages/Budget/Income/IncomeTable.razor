@@ -9,8 +9,30 @@ else
     <Title Level="3">Income</Title>
     
     <Table DataSource="_incomes">
-        <Column Title="Name" @bind-Field="@context.Name" Sortable/>
-        <Column Title="Amount" @bind-Field="context.ExactMoney" Format="$0.00" Sortable/>
+        <Column Title="Name" @bind-Field="@context.Name" Sortable>
+            @if (_editId == context.Id)
+            {
+                <Input @bind-Value="context.Name" OnBlur="async () => await SaveAsync(context)"/>
+            }
+            else
+            {
+                <div @onclick="@(() => _editId = context.Id)">
+                    @context.Name
+                </div>
+            }
+        </Column>
+        <Column Title="Amount" @bind-Field="context.ExactMoney" Format="$0.00" Sortable>
+            @if (_editId == context.Id)
+            {
+                <AntDesign.InputNumber @bind-Value="context.ExactMoney" OnChange="async (decimal value) => await SaveAsync(context)"/>
+            }
+            else
+            {
+                <div @onclick="@(() => _editId = context.Id)">
+                    $@context.ExactMoney.ToString("F2")
+                </div>
+            }
+        </Column>
         <Column Title="Start Date" @bind-Field="@context.StartDate" Format="dd/MM/yyyy" Sortable/>
         <Column Title="Interval Units" @bind-Field="@context.IntervalUnits" Sortable/>
         <Column Title="Interval" @bind-Field="@context.Interval" Sortable/>
@@ -26,6 +48,8 @@ else
 
 @code
 {
+    private Guid _editId = Guid.Empty;
+    
     private bool _loading;
 
     private IReadOnlyList<Income> _incomes;
@@ -58,6 +82,19 @@ else
         await IncomesClient.DeleteIncomeAsync(income.Id);
         
         _loading = false;
+
+        await ReloadAsync();
+    }
+
+    private async Task SaveAsync(Income income)
+    {
+        _loading = true;
+
+        await IncomesClient.UpdateIncomeAsync(income.Id, income);
+
+        _loading = false;
+        
+        _editId = Guid.Empty;
 
         await ReloadAsync();
     }

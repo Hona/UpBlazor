@@ -135,10 +135,6 @@
                             </Extra>
                         </Result>
                     }
-                    else if (context is AuthenticationExpiredException)
-                    {
-                        <RedirectToSignout />
-                    }
                     else
                     {
                         <Result Status="500">

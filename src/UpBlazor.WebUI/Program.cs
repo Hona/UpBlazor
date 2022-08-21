@@ -1,6 +1,8 @@
+using System.Security.Claims;
 using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Web;
+using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using UpBlazor.ApiClient;
 using UpBlazor.WebUI;
@@ -15,27 +17,44 @@ builder.Services.AddAntDesign();
 
 builder.Services.AddAuthorizationCore(options =>
 {
-    options.AddPolicy("Admins", policy => policy.RequireClaim("admin"));
-    options.AddPolicy("AllowedEmails", policy => policy.RequireClaim("allowedEmails"));
+    options.AddPolicy("Admin", policy => policy.RequireAssertion(context => context.User.FindFirst(ClaimTypes.Email)?.Value is "lukemparker@outlook.com"));
 });
-builder.Services.AddScoped<AuthenticationStateProvider, ApiAuthenticationStateProvider>();
-builder.Services.AddBlazoredLocalStorage();
+
+builder.Services.AddOidcAuthentication(options =>
+{
+    builder.Configuration.Bind("Auth0", options.ProviderOptions);
+    options.ProviderOptions.ResponseType = "code";
+    
+    // API audience
+    options.ProviderOptions.AdditionalProviderParameters.Add("audience", builder.Configuration["Auth0:Audience"]);
+});
+
 
 builder.Services.AddSingleton<ImpersonationService>();
 
 builder.Services.AddScoped<string>(x => builder.Configuration["ApiUri"] ?? throw new InvalidOperationException());
-builder.Services.AddHttpClient<ExpensesClient>().AddHttpMessageHandler<ApiCookieInjector>();
-builder.Services.AddHttpClient<ForecastClient>().AddHttpMessageHandler<ApiCookieInjector>();
-builder.Services.AddHttpClient<GoalsClient>().AddHttpMessageHandler<ApiCookieInjector>();
-builder.Services.AddHttpClient<IncomesClient>().AddHttpMessageHandler<ApiCookieInjector>();
-builder.Services.AddHttpClient<NormalizedClient>().AddHttpMessageHandler<ApiCookieInjector>();
-builder.Services.AddHttpClient<NotificationsClient>().AddHttpMessageHandler<ApiCookieInjector>();
-builder.Services.AddHttpClient<UpClient>().AddHttpMessageHandler<ApiCookieInjector>();
-builder.Services.AddHttpClient<TwoUpClient>().AddHttpMessageHandler<ApiCookieInjector>();
-builder.Services.AddHttpClient<PlannerClient>().AddHttpMessageHandler<ApiCookieInjector>();
-builder.Services.AddHttpClient<UsersClient>().AddHttpMessageHandler<ApiCookieInjector>();
-builder.Services.AddHttpClient<RecurringExpensesClient>().AddHttpMessageHandler<ApiCookieInjector>();
-builder.Services.AddHttpClient<SavingsPlanClient>().AddHttpMessageHandler<ApiCookieInjector>();
-builder.Services.AddScoped<ApiCookieInjector>();
+
+const string ApiClient = nameof(ApiClient);
+builder.Services.AddHttpClient(ApiClient,
+        client => client.BaseAddress = new Uri(builder.Configuration["ApiUri"]))
+    .AddHttpMessageHandler(sp =>
+        sp.GetRequiredService<AuthorizationMessageHandler>()
+            .ConfigureHandler(
+                authorizedUrls: new[] { builder.Configuration["ApiUri"] }
+            )
+    );
+
+builder.Services.AddHttpClient<ExpensesClient>(ApiClient);
+builder.Services.AddHttpClient<ForecastClient>(ApiClient);
+builder.Services.AddHttpClient<GoalsClient>(ApiClient);
+builder.Services.AddHttpClient<IncomesClient>(ApiClient);
+builder.Services.AddHttpClient<NormalizedClient>(ApiClient);
+builder.Services.AddHttpClient<NotificationsClient>(ApiClient);
+builder.Services.AddHttpClient<UpClient>(ApiClient);
+builder.Services.AddHttpClient<TwoUpClient>(ApiClient);
+builder.Services.AddHttpClient<PlannerClient>(ApiClient);
+builder.Services.AddHttpClient<UsersClient>(ApiClient);
+builder.Services.AddHttpClient<RecurringExpensesClient>(ApiClient);
+builder.Services.AddHttpClient<SavingsPlanClient>(ApiClient);
 
 await builder.Build().RunAsync();

@@ -20,13 +20,16 @@ builder.Services.AddAuthorizationCore(options =>
     options.AddPolicy("Admin", policy => policy.RequireAssertion(context => context.User.FindFirst(ClaimTypes.Email)?.Value is "lukemparker@outlook.com"));
 });
 
-builder.Services.AddOidcAuthentication(options =>
+builder.Services.AddAuth0OidcAuthentication(options =>
 {
     builder.Configuration.Bind("Auth0", options.ProviderOptions);
     options.ProviderOptions.ResponseType = "code";
     
     // API audience
     options.ProviderOptions.AdditionalProviderParameters.Add("audience", builder.Configuration["Auth0:Audience"]);
+    
+    // Process logouts
+    options.ProviderOptions.MetadataSeed.EndSessionEndpoint = $"{builder.Configuration["Auth0:Authority"]}/v2/logout?client_id={builder.Configuration["Auth0:ClientId"]}&returnTo={builder.HostEnvironment.BaseAddress}";
 });
 
 

@@ -61,11 +61,10 @@ services.AddAuthorization(options =>
     options.AddPolicy(Constants.AdminAuthorizationPolicy, policy =>
     {
         policy.RequireAuthenticatedUser()
-            .RequireClaim(ClaimTypes.Email)
+            .RequireClaim(ClaimTypes.NameIdentifier)
             .RequireAssertion(context =>
             {
-                var emailAddress = context.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Email)
-                    ?.Value;
+                var userId = context.User.FindFirstValue(ClaimTypes.NameIdentifier);
 
                 var adminEmails = builder.Configuration
                     .GetSection(Constants.AdminAuthorizationPolicy)
@@ -78,7 +77,7 @@ services.AddAuthorization(options =>
                     return false;
                 }
 
-                return adminEmails.Any(x => x == emailAddress);
+                return adminEmails.Any(x => x == userId);
             });
     });
 });

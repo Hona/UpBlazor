@@ -82,7 +82,7 @@ public class Auth0_UserIds : IMigration
         
         foreach (var model in models)
         {
-            if (idField(model).StartsWith("windowslive|") || idField(model).Contains('|'))
+            if (idField(model) is null || idField(model).StartsWith("windowslive|") || idField(model).Contains('|'))
             {
                 continue;
             }

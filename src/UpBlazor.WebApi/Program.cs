@@ -85,7 +85,7 @@ services.AddAuthorization(options =>
 
 services.AddMarten(options =>
 {
-    options.Connection(builder.Configuration.GetConnectionString("Marten"));
+    options.Connection("Server=upblazor-postgres.postgres.database.azure.com;Database=okr_db;Port=5432;User Id= lukeadmin;Password=nGXH#1i$W4ii;Ssl Mode=VerifyFull;");
 
     options.AutoCreateSchemaObjects = builder.Environment.IsDevelopment()
         ? AutoCreate.All

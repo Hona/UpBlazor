@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.HttpOverrides;
 using UpBlazor.Application;
 using UpBlazor.Core.Models;
 using UpBlazor.Core.Repositories;
+using UpBlazor.Infrastructure.Migrations.Core;
 using UpBlazor.Infrastructure.Repositories;
 using UpBlazor.Infrastructure.Services;
 using UpBlazor.WebApi;
@@ -98,6 +99,8 @@ services.AddMarten(options =>
         .Identity(x => x.MartenId);
     options.Schema.For<NormalizedAggregate>()
         .Identity(x => x.UserId);
+    options.Schema.For<MigrationLog>()
+        .Identity(x => x.Version);
 });
 
 services.AddSingleton<IUpUserTokenRepository, UpUserTokenRepository>();

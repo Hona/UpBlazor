@@ -17,7 +17,7 @@ builder.Services.AddAntDesign();
 
 builder.Services.AddAuthorizationCore(options =>
 {
-    options.AddPolicy("Admin", policy => policy.RequireAssertion(context => context.User.FindFirst(ClaimTypes.Email)?.Value is "lukemparker@outlook.com"));
+    options.AddPolicy("Admin", policy => policy.RequireAssertion(context => context.User.FindFirst(ClaimTypes.NameIdentifier)?.Value is "windowslive|2a73b0d97086ad1d"));
 });
 
 builder.Services.AddAuth0OidcAuthentication(options =>

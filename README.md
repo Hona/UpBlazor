@@ -131,9 +131,9 @@ This project follows a simplistic take on Clean Architecture.
 <tr>
     <td align="center" style="word-wrap: break-word; width: 150.0; height: 150.0">
         <a href=https://github.com/Hona>
-            <img src=https://avatars.githubusercontent.com/u/10430890?v=4 width="100;"  style="border-radius:50%;align-items:center;justify-content:center;overflow:hidden;padding-top:10px" alt=Luke Parker [SSW]/>
+            <img src=https://avatars.githubusercontent.com/u/10430890?v=4 width="100;"  style="border-radius:50%;align-items:center;justify-content:center;overflow:hidden;padding-top:10px" alt=LukeParkerDev/>
             <br />
-            <sub style="font-size:14px"><b>Luke Parker [SSW]</b></sub>
+            <sub style="font-size:14px"><b>LukeParkerDev</b></sub>
         </a>
     </td>
     <td align="center" style="word-wrap: break-word; width: 150.0; height: 150.0">

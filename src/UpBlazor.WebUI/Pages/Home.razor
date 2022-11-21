@@ -1,49 +1,45 @@
 @page "/home"
 
+@using MudBlazor
+@using Color = MudBlazor.Color
+
 @inject NavigationManager _navigationManager
 @inject UpClient _upClient
 
 @if (_loading)
 {
-    <Spin />
+    <MudProgressLinear Indeterminate />
 }
 else
 {
-    <div style="display: flex; justify-content: center; align-items: center; flex-wrap: wrap">
-        @foreach (var transactionAccount in _accounts.Where(x => x.Attributes.AccountType == AccountType.Transactional))
+    <MudStack Row Justify="Justify.Center" AlignItems="AlignItems.Center" Class="flex-wrap pt-4">
+        @foreach (var transactionAccount in _accounts)
         {
-            <div @onclick='() => _navigationManager.NavigateTo($"/insights/transactions/{transactionAccount.Id}")'>
-                <Card Title="@transactionAccount.Attributes.DisplayName"
-                      Bordered="@true"
-                      Hoverable="@true"
-                      Style="margin: 1rem">
-                    <Statistic Prefix="$" 
-                               Precision="2" 
-                               Value="@decimal.Parse(transactionAccount.Attributes.Balance.Value)" 
-                               TValue="decimal"/>
-                </Card>
-            </div>
+            <a href='@($"/insights/transactions/{transactionAccount.Id}")'>
+                <MudCard Elevation="2" Outlined Style="width:300px;">
+                    <MudCardHeader>
+                        <MudText Typo="Typo.subtitle2">
+                            @transactionAccount.Attributes.DisplayName
+                        </MudText>
+                        <MudSpacer />
+                        <MudChip Color="@(transactionAccount.Attributes.AccountType == AccountType.Transactional ? Color.Primary : Color.Secondary)">
+                            @transactionAccount.Attributes.AccountType
+                        </MudChip>
+                    </MudCardHeader>
+                    <MudCardContent>
+                        <MudAlert Severity="Severity.Normal" NoIcon>
+                            <MudStack Row>
+                                <MudText Typo="Typo.h5">$</MudText>
+                                <MudText Typo="Typo.h5">
+                                    @decimal.Parse(transactionAccount.Attributes.Balance.Value).ToString("F2")
+                                </MudText>
+                            </MudStack>
+                        </MudAlert>
+                    </MudCardContent>
+                </MudCard>
+            </a>
         }
-    </div>
-
-    <Title Level="4">Savers</Title>
-
-    <div style="display: flex; justify-content: center; align-items: center; flex-wrap: wrap">
-        @foreach (var saver in _accounts.Where(x => x.Attributes.AccountType == AccountType.Saver))
-        {
-            <div @onclick='() => _navigationManager.NavigateTo($"/insights/transactions/{saver.Id}")'>
-                <Card Title="@saver.Attributes.DisplayName"
-                      Bordered="@true"
-                      Hoverable="@true"
-                      Style="margin: 1rem">
-                    <Statistic Prefix="$" 
-                               Precision="2" 
-                               Value="@decimal.Parse(saver.Attributes.Balance.Value)" 
-                               TValue="decimal"/>
-                </Card>
-            </div>
-        }
-    </div>
+    </MudStack>
 }
 
 @code

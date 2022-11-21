@@ -1,4 +1,6 @@
-﻿<CascadingAuthenticationState>
+﻿@using MudBlazor
+@using MudBlazor.Utilities
+<CascadingAuthenticationState>
     <Router AppAssembly="@typeof(Program).Assembly" PreferExactMatches="@true">
         <Found Context="routeData">
             <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(AuthorizeLayout)">
@@ -19,3 +21,22 @@
 </CascadingAuthenticationState>
 
 <AntContainer />
+
+<MudBlazor.MudThemeProvider Theme="_theme"/>
+<MudBlazor.MudDialogProvider />
+<MudBlazor.MudSnackbarProvider />
+
+@code
+{
+    private MudTheme _theme = new()
+    {
+        Palette = new Palette()
+        {
+            Primary = new MudColor("#1890FF"),
+            Secondary = new MudColor("#FFF06E"),
+            Tertiary = new MudColor("#FC6E23"),
+            AppbarBackground = new MudColor("#001529"),
+            SecondaryContrastText = new MudColor("#000")
+        }
+    };
+}

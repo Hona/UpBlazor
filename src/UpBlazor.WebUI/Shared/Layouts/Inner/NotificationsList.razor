@@ -1,0 +1,43 @@
+﻿@using Notification = UpBlazor.ApiClient.Notification
+@inject NotificationsClient NotificationsClient
+
+@using MudBlazor
+@using Color = MudBlazor.Color
+
+@if (_notifications is null)
+{
+    <MudProgressCircular Size="Size.Small" Indeterminate />
+}
+else if (!_notifications.Any())
+{
+    <MudText Class="mud-text-secondary my-12">Nothing new</MudText>
+}
+else
+{
+    <MudList Style="max-width: 600px">
+        @foreach (var notification in _notifications)
+        {
+            <MudListItem>
+                <MudStack Row Style="height: fit-content" AlignItems="AlignItems.Center">
+                    <MudIconButton Icon="@Icons.Rounded.Done" Color="Color.Error" Variant="Variant.Outlined" OnClick="@(async () => await NotificationsClient.ReadNotificationAsync(notification.Id))" />
+
+                    <div>
+                        <MudText Class="mud-text-primary">@notification.Title</MudText>
+                        <MudText Class="mud-text-secondary">@notification.Description</MudText>
+                    </div>
+                </MudStack>
+            </MudListItem>
+        }
+    </MudList>
+}
+
+
+@code
+{
+    private IReadOnlyList<Notification>? _notifications;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _notifications = await NotificationsClient.GetAllNotificationsAsync(false);
+    }
+}

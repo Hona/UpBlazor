@@ -1,0 +1,14 @@
+﻿@using MudBlazor
+
+<AuthorizeView>
+    <MudAvatar Image="@context.User.FindFirst("picture")?.Value" Class="@Class" @onclick="OnClick"/>
+</AuthorizeView>
+
+@code
+{
+    [Parameter]
+    public string Class { get; set; } = string.Empty;
+
+    [Parameter]
+    public EventCallback OnClick { get; set; }
+}

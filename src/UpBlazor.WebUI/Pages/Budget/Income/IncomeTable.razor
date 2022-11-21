@@ -1,49 +1,41 @@
-﻿@inject IncomesClient IncomesClient
+﻿@using MudBlazor
+@using Color = MudBlazor.Color
+
+@inject IncomesClient IncomesClient
 
 @if (_loading)
 {
-    <Spin />
+    <MudProgressCircular Indeterminate />
 }
 else
 {
-    <Title Level="3">Income</Title>
+    <MudText Typo="Typo.h4">Income</MudText>
     
-    <Table DataSource="_incomes">
-        <Column Title="Name" @bind-Field="@context.Name" Sortable>
-            @if (_editId == context.Id)
-            {
-                <Input @bind-Value="context.Name" OnBlur="async () => await SaveAsync(context)"/>
-            }
-            else
-            {
-                <div @onclick="@(() => _editId = context.Id)">
-                    @context.Name
-                </div>
-            }
-        </Column>
-        <Column Title="Amount" @bind-Field="context.ExactMoney" Format="$0.00" Sortable>
-            @if (_editId == context.Id)
-            {
-                <AntDesign.InputNumber @bind-Value="context.ExactMoney" OnChange="async (decimal value) => await SaveAsync(context)"/>
-            }
-            else
-            {
-                <div @onclick="@(() => _editId = context.Id)">
-                    $@context.ExactMoney.ToString("F2")
-                </div>
-            }
-        </Column>
-        <Column Title="Start Date" @bind-Field="@context.StartDate" Format="dd/MM/yyyy" Sortable/>
-        <Column Title="Interval Units" @bind-Field="@context.IntervalUnits" Sortable/>
-        <Column Title="Interval" @bind-Field="@context.Interval" Sortable/>
-        <ActionColumn>
-            <Space>
-                <SpaceItem>
-                    <Button Danger OnClick="async () => await DeleteAsync(context)">Remove</Button>
-                </SpaceItem>
-            </Space>
-        </ActionColumn>
-    </Table>
+    <MudDataGrid Items="_incomes">
+        <Columns>
+            <MudBlazor.Column T="Income" Field="@nameof(Income.Name)" />
+            <MudBlazor.Column T="Income" Field="@nameof(Income.ExactMoney)" Title="Amount">
+                <CellTemplate>
+                    $@context.Item.ExactMoney.ToString("F2")
+                </CellTemplate>
+            </MudBlazor.Column>
+            <MudBlazor.Column T="Income" Field="@nameof(Income.StartDate)" Title="Start Date">
+                <CellTemplate>
+                    @context.Item.StartDate.ToString("dd MMMM yyyy")
+                </CellTemplate>
+            </MudBlazor.Column>
+            <MudBlazor.Column T="Income" Title="Paid Every">
+                <CellTemplate>
+                    @context.Item.IntervalUnits @context.Item.Interval
+                </CellTemplate>
+            </MudBlazor.Column>
+            <MudBlazor.Column T="Income">
+                <CellTemplate>
+                    <MudIconButton Icon="@Icons.Rounded.Delete" Color="Color.Tertiary" OnClick="async () => await DeleteAsync(context.Item)"/>
+                </CellTemplate>
+            </MudBlazor.Column>
+        </Columns>
+    </MudDataGrid>
 }
 
 @code

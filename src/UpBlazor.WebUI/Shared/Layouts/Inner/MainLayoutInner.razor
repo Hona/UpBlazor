@@ -1,163 +1,89 @@
 ﻿@using System.Security.Claims
 @using Microsoft.AspNetCore.Http
+@using MudBlazor
+@using Color = MudBlazor.Color
+@using Anchor = MudBlazor.Anchor
 @inject NavigationManager _navigationManager
 
 @implements IDisposable
 
-<Layout Style="min-height: 100vh; max-width: 100vw;">
-    <Sider Theme="SiderTheme.Dark"
-           Collapsible 
-           Collapsed="_siderCollapsed" OnCollapse="collapsed => _siderCollapsed = collapsed" 
-           Breakpoint="BreakpointType.Md" 
-           OnBreakpoint="collapsed => _siderCollapsed = collapsed"
-    >
-        <a target="_blank" @onclick='() => _navigationManager.NavigateTo("/home")' style="display: flex; justify-content: center; align-items: flex-end; padding: 0 0.75rem">
-            <Image Preview="false" Src="/img/up-logo-light-transparent-bg.svg"/>
-            @if (!_siderCollapsed)
-            {
-                <Title Level="2" Style="padding-left: 0.75rem; color: #fff">Blazor</Title>
-            }
-        </a>
-        <Menu Theme="MenuTheme.Dark" Mode="MenuMode.Inline">
-            <MenuItem OnClick='() => _navigationManager.NavigateTo("/")'
-                      RouterMatch="NavLinkMatch.All" RouterLink="/">
-                <Icon Type="home" Theme="outline"/>
-                <span>Landing Page</span>
-            </MenuItem>
-            <SubMenu>
-                <TitleTemplate>
-                    <Icon Type="dollar" Theme="outline"/>
-                    <span>Budget</span>
-                </TitleTemplate>
-                <ChildContent>
-                    <MenuItem OnClick='() => _navigationManager.NavigateTo("/budget/income")'
-                              RouterMatch="NavLinkMatch.All" RouterLink="/budget/income">
-                        <span>Income</span>
-                    </MenuItem>
-                    <MenuItem OnClick='() => _navigationManager.NavigateTo("/budget/expenses")'
-                              RouterMatch="NavLinkMatch.All" RouterLink="/budget/expenses">
-                        <span>Expenses</span>
-                    </MenuItem>
-                    <MenuItem OnClick='() => _navigationManager.NavigateTo("/budget/savings-plan")'
-                              RouterMatch="NavLinkMatch.All" RouterLink="/budget/savings-plan">
-                        <span>Savings Plan</span>
-                    </MenuItem>
-                    <MenuItem OnClick='() => _navigationManager.NavigateTo("/budget/goals")'
-                              RouterMatch="NavLinkMatch.All" RouterLink="/budget/goals">
-                        <span>Goals</span>
-                    </MenuItem>
-                </ChildContent>
-            </SubMenu>
-            <SubMenu>
-                <TitleTemplate>
-                    <Icon Type="fund" Theme="outline"/>
-                    <span>Insights</span>
-                </TitleTemplate>
-                <ChildContent>
-                    <MenuItem OnClick='() => _navigationManager.NavigateTo("/insights/analytics")'
-                              RouterMatch="NavLinkMatch.All" RouterLink="/insights/analytics">
-                        <span>Analytics</span>
-                    </MenuItem>
-                    <MenuItem OnClick='() => _navigationManager.NavigateTo("/insights/planner")'
-                              RouterMatch="NavLinkMatch.All" RouterLink="/insights/planner">
-                        <span>Planner</span>
-                    </MenuItem>
-                    <MenuItem OnClick='() => _navigationManager.NavigateTo("/insights/forecast")'
-                              RouterMatch="NavLinkMatch.All" RouterLink="/insights/forecast">
-                        <span>Forecast</span>
-                    </MenuItem>
-                    <MenuItem OnClick='() => _navigationManager.NavigateTo("/insights/transactions")'
-                              RouterMatch="NavLinkMatch.Prefix" RouterLink="/insights/transactions">
-                        <span>Transactions</span>
-                    </MenuItem>
-                </ChildContent>
-            </SubMenu>
-            <SubMenu>
-                <TitleTemplate>
-                    <Icon Type="setting" Theme="outline"/>
-                    <span>Settings</span>
-                </TitleTemplate>
-                <ChildContent>
-                    <MenuItem OnClick='() => _navigationManager.NavigateTo("/settings/up-access-token")'
-                              RouterMatch="NavLinkMatch.All" RouterLink="/settings/up-access-token">
-                        <span>Access Token</span>
-                    </MenuItem>
-                    <MenuItem OnClick='() => _navigationManager.NavigateTo("/settings/two-up")'
-                              RouterMatch="NavLinkMatch.All" RouterLink="/settings/two-up">
-                        <span>2Up</span>
-                    </MenuItem>
-                </ChildContent>
-            </SubMenu>
-            <RequireAdmin>
-                <SubMenu>
-                    <TitleTemplate>
-                        <Icon Type="warning" Theme="outline"/>
-                        <span>Admin</span>
-                    </TitleTemplate>
-                    <ChildContent>
-                        <MenuItem OnClick='() => _navigationManager.NavigateTo("/admin/users")'
-                                  RouterMatch="NavLinkMatch.All" RouterLink="/admin/users">
-                            <span>Users</span>
-                        </MenuItem>
-                        <MenuItem OnClick='() => _navigationManager.NavigateTo("/admin/notifications")'
-                                  RouterMatch="NavLinkMatch.All" RouterLink="/admin/notifications">
-                            <span>Notifications</span>
-                        </MenuItem>
-                        <MenuItem OnClick='() => _navigationManager.NavigateTo("/admin/component-explorer")'
-                                  RouterMatch="NavLinkMatch.All" RouterLink="/admin/component-explorer">
-                            <span>Component Explorer</span>
-                        </MenuItem>
-                    </ChildContent>
-                </SubMenu>            
-                </RequireAdmin>
-        </Menu>
-    </Sider>
-    <Layout>
-        <Header Style="background: #fff">
-            <AuthorizeView>
-                <div style="width: 100%; height: 100%; display: flex; justify-content: flex-end; align-items: center">
-                    <UserDropdown/>
+<MudLayout>
+    <MudAppBar Style="width: 100vw" Elevation="1">
+        <MudIconButton Icon="@Icons.Filled.Menu" Edge="Edge.Start" Color="Color.Inherit" OnClick="@((e) => ToggleDrawer())" />
+        <MudStack Row="true" AlignItems="AlignItems.Center">
+            <MudImage Src="/img/up-logo-light-transparent-bg.svg" Fluid Height="60" Width="60"/>
+            <MudText Typo="Typo.h5" Style="letter-spacing: 0.2rem; color: white">Blazor</MudText>
+        </MudStack>
+        <MudSpacer/>
+        <MudHidden Breakpoint="Breakpoint.SmAndDown">
+            <MudMenu Icon="@Icons.Outlined.Notifications" Color="Color.Inherit" AnchorOrigin="Origin.BottomRight" TransformOrigin="Origin.TopRight" LockScroll="true" ListClass="pa-2"> 
+                <div class="d-flex justify-space-between align-center px-2">
+                    <MudText Typo="Typo.subtitle2">Notifications</MudText>
                 </div>
-            </AuthorizeView>
-        </Header>
-        <Content Style="padding: 24px; margin: 0; min-height: 280px;">
-            <ErrorBoundary @ref="_errorBoundary">
+                <div class="d-flex justify-center align-center px-2 py-8 relative">
+                    <NotificationsList />
+                </div>            
+            </MudMenu>
+            <MudMenu Dense="true" AnchorOrigin="Origin.BottomLeft" TransformOrigin="Origin.TopCenter" LockScroll="true" Class="ml-2">
+                <ActivatorContent>
+                    <UserProfilePicture />
+                </ActivatorContent>
                 <ChildContent>
-                    @ChildContent
+                    <MudMenuItem Href="/authentication/logout">Sign Out</MudMenuItem>
                 </ChildContent>
-                <ErrorContent>
-                    @if (context is ApiException {StatusCode: StatusCodes.Status403Forbidden} apiException && 
-                         apiException.Response.Contains("Up access token is not set", StringComparison.OrdinalIgnoreCase))
-                    {
-                        <Result Status="error" Title="No Access Token" SubTitle="You have not set your Up API access token, please add it in the settings">
-                            <Extra>
-                                <Button Type="primary"><a href="/settings/up-access-token" style="color: #fff">Settings</a></Button>
-                            </Extra>
-                        </Result>
-                    }
-                    else
-                    {
-                        <Result Status="500">
-                            Unhandle exception occurred: @context.Message
+            </MudMenu>
+        </MudHidden>
+        <MudHidden Breakpoint="Breakpoint.MdAndUp">
+            <UserProfilePicture Class="cursor-pointer" OnClick="ProfileDrawer" />
+        </MudHidden>
+    </MudAppBar>
+    <MudDrawer @bind-Open="_drawerOpen" Elevation="2" ClipMode="DrawerClipMode.Always">
+        <NavMenu />
+    </MudDrawer>
+    <MudMainContent Class="pb-8">
+        <MudContainer MaxWidth="MaxWidth.Large">
+            @ChildContent
+        </MudContainer>
+    </MudMainContent>
+</MudLayout>
 
-                            <Divider/>
+<MudDrawer @bind-Open="@_profileDrawerOpen" Anchor="Anchor.Top" Elevation="0" Variant="@DrawerVariant.Temporary" Class="@(_profileDrawerOpen ? "mud-transparent pa-3" : "mud-transparent invisible")">
+    <MudPaper Elevation="0" Class="rounded-lg">
+        <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.Center" Class="px-4 pt-1">
+            <UserProfilePicture />
+            <MudStack Spacing="0" Class="flex-grow-1">
+                <AuthorizeView>
+                    <MudText Typo="Typo.body1">
+                        @context.User.FindFirst("name")?.Value
+                    </MudText>
+                    <MudText Typo="Typo.subtitle2" Class="mt-n1 mud-text-secondary">
+                        @context.User.FindFirst("nickname")?.Value
+                    </MudText>
+                </AuthorizeView>
+            </MudStack>
+            <MudIconButton Icon="@Icons.Filled.Close" Edge="Edge.End" Class="mud-text-secondary" OnClick="ProfileDrawer" />
+        </MudStack>
+        <MudDivider Class="mt-2" />
+        <MudNavMenu Rounded="true" Color="Color.Primary" Class="pa-2">
+            <MudNavLink Href="/notifications">
+                <MudText Typo="Typo.body2" Class="ml-n4"><b>Notifications</b></MudText>
+            </MudNavLink>
+            <MudNavLink Href="/authentication/logout">
+                <MudText Typo="Typo.body2" Class="ml-n4"><b>Sign out</b></MudText>
+            </MudNavLink>
+        </MudNavMenu>
+    </MudPaper>
+</MudDrawer>
 
-                            <Text Code>
-                                @context.ToString()
-                            </Text>
-                        </Result>
-                    }
-                </ErrorContent>
-            </ErrorBoundary>
-        </Content>
-        <Footer>
-            <AuthorizeView>
-                <UpFooter/>
-            </AuthorizeView>
-        </Footer>
-        <BackTop />
-    </Layout>
-</Layout>
+@code{ 
+    private bool _drawerOpen = true;
+    private bool _profileDrawerOpen = false;
+    private bool _searchDialogOpen = false;
+    
+    private void ToggleDrawer() => _drawerOpen = !_drawerOpen;
+    private void ProfileDrawer() => _profileDrawerOpen = !_profileDrawerOpen;
+    private void OpenSearchDialog() => _searchDialogOpen = true;
+}
 
 @code
 {

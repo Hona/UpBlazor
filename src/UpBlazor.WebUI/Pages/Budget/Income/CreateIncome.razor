@@ -1,35 +1,37 @@
 ﻿@using System.Text.RegularExpressions
+@using MudBlazor
 @using System.ComponentModel.DataAnnotations
+@using Color = MudBlazor.Color
 @inject IncomesClient IncomesClient
 
-<Card Title="New Income">
-    <Form Model="_request" 
-          LabelColSpan="4"
-          WrapperColSpan="20"
-          OnFinish="async () => await OnFormFinishAsync()"
-          Loading="_loading">
-        <FormItem Label="Name">
-            <Input DebounceMilliseconds="int.MaxValue" @bind-Value="@context.Name" />
-        </FormItem>
-        <FormItem Label="Amount">
-            <AntDesign.InputNumber Style="min-width: 9rem" Formatter="MoneyFormat" Parser="MoneyParse" @bind-Value="@context.ExactMoney" DefaultValue="50M" Min="0" Step="0.01M"/>
-        </FormItem>
-        <FormItem Label="Start Date">
-            <DatePicker @bind-Value="@context.StartDate" DefaultValue="DateTime.Now"/>
-        </FormItem>
-        <FormItem Label="Cycle">
-            <InputGroup>
-                <AntDesign.InputNumber Style="min-width: 7rem" @bind-Value="@context.IntervalUnits" Min="1" Step="1" DefaultValue="1"/>
-                <EnumSelect TValue="Interval" Placeholder="Interval" Style="min-width: 9rem" @bind-Value="@context.Interval"/>
-            </InputGroup>
-        </FormItem>
-        <FormItem WrapperColOffset="4" WrapperColSpan="20">
-            <Button Type="primary" HtmlType="submit" >
-                Submit
-            </Button>
-        </FormItem>
-    </Form>
-</Card>
+<MudCard Class="mt-4">
+    <MudCardContent>
+        <MudText Typo="Typo.h6">
+            New Income
+        </MudText>
+        <MudForm @ref="_form">
+            <MudTextField @bind-Value="_request.Name" Label="Name" Required/>
+            <MudNumericField @bind-Value="_request.ExactMoney" Adornment="Adornment.Start" AdornmentText="$" Label="Amount" Required Format="F2"/>
+            <MudDatePicker @bind-Date="_request.StartDate" Label="Start Date" Required/>
+            
+            <MudText Class="pt-4">Paid Every</MudText>
+            <MudStack Row>
+                <MudNumericField @bind-Value="_request.IntervalUnits" Required />
+                <MudSelect @bind-Value="_request.Interval" Required>
+                    @foreach (var item in Enum.GetValues<Interval>())
+                    {
+                        <MudSelectItem Value="@item">@item</MudSelectItem>
+                    }
+                </MudSelect>
+            </MudStack>
+        </MudForm>
+    </MudCardContent>
+    <MudCardActions>
+        <MudButton Color="Color.Primary" OnClick="OnFormFinishAsync">
+            Create
+        </MudButton>
+    </MudCardActions>
+</MudCard>
 
 @code
 {
@@ -39,16 +41,26 @@
     private IncomeRequest _request = new();
 
     private bool _loading;
+
+    private MudForm _form;
     
     private async Task OnFormFinishAsync()
     {
         _loading = true;
+        
+        await _form.Validate();
+
+        if (_form.Errors.Any())
+        {
+            _loading = false;
+            return;
+        }
 
         await IncomesClient.CreateIncomeAsync(new CreateIncomeCommand()
         {
             Name = _request.Name,
             ExactMoney = _request.ExactMoney,
-            StartDate = _request.StartDate,
+            StartDate = _request.StartDate.Value,
             Interval = _request.Interval,
             IntervalUnits = _request.IntervalUnits
         });
@@ -72,7 +84,7 @@
         [Required]
         public string Name { get; set; }
         [Required]
-        public DateTime StartDate { get; set; }
+        public DateTime? StartDate { get; set; }
         [Required]
         public decimal ExactMoney { get; set; }
         [Required]

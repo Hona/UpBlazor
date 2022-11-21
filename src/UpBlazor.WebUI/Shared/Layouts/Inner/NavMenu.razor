@@ -1,0 +1,30 @@
+﻿@using MudBlazor
+@using Color = MudBlazor.Color
+
+<MudNavMenu Color="Color.Primary" Rounded="true" Class="mud-height-full pa-2">
+    <MudNavLink Href="/" Match="NavLinkMatch.All" Icon="@Icons.Rounded.PictureInPicture">Landing Page</MudNavLink>
+        <MudNavLink Href="/home" Icon="@Icons.Rounded.Dashboard">Home</MudNavLink>
+    <MudNavGroup Title="Budget" Icon="@Icons.Rounded.CurrencyExchange" Expanded>
+        <MudNavLink Href="/budget/income">Income</MudNavLink>
+        <MudNavLink Href="/budget/expenses">Expenses</MudNavLink>
+        <MudNavLink Href="/budget/savings-plan">Savings Plan</MudNavLink>
+        <MudNavLink Href="/budget/goals">Goals</MudNavLink>
+    </MudNavGroup>
+    <MudNavGroup Title="Insights" Icon="@Icons.Rounded.AutoGraph" Expanded>
+        <MudNavLink Href="/insights/analytics">Analytics</MudNavLink>
+        <MudNavLink Href="/insights/planner">Planner</MudNavLink>
+        <MudNavLink Href="/insights/forecast">Forecast</MudNavLink>
+        <MudNavLink Href="/insights/transactions">Transactions</MudNavLink>
+    </MudNavGroup>
+    <MudNavGroup Title="Settings" Icon="@Icons.Rounded.Settings" Expanded>
+        <MudNavLink Href="/settings/up-access-token">Access Token</MudNavLink>
+        <MudNavLink Href="/settings/two-up">2Up</MudNavLink>
+    </MudNavGroup>
+    <RequireAdmin>
+        <MudNavGroup Title="Admin" Expanded>
+            <MudNavLink Href="/admin/users">Users</MudNavLink>
+            <MudNavLink Href="/admin/notifications">Notifications</MudNavLink>
+            <MudNavLink Href="/admin/component-explorer">Component Explorer</MudNavLink>
+        </MudNavGroup>
+    </RequireAdmin>
+</MudNavMenu>

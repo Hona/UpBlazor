@@ -10,7 +10,7 @@ using UpBlazor.Application.Services;
 using UpBlazor.Core.Exceptions;
 using UpBlazor.WebApi.ViewModels;
 
-namespace UpBlazor.WebApi.Controllers.Features;
+namespace UpBlazor.WebApi.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
@@ -87,10 +87,28 @@ public class UpController : Controller
         });
     }
     
+    [HttpGet("accounts/transactions")]
+    [ProducesResponseType(typeof(UpPaginatedViewModel<TransactionResource>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetAllTransactions()
+    {
+        var output = await _mediator.Send(new GetUpTransactionsPagedQuery());
+
+        if (!output.Success)
+        {
+            throw new BadRequestException(JsonSerializer.Serialize(output.Errors));
+        }
+        
+        return Ok(new UpPaginatedViewModel<TransactionResource>
+        {
+            Data = output.Response.Data,
+            Links = output.Response.Links
+        });
+    }
+    
     
     [HttpGet("transaction/page")]
     [ProducesResponseType(typeof(UpPaginatedViewModel<TransactionResource>), StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetTransactionsPaginationLink([FromBody] string link)
+    public async Task<IActionResult> GetTransactionsPaginationLink([FromQuery] string link)
     {
         var upApi = await _currentUserService.GetApiAsync();
 

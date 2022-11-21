@@ -82,7 +82,15 @@ else
     {
         _loading = true;
 
-        _transactions = await UpClient.GetTransactionsAsync(AccountId);
+        if (string.IsNullOrWhiteSpace(AccountId))
+        {
+            _transactions = await UpClient.GetAllTransactionsAsync();
+        }
+        else
+        {
+            _transactions = await UpClient.GetTransactionsAsync(AccountId);
+        }
+
         _accounts = await UpClient.GetAccountsAsync();
         
         _transactionsOut = _transactions

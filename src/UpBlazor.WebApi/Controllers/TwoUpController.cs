@@ -5,7 +5,7 @@ using UpBlazor.Application.Features.TwoUp;
 using UpBlazor.Core.Models;
 using UpBlazor.WebApi.ViewModels;
 
-namespace UpBlazor.WebApi.Controllers.Features;
+namespace UpBlazor.WebApi.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]

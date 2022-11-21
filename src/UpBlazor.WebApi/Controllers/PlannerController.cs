@@ -2,9 +2,8 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using UpBlazor.Application.Features.Planner;
-using UpBlazor.Core.Models;
 
-namespace UpBlazor.WebApi.Controllers.Features;
+namespace UpBlazor.WebApi.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]

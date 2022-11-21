@@ -5,7 +5,7 @@ using UpBlazor.Application.Features.SavingsPlans;
 using UpBlazor.Core.Exceptions;
 using UpBlazor.Core.Models;
 
-namespace UpBlazor.WebApi.Controllers.Features;
+namespace UpBlazor.WebApi.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]

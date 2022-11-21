@@ -26,7 +26,7 @@ public class GetUpTransactionsPagedQueryHandler : IRequestHandler<GetUpTransacti
 
         UpResponse<PaginatedDataResponse<TransactionResource>> response;
 
-        if (request.AccountId is null)
+        if (string.IsNullOrWhiteSpace(request.AccountId))
         {
             response = await upApi.GetTransactionsAsync(100, TransactionStatus.Settled);
         }

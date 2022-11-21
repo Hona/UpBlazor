@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using UpBlazor.Application.Features.Incomes;
 using UpBlazor.Core.Models;
 
-namespace UpBlazor.WebApi.Controllers.Features;
+namespace UpBlazor.WebApi.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]

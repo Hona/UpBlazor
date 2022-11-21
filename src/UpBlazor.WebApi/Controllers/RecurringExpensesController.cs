@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using UpBlazor.Application.Features.RecurringExpenses;
 using UpBlazor.Core.Models;
 
-namespace UpBlazor.WebApi.Controllers.Features;
+namespace UpBlazor.WebApi.Controllers;
 
 [ApiController]
 [Route("api/expenses/recurring")]

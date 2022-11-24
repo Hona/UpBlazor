@@ -1,24 +1,44 @@
-﻿@inject ExpensesClient ExpensesClient
+﻿@using MudBlazor
+@using Color = MudBlazor.Color
+
+@inject ExpensesClient ExpensesClient
 @inject IncomesClient IncomesClient
 @inject UpClient UpClient
 
-<Title Level="3">Expenses</Title>
+<MudText Typo="Typo.h4">
+    Expenses
+</MudText>
 
-<Table DataSource="_expenses" Loading="_loading">
-    <Column Title="Name" @bind-Field="@context.Name" Sortable/>
-    <Column Title="Exact" TData="decimal?" DataIndex="Money.Exact" Format="$0.00" Sortable/>
-    <Column Title="Relative" TData="decimal?" DataIndex="Money.Percent" Format="0%" Sortable/>
-    <Column Title="Paid By" @bind-Field="@context.PaidByDate" Format="dd/MM/yyyy" Sortable/>
-    <SaverIdColumn Title="From Saver" SaverId="@context.Id.ToString()" Accounts="_accounts"/>
-    <IncomeIdColumn Title="From Income" IncomeId="@context.Id" Incomes="_incomes"/>
-    <ActionColumn>
-        <Space>
-            <SpaceItem>
-                <Button Danger OnClick="async () => await DeleteAsync(context)">Remove</Button>
-            </SpaceItem>
-        </Space>
-    </ActionColumn>
-</Table>
+<MudDataGrid Items="_expenses" Loading="_loading">
+    <Columns>
+        <MudBlazor.Column T="Expense" Field="@nameof(Expense.Name)" />
+        <MudBlazor.Column T="Expense" Title="Amount">
+            <CellTemplate>
+                <ExactOrRelativeMoneyDisplay Item="context.Item.Money"/>
+            </CellTemplate>
+        </MudBlazor.Column>
+        <MudBlazor.Column T="Expense" Field="@nameof(Expense.PaidByDate)" Title="Paid By">
+            <CellTemplate>
+                <DateDisplay Date="context.Item.PaidByDate"/>
+            </CellTemplate>
+        </MudBlazor.Column>
+        <MudBlazor.Column T="Expense" Title="From Saver">
+            <CellTemplate>
+                <SaverIdColumn SaverId="@context.Item.SaverId" Accounts="_accounts"/>
+            </CellTemplate>
+        </MudBlazor.Column>
+        <MudBlazor.Column T="Expense" Title="From Income">
+            <CellTemplate>
+                <IncomeIdColumn IncomeId="@context.Item.FromIncomeId" Incomes="_incomes"/>
+            </CellTemplate>
+        </MudBlazor.Column>
+        <MudBlazor.Column T="Expense" >
+            <CellTemplate>
+                <MudIconButton Icon="@Icons.Rounded.Delete" Color="Color.Tertiary" OnClick="async () => await DeleteAsync(context.Item)"/>
+            </CellTemplate>
+        </MudBlazor.Column>
+    </Columns>
+</MudDataGrid>
 
 @code
 {

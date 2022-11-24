@@ -1,0 +1,24 @@
+﻿@using MudBlazor
+
+<MudStack Row>
+    <MudNumericField Value="IntervalUnits" ValueChanged="IntervalUnitsChanged" Required />
+    <MudSelect Value="Interval" ValueChanged="IntervalChanged" Required>
+        @foreach (var item in Enum.GetValues<Interval>())
+        {
+            <MudSelectItem Value="@item">@item</MudSelectItem>
+        }
+    </MudSelect>
+</MudStack>
+
+@code
+{
+    [Parameter]
+    public int IntervalUnits { get; set; }
+    [Parameter]
+    public EventCallback<int> IntervalUnitsChanged { get; set; }
+
+    [Parameter]
+    public Interval Interval { get; set; }
+    [Parameter]
+    public EventCallback<Interval> IntervalChanged { get; set; }
+}

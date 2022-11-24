@@ -1,21 +1,29 @@
-﻿@inject IncomesClient IncomesClient
+﻿@using MudBlazor
+
+@inject IncomesClient IncomesClient
 
 @if (_loading)
 {
-    <Spin />
+    <MudProgressCircular Indeterminate />
 }
 else
 {
-    <Select DataSource="_incomes"
-            Value="SelectedIncome"
-            ValueChanged="SelectedIncomeChanged"
-            Placeholder="Select an income..."
-            LabelName="@nameof(Income.Name)">
-    </Select>
+    <MudSelect Value="SelectedIncome" ValueChanged="SelectedIncomeChanged" Required="Required"
+               Placeholder="Select an income" Label="Income">
+        @foreach (var income in _incomes)
+        {
+            <MudSelectItem Value="income" >
+                @income.Name
+            </MudSelectItem>
+        }
+    </MudSelect>
 }
 
 @code
 {
+    [Parameter]
+    public bool Required { get; set; }
+    
     [Parameter]
     public Income? SelectedIncome { get; set; }
 
@@ -41,7 +49,7 @@ else
 
             if (selectedIncome != SelectedIncome)
             {
-                SelectedIncome = selectedIncome;
+                await SelectedIncomeChanged.InvokeAsync(selectedIncome);
             }
         }
         

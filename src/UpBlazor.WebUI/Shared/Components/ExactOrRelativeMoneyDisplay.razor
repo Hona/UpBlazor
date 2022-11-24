@@ -1,0 +1,20 @@
+﻿@using MudBlazor
+
+@if (Item.Exact is not null)
+{
+    <MudText>
+        $@Item.Exact
+    </MudText>
+}
+@if (Item.Percent is not null)
+{
+    <MudText>
+        @Item.Percent%
+    </MudText>
+}
+
+@code
+{
+    [Parameter]
+    public Money Item { get; set; }
+}

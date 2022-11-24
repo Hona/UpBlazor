@@ -3,30 +3,32 @@
 
 @inject IncomesClient IncomesClient
 
+<MudText Typo="Typo.h4">Incomes</MudText>
+
 @if (_loading)
 {
     <MudProgressCircular Indeterminate />
 }
 else
 {
-    <MudText Typo="Typo.h4">Income</MudText>
-    
     <MudDataGrid Items="_incomes">
         <Columns>
             <MudBlazor.Column T="Income" Field="@nameof(Income.Name)" />
             <MudBlazor.Column T="Income" Field="@nameof(Income.ExactMoney)" Title="Amount">
                 <CellTemplate>
-                    $@context.Item.ExactMoney.ToString("F2")
+                    <MudText>
+                        $@context.Item.ExactMoney.ToString("F2")
+                    </MudText>
                 </CellTemplate>
             </MudBlazor.Column>
             <MudBlazor.Column T="Income" Field="@nameof(Income.StartDate)" Title="Start Date">
                 <CellTemplate>
-                    @context.Item.StartDate.ToString("dd MMMM yyyy")
+                    <DateDisplay Date="context.Item.StartDate"/>
                 </CellTemplate>
             </MudBlazor.Column>
             <MudBlazor.Column T="Income" Title="Paid Every">
                 <CellTemplate>
-                    @context.Item.IntervalUnits @context.Item.Interval
+                    <IntervalDisplay Interval="context.Item.Interval" IntervalUnits="context.Item.IntervalUnits" />
                 </CellTemplate>
             </MudBlazor.Column>
             <MudBlazor.Column T="Income">

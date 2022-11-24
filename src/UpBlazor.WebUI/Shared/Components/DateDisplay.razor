@@ -1,0 +1,11 @@
+﻿@using MudBlazor
+
+<MudText>
+    @Date.ToString("dd MMMM yyyy")
+</MudText>
+
+@code
+{
+    [Parameter]
+    public DateTime Date { get; set; }
+}

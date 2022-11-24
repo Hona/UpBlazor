@@ -1,24 +1,44 @@
-﻿@inject RecurringExpensesClient RecurringExpensesClient
+﻿@using MudBlazor
+@using Color = MudBlazor.Color
+
+@inject RecurringExpensesClient RecurringExpensesClient
 @inject UpClient UpClient
 
-<Title Level="3">Recurring Expenses</Title>
-<Table DataSource="_recurringExpenses" Loading="_loading">
-    <Column Title="Name" @bind-Field="@context.Name" Sortable/>
-    <Column Title="Exact" TData="decimal?" DataIndex="Money.Exact" Format="$0.00" Sortable/>
-    <Column Title="Relative" TData="decimal?" DataIndex="Money.Percent" Format="0%" Sortable/>
-    <Column Title="Start Date" @bind-Field="@context.StartDate" Format="dd/MM/yyyy" Sortable/>
-    <Column Title="Interval Units" @bind-Field="@context.IntervalUnits" Sortable/>
-    <Column Title="Interval" @bind-Field="@context.Interval" Sortable/>
-    <SaverIdColumn Title="From Saver" SaverId="@context.SaverId" Accounts="_accounts"/>
-    <ActionColumn>
-        <Space>
-            <SpaceItem>
-                <Button Danger OnClick="async () => await DeleteAsync(context)">Remove</Button>
-            </SpaceItem>
-        </Space>
-    </ActionColumn>
-</Table>
+<MudText Typo="Typo.h4">
+    Recurring Expenses
+</MudText>
 
+
+<MudDataGrid Items="_recurringExpenses" Loading="_loading">
+    <Columns>
+        <MudBlazor.Column T="RecurringExpense" Field="@nameof(RecurringExpense.Name)" />
+        <MudBlazor.Column T="RecurringExpense" Title="Amount">
+            <CellTemplate>
+                <ExactOrRelativeMoneyDisplay Item="context.Item.Money"/>
+            </CellTemplate>
+        </MudBlazor.Column>
+        <MudBlazor.Column T="RecurringExpense" Field="@nameof(RecurringExpense.StartDate)" Title="Start">
+            <CellTemplate>
+                <DateDisplay Date="context.Item.StartDate" />
+            </CellTemplate>
+        </MudBlazor.Column>
+        <MudBlazor.Column T="RecurringExpense" Title="From">
+            <CellTemplate>
+                <SaverIdColumn SaverId="@context.Item.SaverId" Accounts="_accounts"/>
+            </CellTemplate>
+        </MudBlazor.Column>
+        <MudBlazor.Column T="RecurringExpense" Title="Every">
+            <CellTemplate>
+                <IntervalDisplay Interval="context.Item.Interval" IntervalUnits="context.Item.IntervalUnits"/>
+            </CellTemplate>
+        </MudBlazor.Column>
+        <MudBlazor.Column T="RecurringExpense">
+            <CellTemplate>
+                <MudIconButton Icon="@Icons.Rounded.Delete" Color="Color.Tertiary" OnClick="async () => await DeleteAsync(context.Item)"/>
+            </CellTemplate>
+        </MudBlazor.Column>
+    </Columns>
+</MudDataGrid>
 
 @code
 {

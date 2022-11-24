@@ -1,0 +1,13 @@
+﻿@using MudBlazor
+
+<MudText>
+    @IntervalUnits @Interval
+</MudText>
+
+@code {
+    [Parameter]
+    public Interval Interval { get; set; }
+    
+    [Parameter]
+    public int IntervalUnits { get; set; }
+}

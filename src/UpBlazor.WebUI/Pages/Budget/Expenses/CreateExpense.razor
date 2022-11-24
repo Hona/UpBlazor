@@ -1,62 +1,41 @@
 ﻿@using System.ComponentModel
 @using System.ComponentModel.DataAnnotations
+@using MudBlazor
+@using Color = MudBlazor.Color
+
 @inject ExpensesClient ExpensesClient
 @inject RecurringExpensesClient RecurringExpensesClient
 
-<Card Title="New Expense">
-    <Form Model="_request" 
-          LabelColSpan="4"
-          WrapperColSpan="20"
-          OnFinish="async () => await OnFormFinishAsync()"
-          Loading="_loading">
-        <FormItem>
-            <Input DebounceMilliseconds="int.MaxValue" @bind-Value="@context.Name" />
-        </FormItem>
-        <FormItem Label="Cost">
-            <InputGroup>
-                <MoneyInput @bind-Amount="@context.Amount"/>
-            </InputGroup>
-        </FormItem>
-        <FormItem Label="Source">
-            <InputGroup>
-                <ExpenseSourceInput @bind-Value="context.ExpenseSource"
-                                    @ref="_expenseSourceInput"/>
-            </InputGroup>
-        </FormItem>
-        @if (_expenseSourceInput?.Value?.IncomeId is not null)
-        {
-            <FormItem WrapperColOffset="4" WrapperColSpan="20">
-                <AntDesign.Text>
-                    Because you have selected an expense from an income - this is automatically recurring at the same rate as your income
-                </AntDesign.Text>
-            </FormItem>
-        }
-        else
-        {
-            <FormItem Label="@DateLabel">
-                <DatePicker @bind-Value="@context.PaidByDate" DefaultValue="DateTime.Now"/>
-            </FormItem>
+<MudCard Class="mt-4">
+    <MudCardContent>
+        <MudText Typo="Typo.h6">
+            New Expense
+        </MudText>
+        <MudForm @ref="_form">
+            <MudTextField @bind-Value="_request.Name" Label="Name" Required />
+            <MudText Class="pt-6">
+                Cost
+            </MudText>
+            <MoneyInput @bind-Amount="_request.Amount" Required />
             
-            <FormItem Label="Regular Payments">
-                <InputGroup>
-                    <AntDesign.Checkbox Style="padding-right: 1rem" @bind-Value="context.RegularPayments" OnChange="OnRegularPaymentEnabledChange"/>
-                    @if (context.RegularPayments)
-                    {
-                        <AntDesign.InputNumber Disabled="!_request.RegularPayments" Style="min-width: 7rem" TValue="int?" @bind-Value="@context.IntervalUnits" Min="1" Step="1" DefaultValue="1"/>
-                        <EnumSelect TValue="Interval" Placeholder="Interval" Disabled="!_request.RegularPayments" Style="min-width: 9rem" @bind-Value="context.Interval"/>
-                    }
-                </InputGroup>
-            </FormItem>
-        }
-        <FormItem WrapperColOffset="4" WrapperColSpan="20">
-            @* TODO: Implement expenses with relative cost on a saver *@
-            <Button Type="primary" HtmlType="submit" Disabled="@(_request.RegularPayments && (!_request.Interval.HasValue || !_request.IntervalUnits.HasValue)
-                                                                 || _request.Amount.Percent.HasValue && _expenseSourceInput?.Value?.SaverId != null)">
-                Submit
-            </Button>
-        </FormItem>
-    </Form>
-</Card>
+            <MudText Class="pt-6">
+                From
+            </MudText>
+            <ExpenseSourceInput @bind-Value="_request.ExpenseSource" @ref="_expenseSourceInput" Required />
+            <MudDatePicker @bind-Date="_request.PaidByDate" Label="Paid By" Required Class="mt-6"/>
+            <MudSwitch @bind-Checked="_request.RegularPayments" Label="Is Repeating" Color="Color.Primary" Class="mt-6"/>
+            @if (_request.RegularPayments)
+            {
+                <IntervalFullInput @bind-Interval="_request.Interval" @bind-IntervalUnits="_request.IntervalUnits"/>
+            }
+        </MudForm>
+    </MudCardContent>
+    <MudCardActions>
+        <MudButton Color="Color.Primary" OnClick="OnFormFinishAsync">
+            Create
+        </MudButton>
+    </MudCardActions>
+</MudCard>
 
 @code
 {
@@ -71,9 +50,19 @@
 
     private ExpenseSourceInput _expenseSourceInput;
 
+    private MudForm _form;
+
     private async Task OnFormFinishAsync()
     {
         _loading = true;
+
+        await _form.Validate();
+
+        if (!_form.IsValid)
+        {
+            _loading = false;
+            return;
+        }
 
         if (_request.Amount.Percent.HasValue)
         {
@@ -90,10 +79,10 @@
             await RecurringExpensesClient.CreateRecurringExpenseAsync(new CreateRecurringExpenseCommand
             {
                 Amount = _request.Amount,
-                Interval = _request.Interval.Value,
-                IntervalUnits = _request.IntervalUnits.Value,
+                Interval = _request.Interval,
+                IntervalUnits = _request.IntervalUnits,
                 Name = _request.Name,
-                StartDate = _request.PaidByDate,
+                StartDate = _request.PaidByDate.Value,
                 FromSaverId = _expenseSourceInput.Value.SaverId
             });
         }
@@ -103,8 +92,9 @@
             {
                 Amount = _request.Amount,
                 Name = _request.Name,
-                PaidByDate = _request.PaidByDate,
-                FromSaverId = _expenseSourceInput.Value.SaverId
+                PaidByDate = _request.PaidByDate.Value,
+                FromSaverId = _expenseSourceInput.Value.SaverId,
+                FromIncomeId = _expenseSourceInput.Value.IncomeId
             });
         }
 
@@ -124,8 +114,8 @@
     {
         if (!enabled)
         {
-            _request.Interval = null;
-            _request.IntervalUnits = null;
+            _request.Interval = default;
+            _request.IntervalUnits = default;
         }
         else
         {
@@ -144,11 +134,11 @@
         public Money Amount { get; set; } = new();
         
         [Required]
-        public DateTime PaidByDate { get; set; }
+        public DateTime? PaidByDate { get; set; }
         
         [DisplayName("Regular Payment")]
-        public Interval? Interval { get; set; }
-        public int? IntervalUnits { get; set; }
+        public Interval Interval { get; set; }
+        public int IntervalUnits { get; set; }
         
         public bool RegularPayments { get; set; }
 

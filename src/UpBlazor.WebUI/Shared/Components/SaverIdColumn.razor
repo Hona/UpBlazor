@@ -1,21 +1,26 @@
-﻿<Column Title="@Title" TData="string">
-    @{      
-        var saver = Accounts.FirstOrDefault(x => x.Id == SaverId);
-    }
-    @if (saver != null)
-    {
-        <span>@(saver.Attributes.DisplayName) ($@(saver.Attributes.Balance.Value))</span>
-    }
-</Column>
+﻿@using MudBlazor
+
+@if (_saver != null)
+{
+    <MudText>
+        @(_saver.Attributes.DisplayName) ($@(_saver.Attributes.Balance.Value))
+    </MudText>
+}
 
 @code
 {
     [Parameter]
-    public IReadOnlyList<AccountResource> Accounts { get; set; }
+    public IReadOnlyList<AccountResource>? Accounts { get; set; }
 
     [Parameter]
     public string? SaverId { get; set; }
+    
+    private AccountResource? _saver;
 
-    [Parameter]
-    public string Title { get; set; } = "From Saver";
+    protected override void OnParametersSet()
+    {
+        ArgumentNullException.ThrowIfNull(Accounts);
+        
+        _saver = Accounts!.FirstOrDefault(x => x.Id == SaverId);
+    }
 }

@@ -1,18 +1,22 @@
-﻿<Column Title="@Title" TData="string">
-    @{
-        var income = Incomes.FirstOrDefault(x => x.Id == IncomeId);
-    }
-    @(income?.ToString() ?? string.Empty)
-</Column>
+﻿@using MudBlazor
 
+<MudText>
+    @(_income?.Name)
+</MudText>
 @code
 {
     [Parameter]
     public Guid? IncomeId { get; set; }
 
     [Parameter]
-    public string? Title { get; set; }
-    
-    [Parameter]
     public IReadOnlyList<Income> Incomes { get; set; }
+
+    private Income? _income;
+    
+    protected override void OnParametersSet()
+    {
+        ArgumentNullException.ThrowIfNull(Incomes);
+
+        _income = Incomes.FirstOrDefault(x => x.Id == IncomeId);
+    }
 }

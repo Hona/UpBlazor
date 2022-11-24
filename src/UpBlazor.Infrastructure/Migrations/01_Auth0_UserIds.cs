@@ -22,11 +22,7 @@ public class Auth0_UserIds : IMigration
         await MigrateModelAsync<Expense>(session, 
             x => x.UserId, 
             (x, newId) => x.UserId = newId);
-        
-        await MigrateModelAsync<Goal>(session, 
-            x => x.UserId, 
-            (x, newId) => x.UserId = newId);
-        
+
         await MigrateModelAsync<Income>(session, 
             x => x.UserId, 
             (x, newId) => x.UserId = newId);

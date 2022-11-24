@@ -9,7 +9,14 @@
 @if (Item.Percent is not null)
 {
     <MudText>
-        @Item.Percent%
+        @Item.Percent% 
+        
+        @if (PercentCalculated is not null)
+        {
+            <span>
+                @(PercentCalculated.Value.ToString("F2"))
+            </span>
+        }
     </MudText>
 }
 
@@ -17,4 +24,7 @@
 {
     [Parameter]
     public Money Item { get; set; }
+
+    [Parameter]
+    public decimal? PercentCalculated { get; set; }
 }

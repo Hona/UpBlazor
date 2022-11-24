@@ -9,24 +9,29 @@
 </MudText>
 
 <MudDataGrid Items="_savingsPlans">
-     <Columns>
-         <MudBlazor.Column T="SavingsPlan" Field="@nameof(SavingsPlan.Name)" />
-         <MudBlazor.Column T="SavingsPlan" Field="@nameof(SavingsPlan.Amount)" Title="Amount">
-             <CellTemplate>
-                 <ExactOrRelativeMoneyDisplay Item="@context.Item.Amount" />
-             </CellTemplate>
-         </MudBlazor.Column>
-         <MudBlazor.Column T="SavingsPlan" Field="@nameof(SavingsPlan.SaverId)" Title="To">
-             <CellTemplate>
-                 <SaverIdColumn SaverId="@context.Item.SaverId" Accounts="_accounts" />
-             </CellTemplate>
-         </MudBlazor.Column>
-         <MudBlazor.Column T="SavingsPlan">
-             <CellTemplate>
-                 <MudIconButton Icon="@Icons.Rounded.Delete" Color="Color.Tertiary" OnClick="async () => await DeleteAsync(context.Item)"/>
-             </CellTemplate>
-         </MudBlazor.Column>
-     </Columns>
+    <Columns>
+        <MudBlazor.Column T="SavingsPlan" Field="@nameof(SavingsPlan.Name)" />
+        <MudBlazor.Column T="SavingsPlan" Field="@nameof(SavingsPlan.Amount)" Title="Amount">
+            <CellTemplate>
+                <ExactOrRelativeMoneyDisplay Item="@context.Item.Amount" />
+            </CellTemplate>
+        </MudBlazor.Column>
+        <MudBlazor.Column T="SavingsPlan" Field="@nameof(SavingsPlan.SaverId)" Title="To">
+            <CellTemplate>
+                <SaverIdColumn SaverId="@context.Item.SaverId" Accounts="_accounts" />
+            </CellTemplate>
+        </MudBlazor.Column>
+        <MudBlazor.Column T="SavingsPlan">
+            <CellTemplate>
+                <MudIconButton Icon="@Icons.Rounded.Delete" Color="Color.Tertiary" OnClick="async () => await DeleteAsync(context.Item)"/>
+            </CellTemplate>
+        </MudBlazor.Column>
+    </Columns>
+    <NoRecordsContent>
+        <MudText Typo="Typo.body1">
+            No savings plans
+        </MudText>
+    </NoRecordsContent>
 </MudDataGrid>
 
 @code

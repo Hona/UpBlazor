@@ -16,27 +16,10 @@ else
         @foreach (var transactionAccount in _accounts)
         {
             <a href='@($"/insights/transactions/{transactionAccount.Id}")'>
-                <MudCard Elevation="2" Outlined Style="width:300px;">
-                    <MudCardHeader>
-                        <MudText Typo="Typo.subtitle2">
-                            @transactionAccount.Attributes.DisplayName
-                        </MudText>
-                        <MudSpacer />
-                        <MudChip Color="@(transactionAccount.Attributes.AccountType == AccountType.Transactional ? Color.Primary : Color.Secondary)">
-                            @transactionAccount.Attributes.AccountType
-                        </MudChip>
-                    </MudCardHeader>
-                    <MudCardContent>
-                        <MudAlert Severity="Severity.Normal" NoIcon>
-                            <MudStack Row>
-                                <MudText Typo="Typo.h5">$</MudText>
-                                <MudText Typo="Typo.h5">
-                                    @decimal.Parse(transactionAccount.Attributes.Balance.Value).ToString("F2")
-                                </MudText>
-                            </MudStack>
-                        </MudAlert>
-                    </MudCardContent>
-                </MudCard>
+                <MoneyStatistic Title="@transactionAccount.Attributes.DisplayName"
+                                Chip="@transactionAccount.Attributes.AccountType.ToString()"
+                                ChipColor="@(transactionAccount.Attributes.AccountType == AccountType.Transactional ? Color.Primary : Color.Secondary)"
+                                Amount="@decimal.Parse(transactionAccount.Attributes.Balance.Value)"/>
             </a>
         }
     </MudStack>

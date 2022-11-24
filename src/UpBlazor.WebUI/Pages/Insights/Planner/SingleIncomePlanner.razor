@@ -1,10 +1,12 @@
-﻿@inject UpClient UpClient
+﻿@using MudBlazor
+
+@inject UpClient UpClient
 @inject PlannerClient PlannerClient
 @inject NormalizedClient NormalizedClient
 
 @if (_loading)
 {
-    <Spin />
+    <MudProgressCircular Indeterminate />
 }
 else if (Income is null)
 {
@@ -12,98 +14,56 @@ else if (Income is null)
 }
 else
 {
-    <Card>
-        <Statistic Title="Starting Total" Value="@Income.ExactMoney" Precision="2">
-            <PrefixTemplate>
-                $
-            </PrefixTemplate>
-        </Statistic>
-    </Card>
+    <MudStack>
+        <MoneyStatistic Title="Starting Total"
+                        Amount="@Income.ExactMoney" />
 
-    <Divider/>
-
-    <Title Level="4">Income Expenses</Title>
-    <Table DataSource="_incomePlanner.IncomeExpenseSubTotals" Context="tableContext">
-        <Column Title="Name" @bind-Field="@tableContext.Name" Sortable/>
-        <Column Title="Amount (%)" TData="decimal?" DataIndex="Amount.Percent" Format="0%" Sortable>
-            @if (tableContext.Amount.Percent.HasValue)
+        <SavingsPlanDataGrid Items="@_incomePlanner.IncomeExpenseSubTotals"
+                         Accounts="_accounts"
+                         Income="Income"
+                         Title="Income Expenses" 
+                         SaverColumnTitle="From" />
+    
+        <SavingsPlanDataGrid Items="@_incomePlanner.ProRataExpenseSubTotals"
+                             Accounts="_accounts"
+                             Income="Income"
+                             Title="Recurring Expenses (Pro Rata)" 
+                             SaverColumnTitle="From" />
+        
+        <SavingsPlanDataGrid Items="_incomePlanner.ExactSavingsPlanSubTotals"
+                             Accounts="_accounts" 
+                             Title="Exact Savings Plans"
+                             SaverColumnTitle="To"/>
+        
+        <SavingsPlanDataGrid Items="_incomePlanner.PercentSavingsPlanSubTotals"
+                             Accounts="_accounts" 
+                             Title="Relative Savings Plans"
+                             SaverColumnTitle="To" />
+        
+        <MudDivider Class="my-4" />
+        
+        <MoneyStatistic Title="Unbudgeted Money" Amount="_incomePlanner.UnbudgetedMoney"
+                        Elevation="0" Outlined="false"
+                        TitleTypo="Typo.h5"/>
+        
+        <MudText Typo="Typo.h5" Class="mt-4">
+            Final Totals
+        </MudText>
+        
+        <MudStack Class="mt-4 flex-wrap" Row AlignItems="AlignItems.Center">
+            @foreach (var (account, totalAmount) in _incomePlanner.FinalBudget)
             {
-                var exactAmount = Income.ExactMoney * tableContext.Amount.Percent.Value;
+                <MoneyStatistic Title="@_accounts.First(x => x.Id == account).Attributes.DisplayName"
+                                Amount="totalAmount"
+                                MaximumAmount="Income.ExactMoney"/>
 
-                <span>
-                    @tableContext.Amount.Percent.Value ($@exactAmount.ToString("F2"))
-                </span>
             }
-        </Column>
-        <Column Title="Amount ($)" TData="decimal?" DataIndex="Amount.Exact" Sortable>
-            @if (tableContext.Amount.Exact.HasValue)
-            {
-                <span>
-                    $@tableContext.Amount.Exact.Value.ToString("F2")
-                </span>
-            }
-        </Column>
-        <SaverIdColumn Title="Saver" SaverId="@tableContext.SaverId" Accounts="_accounts"/>
-        <Column Title="Remaining Balance" Format="$0.00" @bind-Field="@tableContext.RunningTotal"/>
-    </Table>
-
-    <Title Level="4">Recurring Expenses (Pro Rata)</Title>
-    <Table DataSource="_incomePlanner.ProRataExpenseSubTotals" Context="tableContext">
-        <Column Title="Name" @bind-Field="@tableContext.Name" Sortable/>
-        <Column Title="Amount (%)" TData="decimal?" DataIndex="Amount.Percent" Format="0%" Sortable>
-            @if (tableContext.Amount.Percent.HasValue)
-            {
-                var exactAmount = Income.ExactMoney * tableContext.Amount.Percent.Value;
-
-                <span>
-                    @tableContext.Amount.Percent.Value ($@exactAmount.ToString("F2"))
-                </span>
-            }
-        </Column>
-        <Column Title="Amount ($)" TData="decimal?" DataIndex="Amount.Exact" Sortable>
-            @if (tableContext.Amount.Exact.HasValue)
-            {
-                <span>
-                    $@tableContext.Amount.Exact.Value.ToString("F2")
-                </span>
-            }
-        </Column>
-        <SaverIdColumn Title="Saver" SaverId="@tableContext.SaverId" Accounts="_accounts"/>
-        <Column Title="Remaining Balance" Format="$0.00" @bind-Field="@tableContext.RunningTotal"/>
-    </Table>
-
-    <Title Level="4">Exact Savings Plan</Title>
-    <Table DataSource="_incomePlanner.ExactSavingsPlanSubTotals" Context="tableContext">
-        <Column Title="Name" @bind-Field="@tableContext.Name" Sortable/>
-        <Column Title="Amount" TData="decimal?" DataIndex="Amount.Exact" Format="$0.00" Sortable/>
-        <SaverIdColumn Title="Saver" SaverId="@tableContext.SaverId" Accounts="_accounts"/>
-        <Column Title="Remaining Balance" Format="$0.00" @bind-Field="@tableContext.RunningTotal"/>
-    </Table>
-
-    <Title Level="4">Relative Savings Plan</Title>
-    <Table DataSource="_incomePlanner.PercentSavingsPlanSubTotals" Context="tableContext">
-        <Column Title="Name" @bind-Field="@tableContext.Name" Sortable/>
-        <Column Title="Amount (%)" TData="decimal?" DataIndex="Amount.Percent" Format="0%" Sortable/>
-        <Column Title="Amount ($)" TData="decimal?" DataIndex="Amount.Percent" Sortable>
-            @{
-                var exactAmount = Income.ExactMoney * tableContext.Amount.Percent.Value;
-            }
-            $@exactAmount.ToString("F2")
-        </Column>
-        <SaverIdColumn Title="Saver" SaverId="@tableContext.SaverId" Accounts="_accounts"/>
-        <Column Title="Remaining Balance" Format="$0.00" @bind-Field="@tableContext.RunningTotal"/>
-    </Table>
-
-    <Divider/>
+        </MudStack>
+        
+    </MudStack>
+    @*
 
     <Card>
-        <Statistic Title="Unbudgeted Money" Value="@_incomePlanner.UnbudgetedMoney">
-            <PrefixTemplate>
-                $
-            </PrefixTemplate>
-        </Statistic>
-
-        <Divider/>
 
         <Space Size=@(("8", "8")) Direction="DirectionVHType.Horizontal" Wrap>
             @foreach (var (account, totalAmount) in _incomePlanner.FinalBudget)
@@ -118,13 +78,13 @@ else
                 </SpaceItem>
             }
         </Space>
-    </Card>
+    </Card>*@
 }
 
 @code
 {
     [Parameter]
-    public Income Income { get; set; }
+    public Income? Income { get; set; }
 
     private Guid _cachedIncomeId;
 

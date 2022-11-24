@@ -27,14 +27,24 @@
         <MudContainer MaxWidth="MaxWidth.False" Class="mb-16">
             <MudStack Row Class="flex-wrap" Justify="Justify.SpaceAround">
                 <div class="my-16">
-                    <MudText Typo="Typo.h1">
-                        Budgeting,
-                    </MudText>
-                    <MudText Typo="Typo.h2">
-                        Simplified.
-                    </MudText>
+                    <MudHidden Breakpoint="Breakpoint.SmAndDown">
+                        <MudText Typo="Typo.h1">
+                            Budgeting,
+                        </MudText>
+                        <MudText Typo="Typo.h2">
+                            Simplified.
+                        </MudText>
+                    </MudHidden>
+                    <MudHidden Breakpoint="Breakpoint.SmAndDown" Invert>
+                        <MudText Typo="Typo.h2">
+                            Budgeting,
+                        </MudText>
+                        <MudText Typo="Typo.h3">
+                            Simplified.
+                        </MudText>
+                    </MudHidden>
                 </div>
-                <MudCarousel Class="flex-grow" Style="width:600px;" ItemsSource="_bannerImages">
+                <MudCarousel Class="flex-grow" Style="width:600px;min-height:250px;" ItemsSource="_bannerImages">
                     <ItemTemplate>
                         <MudImage Fluid Src="@($"/img/banner/{context}")" />
                     </ItemTemplate>

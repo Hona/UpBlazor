@@ -61,24 +61,6 @@ else
         </MudStack>
         
     </MudStack>
-    @*
-
-    <Card>
-
-        <Space Size=@(("8", "8")) Direction="DirectionVHType.Horizontal" Wrap>
-            @foreach (var (account, totalAmount) in _incomePlanner.FinalBudget)
-            {
-                <SpaceItem>
-                    <Card Style="min-width: 300px" Title="@_accounts.First(x => x.Id == account).Attributes.DisplayName">
-                        <Progress Percent="@((double) (totalAmount / Income.ExactMoney * 100))" Format='x => x.ToString("F1") + "%"' Status="@ProgressStatus.Normal"/>
-                        <span>
-                            $@totalAmount.ToString("F2")
-                        </span>
-                    </Card>
-                </SpaceItem>
-            }
-        </Space>
-    </Card>*@
 }
 
 @code

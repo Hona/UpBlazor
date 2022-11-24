@@ -11,7 +11,7 @@
 
 <MudDataGrid Items="_recurringExpenses" Loading="_loading">
     <Columns>
-        <MudBlazor.Column T="RecurringExpense" Field="@nameof(RecurringExpense.Name)" />
+        <MudBlazor.Column T="RecurringExpense" Field="@nameof(RecurringExpense.Name)" RowClass="mud-typography-body1" />
         <MudBlazor.Column T="RecurringExpense" Title="Amount">
             <CellTemplate>
                 <ExactOrRelativeMoneyDisplay Item="context.Item.Money"/>

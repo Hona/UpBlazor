@@ -13,7 +13,7 @@ else
 {
     <MudDataGrid Items="_incomes">
         <Columns>
-            <MudBlazor.Column T="Income" Field="@nameof(Income.Name)" />
+            <MudBlazor.Column T="Income" Field="@nameof(Income.Name)" RowClass="mud-typography-body1"/>
             <MudBlazor.Column T="Income" Field="@nameof(Income.ExactMoney)" Title="Amount">
                 <CellTemplate>
                     <MudText>

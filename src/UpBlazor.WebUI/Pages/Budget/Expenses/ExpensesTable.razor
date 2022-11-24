@@ -11,7 +11,7 @@
 
 <MudDataGrid Items="_expenses" Loading="_loading" >
     <Columns>
-        <MudBlazor.Column T="Expense" Field="@nameof(Expense.Name)" RowClass="mud-typography-body1" />
+        <MudBlazor.Column T="Expense" Field="@nameof(Expense.Name)" CellClass="mud-typography-body1" />
         <MudBlazor.Column T="Expense" Title="Amount">
             <CellTemplate>
                 <ExactOrRelativeMoneyDisplay Item="context.Item.Money"/>

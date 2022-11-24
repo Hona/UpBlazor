@@ -6,7 +6,7 @@
 
 <MudDataGrid Items="Items" SortMode="SortMode.None">
     <Columns>
-        <MudBlazor.Column T="SavingsPlanRunningTotal" Field="@nameof(SavingsPlanRunningTotal.Name)" RowClass="mud-typography-body1" />
+        <MudBlazor.Column T="SavingsPlanRunningTotal" Field="@nameof(SavingsPlanRunningTotal.Name)" CellClass="mud-typography-body1" />
         <MudBlazor.Column T="SavingsPlanRunningTotal" Field="@nameof(SavingsPlanRunningTotal.Amount)" Title="Amount">
             <CellTemplate>
                 <ExactOrRelativeMoneyDisplay Item="context.Item.Amount" 

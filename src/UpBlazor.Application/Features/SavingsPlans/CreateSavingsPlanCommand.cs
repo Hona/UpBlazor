@@ -21,11 +21,6 @@ public class CreateSavingsPlanCommandHandler : IRequestHandler<CreateSavingsPlan
 
     public async Task<Guid> Handle(CreateSavingsPlanCommand request, CancellationToken cancellationToken)
     {
-        if (request.Amount.Percent.HasValue)
-        {
-            request.Amount.Percent /= 100;
-        }
-
         var output = new SavingsPlan
         {
             Name = request.Name,

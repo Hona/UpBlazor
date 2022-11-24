@@ -64,11 +64,6 @@
             return;
         }
 
-        if (_request.Amount.Percent.HasValue)
-        {
-            _request.Amount.Percent /= 100;
-        }
-
         if (_request.RegularPayments)
         {
             if (_expenseSourceInput.Value.IncomeId is not null)

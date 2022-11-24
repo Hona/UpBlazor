@@ -2,7 +2,7 @@
 
 <Title Level="3">Income Planner</Title>
 
-<IncomeSelector SelectedIncomeChanged="Callback"/>
+<IncomeSelector @bind-SelectedIncome="_income"/>
 
 <Divider />
 
@@ -11,9 +11,4 @@
 @code
 {
     private Income _income;
-
-    private void Callback(Income obj)
-    {
-        _income = obj;
-    }
 }

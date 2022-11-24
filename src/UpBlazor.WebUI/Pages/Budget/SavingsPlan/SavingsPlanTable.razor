@@ -1,61 +1,79 @@
-﻿@inject SavingsPlanClient SavingsPlanClient
+﻿@using MudBlazor
+@using Color = MudBlazor.Color
+
+@inject SavingsPlanClient SavingsPlanClient
 @inject UpClient UpClient
 
-<Title Level="3">Income</Title>
-<Table DataSource="_savingsPlans" Loading="_loading">
-     <Column Title="Name" @bind-Field="@context.Name" Sortable/>
-     <Column Title="Exact" TData="decimal?" DataIndex="Amount.Exact" Format="$0.00" Sortable/>
-     <Column Title="Relative" TData="decimal?" DataIndex="Amount.Percent" Format="0%" Sortable/>
-     <SaverIdColumn Title="Saver" SaverId="@context.SaverId" Accounts="_accounts"/>
-     <ActionColumn>
-          <Space>
-               <SpaceItem>
-                    <Button Danger OnClick="async () => await DeleteAsync(context)">Remove</Button>
-               </SpaceItem>
-          </Space>
-     </ActionColumn>
-</Table>
+<MudText Typo="Typo.h5">
+     Income
+</MudText>
+
+<MudDataGrid Items="_savingsPlans">
+    <Columns>
+        <MudBlazor.Column T="SavingsPlan" Field="@nameof(SavingsPlan.Name)" />
+        <MudBlazor.Column T="SavingsPlan" Field="@nameof(SavingsPlan.Amount)" Title="Amount">
+            <CellTemplate>
+                <ExactOrRelativeMoneyDisplay Item="@context.Item.Amount" />
+            </CellTemplate>
+        </MudBlazor.Column>
+        <MudBlazor.Column T="SavingsPlan" Field="@nameof(SavingsPlan.SaverId)" Title="To">
+            <CellTemplate>
+                <SaverIdColumn SaverId="@context.Item.SaverId" Accounts="_accounts" />
+            </CellTemplate>
+        </MudBlazor.Column>
+        <MudBlazor.Column T="SavingsPlan">
+            <CellTemplate>
+                <MudIconButton Icon="@Icons.Rounded.Delete" Color="Color.Tertiary" OnClick="async () => await DeleteAsync(context.Item)"/>
+            </CellTemplate>
+        </MudBlazor.Column>
+    </Columns>
+    <NoRecordsContent>
+        <MudText Typo="Typo.body1">
+            No savings plans
+        </MudText>
+    </NoRecordsContent>
+</MudDataGrid>
 
 @code
 {
-     [Parameter]
-     public Income Income { get; set; }
+    [Parameter]
+    public Income Income { get; set; }
 
-     private bool _loading;
+    private bool _loading;
 
-     private IReadOnlyList<SavingsPlan> _savingsPlans;
-     private IReadOnlyList<AccountResource> _accounts;
+    private IReadOnlyList<SavingsPlan> _savingsPlans;
+    private IReadOnlyList<AccountResource> _accounts;
 
-     protected override async Task OnParametersSetAsync() => await ReloadAsync();
+    protected override async Task OnParametersSetAsync() => await ReloadAsync();
 
-     internal async Task ReloadAsync(bool forceReload = false)
-     {
-          _loading = true;
-          
-          if (forceReload)
-          {
-               StateHasChanged();
-          }
+    internal async Task ReloadAsync(bool forceReload = false)
+    {
+        _loading = true;
 
-          _savingsPlans = await SavingsPlanClient.GetSavingsPlansAsync(Income.Id);
-          _accounts = await UpClient.GetAccountsAsync();
+        if (forceReload)
+        {
+            StateHasChanged();
+        }
 
-          _loading = false;
-          
-          if (forceReload)
-          {
-               StateHasChanged();
-          }
-     }
+        _savingsPlans = await SavingsPlanClient.GetSavingsPlansAsync(Income.Id);
+        _accounts = await UpClient.GetAccountsAsync();
 
-     private async Task DeleteAsync(SavingsPlan savingsPlan)
-     {
-          _loading = true;
+        _loading = false;
 
-          await SavingsPlanClient.DeleteSavingsPlanAsync(savingsPlan.Id);
+        if (forceReload)
+        {
+            StateHasChanged();
+        }
+    }
 
-          _loading = false;
+    private async Task DeleteAsync(SavingsPlan savingsPlan)
+    {
+        _loading = true;
 
-          await ReloadAsync();
-     }
+        await SavingsPlanClient.DeleteSavingsPlanAsync(savingsPlan.Id);
+
+        _loading = false;
+
+        await ReloadAsync();
+    }
 }

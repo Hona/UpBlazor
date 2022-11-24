@@ -1,0 +1,70 @@
+﻿@using MudBlazor
+@using Color = MudBlazor.Color
+
+<MudCard Elevation="@Elevation" Outlined="@Outlined" Style="width:300px;">
+    <MudCardHeader>
+        <MudText Typo="@TitleTypo">
+            @Title
+        </MudText>
+        @if (Chip is not null)
+        {
+            <MudSpacer />
+            
+            <MudChip Color="@ChipColor">
+                @Chip
+            </MudChip>
+        }
+        else if (MaximumAmount is not null)
+        {
+            <MudSpacer />
+            
+            <MudChip Color="Color.Tertiary">
+                @((Amount / MaximumAmount).Value.ToString("P1"))
+            </MudChip>
+        }
+    </MudCardHeader>
+    <MudCardContent>
+        <MudAlert Severity="Severity.Normal" NoIcon>
+            <MudStack Row>
+                <MudText Typo="Typo.h5">$</MudText>
+                <MudText Typo="Typo.h5">
+                    @Amount.ToString("F2")
+                </MudText>
+            </MudStack>
+        </MudAlert>
+        
+        @if (MaximumAmount is not null)
+        {
+            <MudProgressLinear Min="0" Max="@((double)MaximumAmount)" Value="@((double)Amount)" 
+                               Class="mt-2" Color="Color.Primary"/>
+        }
+        
+    </MudCardContent>
+</MudCard>
+
+@code
+{
+    [Parameter]
+    public string Title { get; set; } = null!;
+    
+    [Parameter]
+    public string? Chip { get; set; }
+    
+    [Parameter]
+    public Color ChipColor { get; set; }
+    
+    [Parameter]
+    public decimal Amount { get; set; }
+
+    [Parameter]
+    public decimal? MaximumAmount { get; set; }
+
+    [Parameter]
+    public int Elevation { get; set; } = 2;
+
+    [Parameter]
+    public bool Outlined { get; set; } = true;
+
+    [Parameter]
+    public Typo TitleTypo { get; set; } = Typo.subtitle2;
+}

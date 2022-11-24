@@ -1,74 +1,70 @@
 ﻿@using System.Runtime.CompilerServices
+@using MudBlazor
 
-<Space>
-    <SpaceItem>
-        <IncomeSelector @bind-SelectedIncome="SelectedIncome" SelectFirst/>
-    </SpaceItem>
-    <SpaceItem>
-        <SaverSelector @bind-SelectedSaver="SelectedSaver"/>
-    </SpaceItem>
-</Space>
+<MudStack Row AlignItems="AlignItems.End">
+    <IncomeSelector @bind-SelectedIncome="SelectedIncome" SelectFirst="false" Required="IsRequired()" />
+    <MudText>or</MudText>
+    <SaverSelector @bind-SelectedSaver="SelectedSaver" Required="IsRequired()" />
+</MudStack>
 
 @code
 {
-    private bool _isIncome;
+    private AccountResource? _selectedSaver;
+    private Income? _selectedIncome;
+
+    [Parameter]
+    public bool Required { get; set; }
     
-    private AccountResource _selectedSaver;
-    private Income _selectedIncome;
+    [Parameter]
+    public ExpenseSource? Value { get; set; }
 
     [Parameter]
-    public ExpenseSource Value { get; set; }
+    public EventCallback<ExpenseSource?> ValueChanged { get; set; }
 
-    [Parameter]
-    public EventCallback<ExpenseSource> ValueChanged { get; set; }
+    private bool IsRequired()
+    {
+        return Required && Value?.IncomeId is null && Value?.SaverId is null;
+    }
 
-    private AccountResource SelectedSaver
+    private AccountResource? SelectedSaver
     {
         get => _selectedSaver;
         set
         {
             _selectedSaver = value;
-            Value.SaverId = value?.Id;
+            var newValue = value is null ? new ExpenseSource { IncomeId = Value.IncomeId } : new ExpenseSource { SaverId = value.Id };
 
             if (value == null)
             {
-                InvokeValueChanged();
-                StateHasChanged();
+                InvokeValueChanged(newValue);
                 return;
             }
 
             _selectedIncome = null;
-            Value.IncomeId = null;
-
-            InvokeValueChanged();
-            StateHasChanged();
+            InvokeValueChanged(newValue);
         }
     }
 
-    private Income SelectedIncome
+    private Income? SelectedIncome
     {
         get => _selectedIncome;
         set
         {
             _selectedIncome = value;
-            Value.IncomeId = value?.Id;
+            var newValue = value is null ? new ExpenseSource { SaverId = Value.SaverId} : new ExpenseSource { IncomeId = value.Id };
 
             if (value == null)
             {
-                InvokeValueChanged();
-                StateHasChanged();
+                InvokeValueChanged(newValue);
                 return;
             }
 
             _selectedSaver = null;
-            Value.SaverId = null;
-
-            InvokeValueChanged();
-            StateHasChanged();
+            InvokeValueChanged(newValue);
         }
     }
 
-    private void OnTypeChange(bool isIncome)
+    public void ChangeType(bool isIncome)
     {
         if (isIncome)
         {
@@ -80,18 +76,11 @@
         }
     }
 
-    public void ChangeType(bool isIncome)
-    {
-        _isIncome = isIncome;
-        
-        OnTypeChange(isIncome);
-    }
-
-    private void InvokeValueChanged()
+    private void InvokeValueChanged(ExpenseSource? newValue)
     {
         if (ValueChanged.HasDelegate)
         {
-            ValueChanged.InvokeAsync(Value);
+            ValueChanged.InvokeAsync(newValue);
         }
     }
 

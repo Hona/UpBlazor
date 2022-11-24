@@ -1,55 +1,46 @@
 ﻿@using System.Text.RegularExpressions
+@using MudBlazor
 
-<Space>
-    <SpaceItem>
-        <AntDesign.InputNumber Disabled="@(!_isExact)" Style="min-width: 9rem" TValue="decimal?" Formatter="MoneyFormat" Parser="MoneyParse" @bind-Value="@Amount.Exact" DefaultValue="50M" Min="0" Step="0.01M" OnChange="x => Amount.Percent = null"/>
-    </SpaceItem>
-    <SpaceItem>
-        <AntDesign.InputNumber Disabled="@_isExact" Style="min-width: 7rem" TValue="decimal?" Formatter="PercentFormat" Parser="PercentParse" @bind-Value="@Amount.Percent" Min="0" Step="1" OnChange="x => Amount.Exact = null"/>
-    </SpaceItem>
-    <SpaceItem>
-        <AntDesign.Switch @bind-Checked="@_isExact" CheckedChildren="Exact" UnCheckedChildren="Relative" OnChange="@OnCostTypeChange" />
-    </SpaceItem>
-</Space>
+<MudStack Row AlignItems="AlignItems.End">
+    <MudNumericField Label="Exact ($)" Format="N2" AdornmentText="$" Adornment="Adornment.Start" @bind-Value="ExactAmount" Min="0" Step="0.01M" Required="IsRequired()"/>
+    <MudText>or</MudText>
+    <MudNumericField Label="Relative (%)" Format="P" @bind-Value="PercentAmount" Min="0" Step="0.01M" Required="IsRequired()"/>
+</MudStack>
 
-@code {
-    private Money _amount;
-    [Parameter] public Money Amount 
-    { 
-        get => _amount;
-        set 
+@code { 
+
+    [Parameter]
+    public bool Required { get; set; }
+
+    private bool IsRequired()
+    {
+        return Required && ExactAmount is null && PercentAmount is null;
+    }
+    
+    private decimal? ExactAmount
+    {
+        get => Amount.Exact;
+        set
         {
-            if (_amount != value)
-            {
-                _amount = value;
-                AmountChanged.InvokeAsync(_amount);
-            }
+            Amount.Exact = value;
+            Amount.Percent = null;
+            AmountChanged.InvokeAsync(Amount);
         }
     }
+
+    private decimal? PercentAmount
+    {
+        get => Amount.Percent;
+        set
+        {
+            Amount.Percent = value;
+            Amount.Exact = null;
+            AmountChanged.InvokeAsync(Amount);
+        }
+    }
+
+    [Parameter]
+    public Money Amount { get; set; } = new();
 
     [Parameter] public EventCallback<Money> AmountChanged { get; set; }
-
-    private void OnCostTypeChange() 
-    {
-        if (_isExact)
-        {
-            Amount.Exact = 50M; 
-            Amount.Percent = null;
-        }
-        else 
-        {
-            Amount.Exact = null;
-            Amount.Percent = 0M;
-        }        
-    }
-
-    private bool _isExact = true;
-
-    private string MoneyFormat(decimal? value) => value != null ? $"${value:N2}" : "Exact ($)";
-
-    private string MoneyParse(string value) => Regex.Replace(value, @"\$\s?|(,*)", "", RegexOptions.Compiled);
-
-    private string PercentFormat(decimal? value) => value != null ? value + "%" : "Relative (%)";
-
-    private string PercentParse(string value) => value.Replace("%", "");
 }

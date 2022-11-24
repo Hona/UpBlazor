@@ -14,16 +14,9 @@
             <MudNumericField @bind-Value="_request.ExactMoney" Adornment="Adornment.Start" AdornmentText="$" Label="Amount" Required Format="F2"/>
             <MudDatePicker @bind-Date="_request.StartDate" Label="Start Date" Required/>
             
-            <MudText Class="pt-4">Paid Every</MudText>
-            <MudStack Row>
-                <MudNumericField @bind-Value="_request.IntervalUnits" Required />
-                <MudSelect @bind-Value="_request.Interval" Required>
-                    @foreach (var item in Enum.GetValues<Interval>())
-                    {
-                        <MudSelectItem Value="@item">@item</MudSelectItem>
-                    }
-                </MudSelect>
-            </MudStack>
+            <MudText Class="pt-6">Paid Every</MudText>
+            
+            <IntervalFullInput @bind-Interval="_request.Interval" @bind-IntervalUnits="_request.IntervalUnits" />
         </MudForm>
     </MudCardContent>
     <MudCardActions>
@@ -50,13 +43,13 @@
         
         await _form.Validate();
 
-        if (_form.Errors.Any())
+        if (!_form.IsValid)
         {
             _loading = false;
             return;
         }
 
-        await IncomesClient.CreateIncomeAsync(new CreateIncomeCommand()
+        await IncomesClient.CreateIncomeAsync(new CreateIncomeCommand
         {
             Name = _request.Name,
             ExactMoney = _request.ExactMoney,

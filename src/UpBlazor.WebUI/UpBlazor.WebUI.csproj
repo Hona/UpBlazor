@@ -25,4 +25,14 @@
       <ProjectReference Include="..\UpBlazor.Core\UpBlazor.Core.csproj" />
     </ItemGroup>
     
+    <ItemGroup>
+      <_ContentIncludedByDefault Remove="Pages\Budget\Goals\CreateGoal.razor" />
+      <_ContentIncludedByDefault Remove="Pages\Budget\Goals\GoalsTable.razor" />
+      <_ContentIncludedByDefault Remove="Pages\Budget\Goals\Index.razor" />
+      <_ContentIncludedByDefault Remove="Pages\Insights\Analytics\Index.razor" />
+      <_ContentIncludedByDefault Remove="Pages\Admin\ComponentExplorer\Demos\ExpenseSourceInputDemo.razor" />
+      <_ContentIncludedByDefault Remove="Pages\Admin\ComponentExplorer\Demos\UserDropdownDemo.razor" />
+      <_ContentIncludedByDefault Remove="Pages\Admin\ComponentExplorer\Index.razor" />
+    </ItemGroup>
+    
 </Project>

@@ -109,7 +109,6 @@ services.AddSingleton<IRegisteredUserRepository, RegisteredUserRepository>();
 services.AddSingleton<IExpenseRepository, ExpenseRepository>();
 services.AddSingleton<IRecurringExpenseRepository, RecurringExpenseRepository>();
 services.AddSingleton<IIncomeRepository, IncomeRepository>();
-services.AddSingleton<IGoalRepository, GoalRepository>();
 services.AddSingleton<ISavingsPlanRepository, SavingsPlanRepository>();
 services.AddSingleton<INormalizedAggregateRepository, NormalizedAggregateRepository>();
 services.AddSingleton<INotificationRepository, NotificationRepository>();

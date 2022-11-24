@@ -1,0 +1,52 @@
+﻿@using MudBlazor
+
+<MudText Typo="Typo.h4">
+    @Title
+</MudText>
+
+<MudDataGrid Items="Items" SortMode="SortMode.None">
+    <Columns>
+        <MudBlazor.Column T="SavingsPlanRunningTotal" Field="@nameof(SavingsPlanRunningTotal.Name)" />
+        <MudBlazor.Column T="SavingsPlanRunningTotal" Field="@nameof(SavingsPlanRunningTotal.Amount)" Title="Amount">
+            <CellTemplate>
+                <ExactOrRelativeMoneyDisplay Item="context.Item.Amount" 
+                                             PercentCalculated="@(Income?.ExactMoney * context.Item.Amount.Percent)"/>
+            </CellTemplate>
+        </MudBlazor.Column>
+        <MudBlazor.Column T="SavingsPlanRunningTotal" Field="@nameof(SavingsPlanRunningTotal.SaverId)" Title="@SaverColumnTitle">
+            <CellTemplate>
+                <SaverIdColumn SaverId="@context.Item.SaverId" Accounts="Accounts"/>
+            </CellTemplate>
+        </MudBlazor.Column>
+        <MudBlazor.Column T="SavingsPlanRunningTotal" Field="@nameof(SavingsPlanRunningTotal.RunningTotal)" Title="Remaining Balance">
+            <CellTemplate>
+                <MudText>
+                    $@context.Item.RunningTotal.ToString("F2")
+                </MudText>
+            </CellTemplate>
+        </MudBlazor.Column>
+    </Columns>
+    <NoRecordsContent>
+        <MudText Typo="Typo.body1">
+            No @Title.ToLower()
+        </MudText>
+    </NoRecordsContent>
+</MudDataGrid>
+
+@code {
+    [Parameter]
+    public IReadOnlyList<SavingsPlanRunningTotal> Items { get; set; }
+    
+    [Parameter]
+    public Income? Income { get; set; }
+
+    [Parameter]
+    public IReadOnlyList<AccountResource> Accounts { get; set; }
+
+    [Parameter]
+    public string Title { get; set; }
+
+    [Parameter]
+    public string SaverColumnTitle { get; set; }
+
+}

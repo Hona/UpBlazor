@@ -1,31 +1,26 @@
 ﻿@using System.ComponentModel.DataAnnotations
+@using MudBlazor
+@using Color = MudBlazor.Color
+
 @inject SavingsPlanClient SavingsPlanClient
 
-<Card Title="New Savings Plan">
-    <Form Model="_request"
-          LabelColSpan="4"
-          WrapperColSpan="20"
-          OnFinish="async () => await OnFormFinishAsync()"
-          Loading="_loading"
-          Context="formContext">
-        <FormItem Label="Name">
-            <Input DebounceMilliseconds="int.MaxValue" @bind-Value="@formContext.Name"/>
-        </FormItem>
-        <FormItem Label="Amount">
-            <InputGroup>
-                <MoneyInput @bind-Amount="@formContext.Amount"/>
-            </InputGroup>
-        </FormItem>
-        <FormItem Label="Saver">
-            <SaverSelector SelectedSaverChanged="x => _request.SaverId = x.Id"/>
-        </FormItem>
-        <FormItem WrapperColOffset="4" WrapperColSpan="20">
-            <Button Type="primary" HtmlType="submit">
-                Submit
-            </Button>
-        </FormItem>
-    </Form>
-</Card>
+<MudCard Class="mt-4">
+    <MudCardContent>
+        <MudText Typo="Typo.h6">
+            New Savings Plan
+        </MudText>
+        <MudForm @ref="_form">
+            <MudTextField @bind-Value="_request.Name" Label="Name" Required/>
+            <MoneyInput @bind-Amount="_request.Amount" Required />
+            <SaverSelector @bind-SelectedSaver="_request.Saver" Required />
+        </MudForm>
+    </MudCardContent>
+    <MudCardActions>
+        <MudButton Color="Color.Primary" OnClick="OnFormFinishAsync">
+            Create
+        </MudButton>
+    </MudCardActions>
+</MudCard>
 
 @code
 {
@@ -38,16 +33,26 @@
     private SavingsPlanRequest _request = new();
 
     private bool _loading;
+
+    private MudForm _form;
     
     private async Task OnFormFinishAsync()
     {
         _loading = true;
 
+        await _form.Validate();
+
+        if (!_form.IsValid)
+        {
+            _loading = false;
+            return;
+        }
+
         await SavingsPlanClient.CreateSavingsPlanAsync(new CreateSavingsPlanCommand
         {
             Name = _request.Name,
             Amount = _request.Amount,
-            SaverId = _request.SaverId,
+            SaverId = _request.Saver.Id,
             IncomeId = Income.Id
         });
         
@@ -69,6 +74,6 @@
         public Money Amount { get; set; } = new();
         
         [Required]
-        public string SaverId { get; set; }
+        public AccountResource? Saver { get; set; }
     }
 }

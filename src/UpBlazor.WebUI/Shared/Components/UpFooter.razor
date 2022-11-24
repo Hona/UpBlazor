@@ -1,13 +1,13 @@
-﻿@using Up.NET.Models
+﻿@using MudBlazor
 
 @inject UpClient _upClient
 
 @inject NavigationManager NavigationManager
 
-<div style="display: flex; justify-content: center; align-items: center; width: 100%">
+<div style="display: flex; justify-content: center; align-items: center; width: 100%" class="mt-8">
     @if (_loading)
     {
-        <Spin />
+        <MudProgressCircular Indeterminate />
     }
     else
     {
@@ -15,11 +15,11 @@
             <Authorized>
                 @if (_response is null)
                 {
-                    <span>❌</span>
+                    <MudText>❌</MudText>
                 }
                 else
                 {
-                    <span>@_response.Meta.StatusEmoji</span>
+                    <MudText>@_response.Meta.StatusEmoji</MudText>
                 }
             </Authorized>
             <NotAuthorized />

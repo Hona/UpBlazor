@@ -1,6 +1,82 @@
 ﻿@page "/"
 @layout EmptyLayout
 
+@using MudBlazor
+@using Color = MudBlazor.Color
+@using Anchor = MudBlazor.Anchor
+
+<MudLayout Class="mud-background-gray" Style="min-height:100vh;">
+    <MudAppBar Fixed="false" Elevation="0">
+        <MudStack Row="true" AlignItems="AlignItems.Center">
+            <MudImage Src="/img/up-logo-light-transparent-bg.svg" Fluid Height="60" Width="60"/>
+            <MudText Typo="Typo.h5" Style="letter-spacing: 0.2rem; color: white">Blazor</MudText>
+        </MudStack>
+        
+        <MudSpacer/>
+        
+        <AuthorizeView>
+            <Authorized>
+                <MudButton Variant="Variant.Filled" Color="Color.Primary" Href="/home">Home</MudButton>
+            </Authorized>
+            <NotAuthorized>
+                <MudButton Variant="Variant.Filled" Color="Color.Primary" Href="/authentication/login">Login</MudButton>
+            </NotAuthorized>
+        </AuthorizeView>
+    </MudAppBar>
+    <MudMainContent Class="mud-theme-secondary py-6" Style="height:100%;">
+        <MudContainer MaxWidth="MaxWidth.False" Class="mb-16">
+            <MudStack Row Class="flex-wrap" Justify="Justify.SpaceAround">
+                <div class="my-16">
+                    <MudText Typo="Typo.h1">
+                        Budgeting,
+                    </MudText>
+                    <MudText Typo="Typo.h2">
+                        Simplified.
+                    </MudText>
+                </div>
+                <MudCarousel Class="flex-grow" Style="width:600px;" ItemsSource="_bannerImages">
+                    <ItemTemplate>
+                        <MudImage Fluid Src="@($"/img/banner/{context}")" />
+                    </ItemTemplate>
+                </MudCarousel>
+            </MudStack>
+        </MudContainer>
+    </MudMainContent>
+    <MudMainContent Class="pt-0 pb-8 mt-n16">
+        <MudContainer MaxWidth="MaxWidth.Large">
+            <MudPaper Elevation="1" Class="pa-6 rounded-lg">
+                <MudStack Row Justify="Justify.Center" AlignItems="AlignItems.Start" Class="flex-wrap">
+                    @foreach (var feature in _features)
+                    {
+                        <MudCard Elevation="0" Outlined Style="max-width:300px;">
+                            <MudCardHeader>
+                                <MudText Typo="Typo.subtitle1">
+                                    @feature.Title
+                                </MudText>
+                            </MudCardHeader>
+                            <MudCardContent>
+                                <MudText Typo="Typo.body2">
+                                    @feature.Description
+                                </MudText>
+                            </MudCardContent>
+                        </MudCard>
+                    }
+                </MudStack>
+            </MudPaper>            
+        </MudContainer>
+        
+        <MudStack Row Class="mt-8" Justify="Justify.Center" AlignItems="AlignItems.Center">
+            <MudButton Variant="Variant.Text" Href="https://github.com/Hona/UpBlazor" StartIcon="@Icons.Custom.Brands.GitHub">
+                Source Code
+            </MudButton>
+            <MudButton Variant="Variant.Text" Href="https://twitter.com/LukeParkerDev" StartIcon="@Icons.Custom.Brands.Twitter">
+                Contact
+            </MudButton>
+        </MudStack>
+    </MudMainContent>
+</MudLayout>
+
+@*
 <Layout Style="min-height: 100vh">
     <Header Style="position: fixed; z-index: 1; width: 100%;">
         <div style="height: 100%; width: auto; display: flex; justify-content: space-between; align-items: center">
@@ -115,6 +191,7 @@
         </Space>
     </Footer>
 </Layout>
+*@
 
 @code
 {
@@ -127,4 +204,44 @@
         "status-with-form.png",
         "table.png"
     };
+
+    private List<Feature> _features = new()
+    {
+        new Feature
+        {
+            Title = "💰 Income",
+            Description = "Track multiple incomes & graphs to see your gross income over time."
+        },
+        new Feature
+        {
+            Title = "💸 Expenses",
+            Description = "Track multiple expenses - both one off and recurring. See how much you spend on certain things, or track how much you need to save!"
+        },
+        new Feature
+        {
+            Title = "🏦 Savings Plan",
+            Description = "Forward plan how much money you put into each bucket (saver) every pay cycle. Expenses are automatically deducted! Find out just how long it takes to save up for that holiday."
+        },
+        new Feature
+        {
+            Title = "🎯 Goals",
+            Description = "Struggle with saving? Set your goals and track how far on (or off) track you are!"
+        },
+        new Feature
+        {
+            Title = "🧑‍🤝‍🧑 2Up",
+            Description = "With support for connecting multiple Up users, you can share expenses, incomes & planning together!"
+        },
+        new Feature
+        {
+            Title = "📈 Insights",
+            Description = "You can view graphs & analytics boards to see gross income & expenses, projected account balances as well as transation history!"
+        }
+    };
+
+    private class Feature
+    {
+        public string Title { get; set; }
+        public string Description { get; set; }
+    }
 }

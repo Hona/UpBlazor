@@ -1,8 +1,12 @@
 ﻿@page "/budget/savings-plan"
 
-<Title Level="3">Savings Plan</Title>
+@using MudBlazor
 
-<IncomeSelector SelectedIncomeChanged="OnSelectedIncomeChanged"/>
+<MudText Typo="Typo.h4">
+    Savings Plans
+</MudText>
+
+<IncomeSelector @bind-SelectedIncome="_income" />
 
 <Divider />
 
@@ -11,9 +15,4 @@
 @code
 {
     private Income _income;
-    
-    private void OnSelectedIncomeChanged(Income income)
-    {
-        _income = income;
-    }
 }

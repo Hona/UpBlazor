@@ -26,8 +26,8 @@
     <MudCardContent>
         <MudAlert Severity="Severity.Normal" NoIcon>
             <MudStack Row>
-                <MudText Typo="Typo.h5">$</MudText>
-                <MudText Typo="Typo.h5">
+                <MudText Typo="Typo.h5" Color="@ValueColor">$</MudText>
+                <MudText Typo="Typo.h5" Color="@ValueColor">
                     @Amount.ToString("F2")
                 </MudText>
             </MudStack>
@@ -67,4 +67,7 @@
 
     [Parameter]
     public Typo TitleTypo { get; set; } = Typo.subtitle2;
+    
+    [Parameter]
+    public Color ValueColor { get; set; } = Color.Inherit;
 }

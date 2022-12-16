@@ -1,9 +1,34 @@
-﻿@layout MainLayout
+﻿@using MudBlazor
+@using Color = MudBlazor.Color
+@using Align = MudBlazor.Align
+@layout MainLayout
 
 @inject NavigationManager _navigationManager
 
-<Result Status="404" Title="404" SubTitle="Sorry, the page you visited does not exist.">
-    <Extra>
-        <Button Type="primary" OnClick='() => _navigationManager.NavigateTo("/")'>Back Home</Button>
-    </Extra>
-</Result>
+<MudContainer MaxWidth="MaxWidth.Small" Class="py-16">
+    <MudGrid Spacing="0">
+        <MudItem xs="12" md="2">
+            <MudText Typo="Typo.h3" Color="Color.Primary"><b>404</b></MudText>
+        </MudItem>
+        <MudItem xs="12" md="10">
+            <MudStack Row="true">
+                <MudDivider Vertical="true" FlexItem="true" Class="d-none d-md-block mt-2 mb-1"/>
+                <MudStack Spacing="1">
+                    <MudText Typo="Typo.h3" Color="Color.Dark"><b>Page not found</b></MudText>
+                    <MudText>Sorry, there's nothing at this address.</MudText>
+                </MudStack>
+            </MudStack>
+        </MudItem>
+        <MudItem md="2" Class="d-none d-md-block" />
+        <MudItem xs="12" md="10">
+            <MudStack Row="true" Class="py-4 px-0 px-md-4">
+                <MudButton Href="/home" Variant="Variant.Filled" Color="Color.Primary" DisableElevation="true">
+                    Go back
+                </MudButton>
+                <MudButton Href="https://twitter.com/LukeParkerDev" Variant="Variant.Filled" Color="Color.Default" DisableElevation="true">
+                    Contact support
+                </MudButton>
+            </MudStack>
+        </MudItem>
+    </MudGrid>
+</MudContainer>

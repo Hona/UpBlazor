@@ -4,6 +4,7 @@
 @using System.Globalization
 @using MudBlazor
 @using Color = MudBlazor.Color
+@using ChartType = ApexCharts.ChartType
 
 @inject ForecastClient ForecastClient
 @inject NormalizedClient NormalizedClient
@@ -102,7 +103,19 @@ else
                 Total Income
             </MudCardHeader>
             <MudCardContent>
-                <Area Config="_forecastConfig" Data="@_incomeForecastData"/>
+                <ApexChart TItem="ForecastDto" Options="GetOptions()">
+                    @foreach (var incomeName in _incomeForecastData
+                        .DistinctBy(x => x.AccountName)
+                        .Select(x => x.AccountName))
+                    {
+                        <ApexPointSeries TItem="ForecastDto"
+                                         Items="_incomeForecastData.Where(x => x.AccountName == incomeName)"
+                                         Name="@incomeName"
+                                         XValue="@(x => DateTime.ParseExact(x.Cycle, "dd/MM/yyyy", CultureInfo.InvariantCulture))"
+                                         YValue="x => x.Balance"/>
+                    }
+
+                </ApexChart>
             </MudCardContent>
         </MudCard>
         
@@ -111,7 +124,19 @@ else
                 Total Expenses
             </MudCardHeader>
             <MudCardContent>
-                <Area Config="_forecastConfig" Data="@_expensesForecastData"/>
+                <ApexChart TItem="ForecastDto" Options="GetOptions()">
+                    @foreach (var incomeName in _expensesForecastData
+                        .DistinctBy(x => x.AccountName)
+                        .Select(x => x.AccountName))
+                    {
+                        <ApexPointSeries TItem="ForecastDto"
+                                         Items="@_expensesForecastData.Where(x => x.AccountName == incomeName)"
+                                         Name="@incomeName"
+                                         XValue="@(x => DateTime.ParseExact(x.Cycle, "dd/MM/yyyy", CultureInfo.InvariantCulture))"
+                                         YValue="x => x.Balance"/>
+                    }
+
+                </ApexChart>
             </MudCardContent>
         </MudCard>
         
@@ -120,7 +145,19 @@ else
                 Totals
             </MudCardHeader>
             <MudCardContent>
-                <Area Config="_forecastConfig" Data="@_totalForecastData"/>
+                <ApexChart TItem="ForecastDto" Options="GetOptions()">
+                    @foreach (var incomeName in _totalForecastData
+                        .DistinctBy(x => x.AccountName)
+                        .Select(x => x.AccountName))
+                    {
+                        <ApexPointSeries TItem="ForecastDto"
+                                         Items="@_totalForecastData.Where(x => x.AccountName == incomeName)"
+                                         Name="@incomeName"
+                                         XValue="@(x => DateTime.ParseExact(x.Cycle, "dd/MM/yyyy", CultureInfo.InvariantCulture))"
+                                         YValue="x => x.Balance"/>
+                    }
+
+                </ApexChart>
             </MudCardContent>
         </MudCard>
 
@@ -135,7 +172,44 @@ else
     private IReadOnlyList<ForecastDto> _expensesForecastData;
     private IReadOnlyList<ForecastDto> _totalForecastData;
 
-    private double _days = 365 * 2;
+    private ApexChartOptions<ForecastDto> GetOptions() => new()
+    {
+        Chart = new Chart()
+        {
+            Type = ChartType.Area,
+            Height = 350,
+            Zoom = new Zoom
+            {
+                AutoScaleYaxis = true
+            },
+            Stacked = true,
+            StackType = StackType.Normal
+        },
+        Stroke = new Stroke()
+        {
+            Curve = Curve.Stepline,
+            Width = 2
+        },
+        Xaxis = new XAxis()
+        {
+            Type = XAxisType.Datetime
+        },
+        Yaxis = new List<YAxis>()
+        {
+            new YAxis()
+            {
+                Labels = new YAxisLabels()
+                {
+                    Formatter = @"
+(value) => {
+    return window.formatter.format(value);
+}"
+                }
+            }
+        }
+    };
+
+    private double _days = 365;
 
     private DateTime? _daySummaryDate;
     

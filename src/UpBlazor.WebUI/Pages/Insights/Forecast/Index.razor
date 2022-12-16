@@ -180,10 +180,11 @@ else
             Height = 350,
             Zoom = new Zoom
             {
-                AutoScaleYaxis = true
+                AutoScaleYaxis = true,
             },
             Stacked = true,
-            StackType = StackType.Normal
+            StackType = StackType.Normal,
+            Group = "ForecastSynchronization"
         },
         Stroke = new Stroke()
         {
@@ -192,7 +193,7 @@ else
         },
         Xaxis = new XAxis()
         {
-            Type = XAxisType.Datetime
+            Type = XAxisType.Datetime,
         },
         Yaxis = new List<YAxis>()
         {
@@ -227,56 +228,6 @@ else
 
         _loading = false;
     }
-
-    private readonly SliderAreaConfig _forecastConfig = new()
-    {
-        XField = "cycle",
-        YField = "balance",
-        SeriesField = "accountName",
-        XAxis = new ValueCatTimeAxis
-        {
-            Visible = true,
-            Label = new BaseAxisLabel
-            {
-                Visible = true,
-                AutoHide = true,
-            },
-            TickInterval = 7 * 4
-        },
-        Interactions = new[]
-        {
-            new Interaction()
-            {
-                Enable = true,
-                Type = "slider",
-                Cfg = new
-                {
-                    start = 0,
-                    end = 0.2
-                }
-            }
-        },
-        slider = new SliderAreaConfig.Slider()
-        {
-            start = 0,
-            end = 0.2
-        },
-        startOnZero = true
-    };
-
-    public class SliderAreaConfig : AreaConfig
-    {
-        public class Slider
-        {
-            public double start { get; set; }
-            public double end { get; set; }
-        }
-        
-        public Slider slider { get; set; }
-        
-        public bool startOnZero { get; set; }
-    }
-
     private async Task HandleLoadClick()
     {
         await ReloadAsync();

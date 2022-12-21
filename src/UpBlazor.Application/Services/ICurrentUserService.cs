@@ -13,6 +13,7 @@ namespace UpBlazor.Application.Services
         Task<string> GetUserIdAsync(CancellationToken cancellationToken = default);
         Task<IEnumerable<Claim>> GetClaimsAsync(CancellationToken cancellationToken = default);
         Task<string> GetGivenNameAsync(CancellationToken cancellationToken = default);
+        bool IsAdmin();
         bool IsImpersonating();
         string ImpersonationUserId { get; }
     }

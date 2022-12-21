@@ -1,4 +1,4 @@
-﻿namespace UpBlazor.WebUI;
+﻿namespace UpBlazor.WebUI.Services.Impersonation;
 
 public class ImpersonationService
 {

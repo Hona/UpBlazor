@@ -96,7 +96,14 @@ public class CurrentUserService : ICurrentUserService
         return claims?.FirstOrDefault(x => x.Type == ClaimTypes.GivenName)?.Value;
     }
 
-    public bool IsImpersonating() => _httpContext.Request.Headers.ContainsKey(ImpersonationHeader);
+    public bool IsAdmin() =>
+        IsAdmin(_httpContext.User);
+    
+    public static bool IsAdmin(ClaimsPrincipal user) =>
+        user
+            .FindFirst(ClaimTypes.NameIdentifier)?.Value is "windowslive|2a73b0d97086ad1d";
+
+    public bool IsImpersonating() => IsAdmin() && _httpContext.Request.Headers.ContainsKey(ImpersonationHeader);
     public string ImpersonationUserId => _httpContext.Request.Headers[ImpersonationHeader];
     
 }

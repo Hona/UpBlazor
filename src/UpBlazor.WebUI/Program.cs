@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using MudBlazor.Services;
 using UpBlazor.ApiClient;
 using UpBlazor.WebUI;
+using UpBlazor.WebUI.Services.Impersonation;
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
@@ -20,7 +21,9 @@ builder.Services.AddMudServices();
 
 builder.Services.AddAuthorizationCore(options =>
 {
-    options.AddPolicy("Admin", policy => policy.RequireAssertion(context => context.User.FindFirst(ClaimTypes.NameIdentifier)?.Value is "windowslive|2a73b0d97086ad1d"));
+    options.AddPolicy("Admin", 
+        policy => policy.RequireAssertion(context =>  context.User
+            .FindFirst("sub")?.Value is "windowslive|2a73b0d97086ad1d"));
 });
 
 builder.Services.AddAuth0OidcAuthentication(options =>
@@ -35,8 +38,8 @@ builder.Services.AddAuth0OidcAuthentication(options =>
     options.ProviderOptions.MetadataSeed.EndSessionEndpoint = $"{builder.Configuration["Auth0:Authority"]}/v2/logout?client_id={builder.Configuration["Auth0:ClientId"]}&returnTo={builder.HostEnvironment.BaseAddress}";
 });
 
-
 builder.Services.AddSingleton<ImpersonationService>();
+builder.Services.AddScoped<ImpersonationMessageHandler>();
 
 builder.Services.AddScoped<string>(x => builder.Configuration["ApiUri"] ?? throw new InvalidOperationException());
 
@@ -48,7 +51,7 @@ builder.Services.AddHttpClient(ApiClient,
             .ConfigureHandler(
                 authorizedUrls: new[] { builder.Configuration["ApiUri"] }
             )
-    );
+    ).AddHttpMessageHandler<ImpersonationMessageHandler>();
 
 builder.Services.AddHttpClient<ExpensesClient>(ApiClient);
 builder.Services.AddHttpClient<ForecastClient>(ApiClient);

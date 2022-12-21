@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Authentication.OAuth.Claims;
 using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.AspNetCore.HttpOverrides;
 using UpBlazor.Application;
+using UpBlazor.Application.Services;
 using UpBlazor.Core.Models;
 using UpBlazor.Core.Repositories;
 using UpBlazor.Infrastructure.Migrations.Core;
@@ -60,25 +61,9 @@ services.AddAuthorization(options =>
 {
     options.AddPolicy(Constants.AdminAuthorizationPolicy, policy =>
     {
-        policy.RequireAuthenticatedUser()
-            .RequireClaim(ClaimTypes.NameIdentifier)
-            .RequireAssertion(context =>
-            {
-                var userId = context.User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-                var adminEmails = builder.Configuration
-                    .GetSection(Constants.AdminAuthorizationPolicy)
-                    .GetChildren()
-                    .Select(x => x.Value)
-                    .ToArray();
-
-                if (!adminEmails.Any())
-                {
-                    return false;
-                }
-
-                return adminEmails.Any(x => x == userId);
-            });
+        policy
+            .RequireAuthenticatedUser()
+            .RequireAssertion(context => CurrentUserService.IsAdmin(context.User));
     });
 });
 

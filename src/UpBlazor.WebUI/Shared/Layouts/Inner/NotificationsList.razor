@@ -15,15 +15,21 @@ else if (!_notifications.Any())
 else
 {
     <MudList Style="max-width: 600px">
-        @foreach (var notification in _notifications)
+        @foreach (var notification in _notifications.OrderByDescending(x => x.CreatedAt))
         {
             <MudListItem>
-                <MudStack Row Style="height: fit-content" AlignItems="AlignItems.Center">
-                    <MudIconButton Icon="@Icons.Rounded.Done" Color="Color.Error" Variant="Variant.Outlined" OnClick="@(async () => await NotificationsClient.ReadNotificationAsync(notification.Id))" />
-
-                    <div>
-                        <MudText Class="mud-text-primary">@notification.Title</MudText>
+                <MudStack Row Style="height: fit-content" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween">
+                    <div style="width: 100%">
+                        <MudStack Row Justify="Justify.SpaceBetween">
+                            <MudText Class="mud-text-primary">@notification.Title</MudText>
+                            <MudText Typo="Typo.overline">@notification.CreatedAt.ToString("D")</MudText>
+                        </MudStack>
                         <MudText Class="mud-text-secondary">@notification.Description</MudText>
+                    </div>
+                    
+                    <div @onclick="@() => {}" @onclick:stopPropagation="true" @onclick:preventDefault="true">
+                        <MudIconButton Icon="@Icons.Rounded.Done" Color="Color.Success" Variant="Variant.Text" 
+                                       OnClick="@(async () => await NotificationsClient.ReadNotificationAsync(notification.Id))"/>
                     </div>
                 </MudStack>
             </MudListItem>

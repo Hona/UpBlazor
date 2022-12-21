@@ -77,10 +77,6 @@ services.AddMarten(options =>
 
     options.Schema.For<UpUserToken>()
         .Identity(x => x.UserId);
-    options.Schema.For<TwoUp>()
-        .Identity(x => x.MartenId);
-    options.Schema.For<TwoUpRequest>()
-        .Identity(x => x.MartenId);
     options.Schema.For<NormalizedAggregate>()
         .Identity(x => x.UserId);
     options.Schema.For<MigrationLog>()
@@ -88,8 +84,6 @@ services.AddMarten(options =>
 });
 
 services.AddSingleton<IUpUserTokenRepository, UpUserTokenRepository>();
-services.AddSingleton<ITwoUpRepository, TwoUpRepository>();
-services.AddSingleton<ITwoUpRequestRepository, TwoUpRequestRepository>();
 services.AddSingleton<IRegisteredUserRepository, RegisteredUserRepository>();
 services.AddSingleton<IExpenseRepository, ExpenseRepository>();
 services.AddSingleton<IRecurringExpenseRepository, RecurringExpenseRepository>();

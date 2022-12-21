@@ -59,7 +59,6 @@ builder.Services.AddHttpClient<IncomesClient>(ApiClient);
 builder.Services.AddHttpClient<NormalizedClient>(ApiClient);
 builder.Services.AddHttpClient<NotificationsClient>(ApiClient);
 builder.Services.AddHttpClient<UpClient>(ApiClient);
-builder.Services.AddHttpClient<TwoUpClient>(ApiClient);
 builder.Services.AddHttpClient<PlannerClient>(ApiClient);
 builder.Services.AddHttpClient<UsersClient>(ApiClient);
 builder.Services.AddHttpClient<RecurringExpensesClient>(ApiClient);

@@ -1,7 +1,6 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
-using UpBlazor.Application.Features.TwoUp;
 
 namespace UpBlazor.Application.Features.Notifications;
 
@@ -18,10 +17,9 @@ public class GetUnreadNotificationCountQueryHandler : IRequestHandler<GetUnreadN
 
     public async Task<int> Handle(GetUnreadNotificationCountQuery request, CancellationToken cancellationToken)
     {
-        var twoUpRequests = await _mediator.Send(new GetAllTwoUpRequestsForCurrentUserQuery(), cancellationToken);
         var systemNotifications = await _mediator.Send(new GetAllNotificationsForCurrentUserQuery(), cancellationToken);
 
-        var output = twoUpRequests.Count + systemNotifications.Count;
+        var output = systemNotifications.Count;
         return output;
     }
 }

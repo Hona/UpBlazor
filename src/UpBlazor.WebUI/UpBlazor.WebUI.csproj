@@ -34,6 +34,10 @@
       <_ContentIncludedByDefault Remove="Pages\Admin\ComponentExplorer\Demos\ExpenseSourceInputDemo.razor" />
       <_ContentIncludedByDefault Remove="Pages\Admin\ComponentExplorer\Demos\UserDropdownDemo.razor" />
       <_ContentIncludedByDefault Remove="Pages\Admin\ComponentExplorer\Index.razor" />
+      <_ContentIncludedByDefault Remove="Pages\Settings\TwoUp\ConnectWithPlayer2.razor" />
+      <_ContentIncludedByDefault Remove="Pages\Settings\TwoUp\Index.razor" />
+      <_ContentIncludedByDefault Remove="Pages\Settings\TwoUp\TwoUpConnectRequests.razor" />
+      <_ContentIncludedByDefault Remove="Pages\Settings\TwoUp\TwoUpTable.razor" />
     </ItemGroup>
     
 </Project>

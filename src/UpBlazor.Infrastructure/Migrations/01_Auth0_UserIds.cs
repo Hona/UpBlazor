@@ -38,25 +38,7 @@ public class Auth0_UserIds : IMigration
         await MigrateModelAsync<RecurringExpense>(session, 
             x => x.UserId, 
             (x, newId) => x.UserId = newId);
-        
-        await MigrateModelAsync<TwoUp>(session, 
-            x => x.UserId1, 
-            (x, newId) => x.UserId1 = newId);
-        
-        // 2 pulls of the same thing...
-        await MigrateModelAsync<TwoUp>(session, 
-            x => x.UserId2, 
-            (x, newId) => x.UserId2 = newId);
-        
-        await MigrateModelAsync<TwoUpRequest>(session, 
-            x => x.RequesterId, 
-            (x, newId) => x.RequesterId = newId);
-        
-        // 2 pulls of the same thing...
-        await MigrateModelAsync<TwoUpRequest>(session, 
-            x => x.RequesteeId, 
-            (x, newId) => x.RequesteeId = newId);
-        
+
         await MigrateModelAsync<UpUserToken>(session, 
             x => x.UserId, 
             (x, newId) => x.UserId = newId);

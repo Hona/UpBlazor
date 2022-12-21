@@ -3,7 +3,6 @@
 
 @inject NavigationManager _navigationManager
 @inject NotificationsClient _notificationsClient
-@inject TwoUpClient _twoUpClient
 
 <Title Level="3">Notifications</Title>
 
@@ -14,31 +13,14 @@
     }
     else
     {
-        @if (!_twoUpRequests.Any() && !_unreadNotifications.Any())
+        @if (!_unreadNotifications.Any())
         {
             <Result Icon="smile-outline"
                     Title="All clear!"/>
         }
         else
         {
-            @foreach (var response in _twoUpRequests)
-            {
-                <Alert Type="@AlertType.Info"
-                       ShowIcon="@true" Style="margin-bottom: 1.5rem">
-                    <MessageTemplate>
-                        <div style="display: flex; justify-content: space-between; align-items: center">
-                            <span>
-                                2Up Requested from @response.RequesterName
-                            </span>
-                            <Button OnClick='() => _navigationManager.NavigateTo("/settings/two-up")'>Review</Button>
-                        </div>
-                    </MessageTemplate>
-                    <ChildContent>
-                        "@response.RequesterMessage"
-                    </ChildContent>
-                </Alert>
-            }
-            
+
             @foreach (var notification in _unreadNotifications)
             {
                 <Alert Type="@AlertType.Info"
@@ -63,7 +45,6 @@
 @code
 {
     private IReadOnlyList<ApiClient.Notification> _unreadNotifications;
-    private IReadOnlyList<TwoUpRequest> _twoUpRequests;
 
     private bool _loading;
 
@@ -74,7 +55,6 @@
         _loading = true;
 
         _unreadNotifications = await _notificationsClient.GetAllNotificationsAsync(false);
-        _twoUpRequests = await _twoUpClient.GetRequestsAsync();
         
         _loading = false;
     }

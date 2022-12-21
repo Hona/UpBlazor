@@ -24,7 +24,7 @@ else
                         .Where(x => x.Relationships.Account.Data.Id == account.Id)
                         .ToList();
                 }
-                <MudDataGrid Items="transactions" Outlined Elevation="0">
+                <MudDataGrid Items="transactions" Elevation="0">
                     <Columns>
                         <MudBlazor.Column T="TransactionResource" Title="Created At">
                             <CellTemplate>

@@ -1,68 +1,78 @@
 ﻿@page "/settings/up-access-token"
 
+@using MudBlazor
 @using System.ComponentModel
 @using System.ComponentModel.DataAnnotations
+@using Color = MudBlazor.Color
 
 @inject UpClient UpClient
 
 @if (_loading)
 {
-    <Spin />
+    <MudProgressLinear Indeterminate />
 }
 else if (IsSet)
 {
-
     if (_pingResponse == null)
     {
-        <Result Status="error" Title="Could not access your account"/>
+        <MudAlert Severity="Severity.Error" Class="mt-4">
+            Could not access your account
+        </MudAlert>
     }
     else
     {
-        <Result Status="success" Title="Valid account access!" SubTitle="@($"Ping Status: {_pingResponse.Meta.StatusEmoji}")">
-            <SubTitleTemplate>
-                Ping Status: @_pingResponse.Meta.StatusEmoji
-            </SubTitleTemplate>
-        </Result>
+        <MudAlert Severity="Severity.Success" Class="mt-4">
+            Valid account access! @_pingResponse.Meta.StatusEmoji
+        </MudAlert>
     }
 }
 else
 {
-    <Result Status="warning" Title="No access token has been set" SubTitle="Please follow the instructions below">
-        <Extra>
-            <Button Type="primary"><a href="https://api.up.com.au/getting_started" target="_blank" style="color: #fff">Get Access Token</a></Button>
-        </Extra>
-    </Result>
+    <MudAlert Severity="Severity.Warning" Class="mt-4">
+        <MudText Typo="Typo.h6" Color="Color.Warning">
+            No access token has been set
+        </MudText>
+        <MudText>
+            Please follow the instructions below
+        </MudText>
+    </MudAlert>
 }
 
 <Divider />
 
-<Form Model="@_setAccessToken"
-      LabelColSpan="4"
-      WrapperColSpan="20"
-      OnFinish="OnFinishAsync"
-      Style="width: 100%"
-      ValidateMessages="_errorMessages"
-      Loading="_formLoading">
-    <FormItem>
-        <Input DebounceMilliseconds="int.MaxValue" @bind-Value="@context.Value" />
-        <Text>Want to try it out? Use 'up:demo'</Text>
-    </FormItem>
-    <FormItem WrapperColOffset="4" WrapperColSpan="20">
-        <Button Type="@ButtonType.Primary" HtmlType="submit">
+<MudForm>
+    
+</MudForm>
+
+<MudCard Class="mt-4">
+    <MudCardContent>
+        <MudText Typo="Typo.h6">
+            Your Access Token
+        </MudText>
+        <MudStack Row AlignItems="AlignItems.Center">
+            <MudText>
+                Don't have an access token yet?
+            </MudText>        
+            <MudButton Href="https://api.up.com.au/getting_started" Target="_blank"
+                       Variant="Variant.Filled" Color="Color.Secondary" DisableElevation>
+                Get Access Token
+            </MudButton>
+        </MudStack>
+
+        <MudTextField @bind-Value="_setAccessToken.Value" Label="API Token" />
+        <MudText Typo="Typo.subtitle1">
+            Want to try it out? Use 'up:demo'
+        </MudText>
+    </MudCardContent>
+    <MudCardActions>
+        <MudButton Color="Color.Primary" Variant="Variant.Filled" DisableElevation OnClick="OnFinishAsync">
             Save
-        </Button>
-        <Popover Title="Title" Trigger="@(new[] { Trigger.Click })">
-            <ContentTemplate>
-                Are you sure? <Button Danger Size="small" OnClick="OnClearAccessTokenClickAsync">Yes</Button>
-            </ContentTemplate>
-            <ChildContent>
-                <AntDesign.Button Danger Type="text">
-                    Clear Token
-                </AntDesign.Button>
-            </ChildContent>
-        </Popover>
-    </FormItem>
-</Form>
+        </MudButton>
+        <MudButton Color="Color.Error" OnClick="OnClearAccessTokenClickAsync">
+            Clear
+        </MudButton>
+    </MudCardActions>
+</MudCard>
 
 @code
 {
@@ -73,7 +83,7 @@ else
     
     private FormValidateErrorMessages _errorMessages;
     private PingResponse? _pingResponse;
-
+    
     private readonly SetAccessToken _setAccessToken = new();
 
     protected override async Task OnInitializedAsync() => await ReloadAsync();
@@ -94,7 +104,7 @@ else
         _loading = false;
     }
     
-    private async Task OnFinishAsync(EditContext editContext)
+    private async Task OnFinishAsync()
     {
         _formLoading = true;
 

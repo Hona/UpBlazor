@@ -27,10 +27,8 @@ else
                         <MudText Class="mud-text-secondary">@notification.Description</MudText>
                     </div>
                     
-                    <div @onclick="@() => {}" @onclick:stopPropagation="true" @onclick:preventDefault="true">
-                        <MudIconButton Icon="@Icons.Rounded.Done" Color="Color.Success" Variant="Variant.Text" 
-                                       OnClick="@(async () => await NotificationsClient.ReadNotificationAsync(notification.Id))"/>
-                    </div>
+                    <MudIconButton Icon="@Icons.Rounded.Done" Color="Color.Success" Variant="Variant.Text" 
+                                   OnClick="@(async () => await NotificationsClient.ReadNotificationAsync(notification.Id))"/>
                 </MudStack>
             </MudListItem>
         }

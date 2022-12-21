@@ -1,66 +1,69 @@
 ﻿@page "/insights/transactions/{AccountId?}"
 
+@using MudBlazor
+@using Color = MudBlazor.Color
+
 @inject UpClient UpClient
 @if (_loading)
 {
-    <Spin />
+    <MudProgressLinear Indeterminate />
 }
 else
 {
-    <Card BodyStyle="padding: 0">
-        <CardTabs>
-            <Tabs DefaultActiveKey="0">
-                @for (var i = 0; i < _accounts.Count; i++)
-                {
-                    var account = _accounts[i];
-                    
-                    <TabPane Key="@i.ToString()">
-                        <TabTemplate>
-                            @account.Attributes.DisplayName
-                        </TabTemplate>
-                        <ChildContent>
-                            @{
-                                var transactionsOut = _transactionsOut
-                                    .Where(x => x.Relationships.Account.Data.Id == account.Id)
-                                    .ToList();
-                            }
-                            <Table DataSource="transactionsOut"
-                                   Title="Transactions Out 🔻"
-                                   OnPageIndexChange="async args => await HandlePageChange(args, transactionsOut.Count)">
-                                <Column Title="Date" DataIndex="Attributes.CreatedAt" TData="DateTime" Format="dd/MM/yyyy"/>
-                                <Column Title="Description" DataIndex="Attributes.Description" TData="string"/>
-                                <Column Title="Message" DataIndex="Attributes.Message" TData="string"/>
-                                <Column Title="Round Up" DataIndex="Attributes.RoundUp.Amount.Value" TData="string">
-                                    @(context.Attributes.RoundUp?.Amount?.Value.Substring(1, context.Attributes.RoundUp.Amount.Value.Length - 1))
-                                </Column>
-                                <Column Title="Round Up (Boost)" DataIndex="Attributes.RoundUp.BoostPortion.Value" TData="string">
-                                    @(context.Attributes.RoundUp?.BoostPortion?.Value.Substring(1, context.Attributes.RoundUp.BoostPortion.Value.Length - 1))
-                                </Column>
-                                <Column Title="Amount" DataIndex="Attributes.Amount.Value" TData="string">
-                                    @(context.Attributes.Amount.Value.Substring(1, context.Attributes.Amount.Value.Length - 1))
-                                </Column>
-                            </Table>
-
-                            @{
-                                var transactionsIn = _transactionsIn
-                                    .Where(x => x.Relationships.Account.Data.Id == account.Id)
-                                    .ToList();
-                            }
-                            <Table DataSource="transactionsIn"
-                                   Title="Transactions In 🟢">
-                                <Column Title="Date" DataIndex="Attributes.CreatedAt" TData="DateTime" Format="dd/MM/yyyy"/>
-                                <Column Title="Description" DataIndex="Attributes.Description" TData="string"/>
-                                <Column Title="Message" DataIndex="Attributes.Message" TData="string"/>
-                                <Column Title="Round Up" DataIndex="Attributes.RoundUp.Amount.Value" TData="string"/>
-                                <Column Title="Round Up (Boost)" DataIndex="Attributes.RoundUp.BoostPortion.Value" TData="string"/>
-                                <Column Title="Amount" DataIndex="Attributes.Amount.Value" TData="string"/>
-                            </Table>
-                        </ChildContent>
-                    </TabPane>
+    <MudTabPanel Text="Tab One">
+        <MudText>Content One</MudText>
+    </MudTabPanel>
+    
+    
+    <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6">
+        @foreach (var account in _accounts)
+        {
+            <MudTabPanel Text="@account.Attributes.DisplayName">
+                @{
+                    var transactions = _transactions.Data
+                        .Where(x => x.Relationships.Account.Data.Id == account.Id)
+                        .ToList();
                 }
-            </Tabs>
-        </CardTabs>
-    </Card>
+                <MudDataGrid Items="transactions" Outlined Elevation="0">
+                    <Columns>
+                        <MudBlazor.Column T="TransactionResource" Title="Created At">
+                            <CellTemplate>
+                                @context.Item.Attributes.CreatedAt.ToString("f")
+                            </CellTemplate>
+                        </MudBlazor.Column>
+                        <MudBlazor.Column T="TransactionResource" Title="Description">
+                            <CellTemplate>
+                                @context.Item.Attributes.Description
+                            </CellTemplate>
+                        </MudBlazor.Column>
+                        <MudBlazor.Column T="TransactionResource" Title="Message">
+                            <CellTemplate>
+                                @context.Item.Attributes.Message
+                            </CellTemplate>
+                        </MudBlazor.Column>
+                        <MudBlazor.Column T="TransactionResource" Title="Amount">
+                            <CellTemplate>
+                                @if (context.Item.Attributes.Amount.ValueInBaseUnits < 0)
+                                {
+                                    <MudText Typo="Typo.body2" Color="Color.Error">
+                                        $@context.Item.Attributes.Amount.Value[1..]
+                                    </MudText>
+                                }
+                                else
+                                {
+                                    <MudText Typo="Typo.body2" Color="Color.Success">
+                                        $@context.Item.Attributes.Amount.Value
+                                    </MudText>
+                                }
+                            </CellTemplate>
+                        </MudBlazor.Column>
+                    </Columns>
+                </MudDataGrid>
+            </MudTabPanel>
+        }
+    </MudTabs>
+    
+    <MudButton OnClick="LoadMoreAsync">Load More</MudButton>
 }
 
 @code
@@ -69,9 +72,6 @@ else
     
     private UpPaginatedViewModelOfTransactionResource _transactions;
     private IReadOnlyList<AccountResource> _accounts;
-    
-    private List<TransactionResource> _transactionsIn;
-    private List<TransactionResource> _transactionsOut;
 
     [Parameter]
     public string AccountId { get; set; }
@@ -92,17 +92,7 @@ else
         }
 
         _accounts = await UpClient.GetAccountsAsync();
-        
-        _transactionsOut = _transactions
-            .Data
-            .Where(x => x.Attributes.Amount.ValueInBaseUnits < 0)
-            .ToList();
-        
-        _transactionsIn = _transactions
-            .Data
-            .Where(x => x.Attributes.Amount.ValueInBaseUnits >= 0)
-            .ToList();
-        
+
         // View only one account
         if (!string.IsNullOrWhiteSpace(AccountId))
         {
@@ -115,21 +105,5 @@ else
     private async Task LoadMoreAsync()
     {
         _transactions = await UpClient.GetTransactionsPaginationLinkAsync(_transactions.Links.Next);
-
-        _transactionsOut.AddRange(_transactions
-            .Data
-            .Where(x => x.Attributes.Amount.ValueInBaseUnits < 0));
-
-        _transactionsIn.AddRange(_transactions
-            .Data
-            .Where(x => x.Attributes.Amount.ValueInBaseUnits >= 0));
-    }
-
-    private async Task HandlePageChange(PaginationEventArgs obj, int totalItems)
-    {
-        if (_transactions?.Links?.HasNext is true && obj.Page >= Math.Ceiling((decimal)totalItems / obj.PageSize))
-        {
-            await LoadMoreAsync();
-        }
     }
 }

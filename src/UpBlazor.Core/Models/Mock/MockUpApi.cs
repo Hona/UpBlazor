@@ -111,8 +111,38 @@ namespace UpBlazor.Core.Models.Mock
         public Task<UpResponse<NoResponse>> RemoveTagsFromTransactionAsync(string transactionId, params string[] tagIds) => throw new NotImplementedException();
 
         public Task<UpResponse<PaginatedDataResponse<TransactionResource>>> GetTransactionsAsync(int? pageSize = null, TransactionStatus? status = null, DateTime? since = null,
-            DateTime? until = null, string category = null, string tag = null) =>
-            throw new NotImplementedException();
+            DateTime? until = null, string category = null, string tag = null) => Task.FromResult(new UpResponse<PaginatedDataResponse<TransactionResource>>()
+        {
+            Response = new PaginatedDataResponse<TransactionResource>()
+            {
+                Data = new List<TransactionResource>()
+                {
+                    new()
+                    {
+                        Attributes = new TransactionAttributes()
+                        {
+                            Amount = new MoneyObject()
+                            {
+                                Value = "-17.12",
+                                ValueInBaseUnits = -1712
+                            },
+                            Description = "Amazon",
+                            CreatedAt = DateTime.Now.Subtract(TimeSpan.FromDays(1))
+                        },
+                        Relationships = new TransactionRelationships()
+                        {
+                            Account = new RelatedData<TransactionRelatedAccount>()
+                            {
+                                Data = new TransactionRelatedAccount()
+                                {
+                                    Id = _accountsData.Response.Data[0].Id
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        });
 
         public Task<UpResponse<PaginatedDataResponse<TransactionResource>>> GetTransactionsAsync(string accountId, int? pageSize = null, TransactionStatus? status = null,
             DateTime? since = null, DateTime? until = null, string category = null, string tag = null) =>

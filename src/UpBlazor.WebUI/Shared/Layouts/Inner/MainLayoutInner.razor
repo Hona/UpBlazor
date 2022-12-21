@@ -42,7 +42,49 @@
     </MudDrawer>
     <MudMainContent Class="pb-8">
         <MudContainer MaxWidth="MaxWidth.Large">
-            @ChildContent
+            <ErrorBoundary @ref="_errorBoundary">
+                <ChildContent>
+                    @ChildContent
+                </ChildContent>
+                <ErrorContent>
+                    @if (context is ApiException {StatusCode: StatusCodes.Status403Forbidden} apiException && 
+                         apiException.Response.Contains("Up access token is not set", StringComparison.OrdinalIgnoreCase))
+                    {
+                        <MudAlert Severity="Severity.Error" Class="mt-4">
+                            <MudText Typo="Typo.h5" Color="Color.Error">
+                                No Access Token
+                            </MudText>
+                            <MudText>
+                                You have not set your Up API access token, please add it in the settings
+                            </MudText>
+                            <MudButton StartIcon="@Icons.Rounded.Settings" Href="/settings/up-access-token" Color="Color.Inherit">
+                                Settings
+                            </MudButton>
+                        </MudAlert>
+                    }
+                    else
+                    {
+                        <MudAlert Severity="Severity.Error" Class="mt-4">
+                            <MudText Typo="Typo.h5" Color="Color.Error">
+                                Unhandle exception occurred
+                            </MudText>
+                            <MudText>
+                                @context.Message
+                            </MudText>
+                            
+                            <MudDivider />
+                            
+                            <MudText Typo="Typo.overline">
+                                @context.Message
+                            </MudText>
+                            
+                            <MudButton StartIcon="@Icons.Rounded.Home" Href="/home" Color="Color.Inherit">
+                                Home
+                            </MudButton>
+                        </MudAlert>
+                    }
+                </ErrorContent>
+            </ErrorBoundary>
         </MudContainer>
         <UpFooter />
     </MudMainContent>

@@ -1,21 +1,17 @@
 ﻿@page "/insights/transactions/{AccountId?}"
 
-@using MudBlazor
 @using Color = MudBlazor.Color
 
+@inject IJSRuntime JS
 @inject UpClient UpClient
-@if (_loading)
+
+@if (_loading && _transactions == null)
 {
     <MudProgressLinear Indeterminate />
 }
 else
 {
-    <MudTabPanel Text="Tab One">
-        <MudText>Content One</MudText>
-    </MudTabPanel>
-    
-    
-    <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6">
+    <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true">
         @foreach (var account in _accounts)
         {
             <MudTabPanel Text="@account.Attributes.DisplayName">
@@ -24,24 +20,24 @@ else
                         .Where(x => x.Relationships.Account.Data.Id == account.Id)
                         .ToList();
                 }
-                <MudDataGrid Items="transactions" Elevation="0">
+                <MudDataGrid Outlined Loading="_loading" Items="transactions" Elevation="0" RowsPerPage="15">
                     <Columns>
-                        <MudBlazor.Column T="TransactionResource" Title="Created At">
+                        <MudBlazor.Column T="TransactionResource" SortBy="x => x.Attributes.CreatedAt" Title="Created At">
                             <CellTemplate>
                                 @context.Item.Attributes.CreatedAt.ToString("f")
                             </CellTemplate>
                         </MudBlazor.Column>
-                        <MudBlazor.Column T="TransactionResource" Title="Description">
+                        <MudBlazor.Column T="TransactionResource" SortBy="x => x.Attributes.Description" Title="Description">
                             <CellTemplate>
                                 @context.Item.Attributes.Description
                             </CellTemplate>
                         </MudBlazor.Column>
-                        <MudBlazor.Column T="TransactionResource" Title="Message">
+                        <MudBlazor.Column T="TransactionResource" SortBy="x => x.Attributes.Message" Title="Message">
                             <CellTemplate>
                                 @context.Item.Attributes.Message
                             </CellTemplate>
                         </MudBlazor.Column>
-                        <MudBlazor.Column T="TransactionResource" Title="Amount">
+                        <MudBlazor.Column T="TransactionResource" SortBy="x => x.Attributes.Amount.ValueInBaseUnits" Title="Amount">
                             <CellTemplate>
                                 @if (context.Item.Attributes.Amount.ValueInBaseUnits < 0)
                                 {
@@ -58,12 +54,16 @@ else
                             </CellTemplate>
                         </MudBlazor.Column>
                     </Columns>
+                    <PagerContent>
+                        <MudStack Row Justify="Justify.FlexEnd" AlignItems="AlignItems.Center">
+                            <MudDataGridPager T="TransactionResource"/>
+                            <MudButton Style="height: min-content" OnClick="LoadMoreAsync">Load More</MudButton>
+                        </MudStack>
+                    </PagerContent>
                 </MudDataGrid>
             </MudTabPanel>
         }
     </MudTabs>
-    
-    <MudButton OnClick="LoadMoreAsync">Load More</MudButton>
 }
 
 @code
@@ -104,6 +104,14 @@ else
 
     private async Task LoadMoreAsync()
     {
+        _loading = true;
+
+        await JS.InvokeVoidAsync("scrollToTop");
+        
+        var oldTransactions = _transactions.Data;
         _transactions = await UpClient.GetTransactionsPaginationLinkAsync(_transactions.Links.Next);
+        _transactions.Data = oldTransactions.Concat(_transactions.Data).ToList();
+        
+        _loading = false;
     }
 }

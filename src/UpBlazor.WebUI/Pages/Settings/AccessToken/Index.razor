@@ -81,7 +81,6 @@ else
 
     private bool IsSet => _pingResponse != null;
     
-    private FormValidateErrorMessages _errorMessages;
     private PingResponse? _pingResponse;
     
     private readonly SetAccessToken _setAccessToken = new();
@@ -113,15 +112,10 @@ else
             await UpClient.TrySetTokenAsync(_setAccessToken.Value);
             
             // Success
-            _errorMessages = null;
             _setAccessToken.Value = string.Empty;
         }
         catch (Exception e)
         {
-            _errorMessages = new FormValidateErrorMessages
-            {
-                Required = e.Message
-            };
             _setAccessToken.Value = string.Empty;
 
             _formLoading = false;

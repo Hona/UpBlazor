@@ -17,12 +17,7 @@
     <link rel="apple-touch-icon" sizes="144x144" href="apple/apple-touch-icon-ipad-retina-152x152.png">
 
     <link href="UpBlazor.WebUI.styles.css" rel="stylesheet"/>
-    <link href="_content/AntDesign/css/ant-design-blazor.css" rel="stylesheet" />
-    <script src="_content/AntDesign/js/ant-design-blazor.js"></script>
     <link href="css/app.css" rel="stylesheet"/>
-    
-    <script src="https://unpkg.com/@antv/g2plot@latest/dist/g2plot.min.js"></script>
-    <script src="_content/AntDesign.Charts/ant-design-charts-blazor.js"></script>
 
     <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" rel="stylesheet" />
     <link href="_content/MudBlazor/MudBlazor.min.css" rel="stylesheet" />
@@ -30,7 +25,7 @@
 
 <body>
     <div id="app">
-        <div class="ant-layout ant-layout-sider" id="upblazor-splash">
+        <div style="background: #001529" class="d-flex flex-column" id="upblazor-splash">
             <div>
                 <img src="/img/up-logo-light-transparent-bg.svg" style="max-height: 30vh; aspect-ratio: 1/1"/>
             </div>
@@ -49,16 +44,7 @@
     <script src="_content/MudBlazor/MudBlazor.min.js"></script>
     <script src="_content/Blazor-ApexCharts/js/apex-charts.min.js"></script>
     <script src="_content/Blazor-ApexCharts/js/blazor-apex-charts.js"></script>
-    <script>
-        window.formatter = new Intl.NumberFormat('en-AU', {
-            style: 'currency',
-            currency: 'AUD',
-
-            // These options are needed to round to whole numbers if that's what you want.
-            //minimumFractionDigits: 0, // (this suffices for whole numbers, but will print 2500.10 as $2,500.1)
-            //maximumFractionDigits: 0, // (causes 2500.99 to be printed as $2,501)
-        });
-    </script>
+    <script src="js/interop.js"></script>
 </body>
 
 </html>

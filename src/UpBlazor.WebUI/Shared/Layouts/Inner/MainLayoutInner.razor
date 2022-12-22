@@ -3,6 +3,7 @@
 @using MudBlazor
 @using Color = MudBlazor.Color
 @using Anchor = MudBlazor.Anchor
+
 @inject NavigationManager _navigationManager
 
 @implements IDisposable
@@ -21,7 +22,7 @@
                     <MudText Typo="Typo.subtitle2">Notifications</MudText>
                 </div>
                 <div class="d-flex justify-center align-center px-2 py-8 relative">
-                    <NotificationsList />
+                    <NotificationsList/>
                 </div>            
             </MudMenu>
             <MudMenu Dense="true" AnchorOrigin="Origin.BottomLeft" TransformOrigin="Origin.TopCenter" LockScroll="true" Class="ml-2">

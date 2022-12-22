@@ -1,72 +1,64 @@
 ﻿@page "/admin/users"
 @using UpBlazor.WebUI.Services.Impersonation
+@using Color = MudBlazor.Color
 @layout AdminAuthorizeLayout
 
 @inject UsersClient UsersClient
 @inject ImpersonationService ImpersonationService
 
-<Title Level="3">Users</Title>
+<MudText Typo="Typo.h3" Class="my-4">Users</MudText>
 
 @if (_loading)
 {
-    <Spin />
+    <MudProgressLinear Indeterminate />
 }
 else if (_allUsers is null || !_allUsers.Any())
 {
-    <Text>No users found.</Text>
+    <MudAlert Severity="Severity.Warning">No users found</MudAlert>
 }
 else
 {
     @if (ImpersonationService.IsImpersonating)
     {
-        <Button OnClick="() => ImpersonationService.Clear()" Style="margin-bottom: 1rem;">
+        <MudButton OnClick="() => ImpersonationService.Clear()" Style="margin-bottom: 1rem;">
             Clear Impersonation
-        </Button>
+        </MudButton>
     }
 
-    <Card>
-        <Statistic Value="_allUsers.Count" Title="Total Users"/>
-    </Card>
-
-    <Divider/>
-
-    <Table DataSource="_allUsers">
-        <Column @bind-Field="@context.Id"/>
-        <Column @bind-Field="@context.Email" 
-                Sortable/>
-        <Column @bind-Field="@context.GivenName"
-                Title="Given Name"
-                Sortable/>
-        <Column @bind-Field="@context.Token"
-                Title="Token"
-                Sortable>
-            @switch (context.Token)
-            {
-                case TokenType.NotSet:
-                    <Tag>None</Tag>
-                    break;
-                case TokenType.Demo:
-                    <Tag PresetColor="PresetColor.Volcano">Demo</Tag>
-                    break;
-                case TokenType.Real:
-                    <Tag PresetColor="PresetColor.Green">Real</Tag>
-                    break;
-            }
-        </Column>
-        <Column Title="Created At" 
-                @bind-Field="@context.CreatedAt" 
-                Format="dd/MM/yyyy hh:mm tt" 
-                Sortable/>
-        <Column Title="Updated At" 
-                @bind-Field="@context.UpdatedAt" 
-                Format="dd/MM/yyyy hh:mm tt" 
-                Sortable/>
-        <ActionColumn>
-            <Button OnClick="() => ImpersonationService.ActorUserId = context.Id">
-                Impersonate
-            </Button>
-        </ActionColumn>
-    </Table>
+    <MoneyStatistic Amount="_allUsers.Count" Title="Total Users" HideDollarSymbol AmountFormatter="G"/>
+    
+    <MudDataGrid Class="mt-4" Items="_allUsers">
+        <Columns>
+            <Column T="RegisteredUserDto" Field="@nameof(RegisteredUserDto.Id)" />
+            <Column T="RegisteredUserDto" Field="@nameof(RegisteredUserDto.Email)" />
+            <Column T="RegisteredUserDto" Field="@nameof(RegisteredUserDto.GivenName)" />
+            <Column T="RegisteredUserDto" Field="@nameof(RegisteredUserDto.Token)">
+                <CellTemplate>
+                    @switch (context.Item.Token)
+                    {
+                        case TokenType.NotSet:
+                            <MudChip>None</MudChip>
+                            break;
+                        case TokenType.Demo:
+                            <MudChip Color="Color.Warning">Demo</MudChip>
+                            break;
+                        case TokenType.Real:
+                            <MudChip Color="Color.Success">Real</MudChip>
+                            break;
+                    }
+                </CellTemplate>
+            </Column>
+            <Column T="RegisteredUserDto" Field="@nameof(RegisteredUserDto.CreatedAt)" />
+            <Column T="RegisteredUserDto" Field="@nameof(RegisteredUserDto.UpdatedAt)" />
+            <Column T="RegisteredUserDto">
+                <CellTemplate>
+                    <MudButton OnClick="() => ImpersonationService.ActorUserId = context.Item.Id">
+                        Impersonate
+                    </MudButton>
+                </CellTemplate>
+            </Column>
+        </Columns>
+    </MudDataGrid>
 }
 
 @code

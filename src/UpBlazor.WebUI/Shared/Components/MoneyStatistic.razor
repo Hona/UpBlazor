@@ -26,9 +26,12 @@
     <MudCardContent>
         <MudAlert Severity="Severity.Normal" NoIcon>
             <MudStack Row>
-                <MudText Typo="Typo.h5" Color="@ValueColor">$</MudText>
+                @if (!HideDollarSymbol)
+                {
+                    <MudText Typo="Typo.h5" Color="@ValueColor">$</MudText>
+                }
                 <MudText Typo="Typo.h5" Color="@ValueColor">
-                    @Amount.ToString("F2")
+                    @Amount.ToString(AmountFormatter)
                 </MudText>
             </MudStack>
         </MudAlert>
@@ -57,6 +60,9 @@
     public decimal Amount { get; set; }
 
     [Parameter]
+    public string AmountFormatter { get; set; } = "F2";
+
+    [Parameter]
     public decimal? MaximumAmount { get; set; }
 
     [Parameter]
@@ -70,4 +76,7 @@
     
     [Parameter]
     public Color ValueColor { get; set; } = Color.Inherit;
+
+    [Parameter]
+    public bool HideDollarSymbol { get; set; }
 }

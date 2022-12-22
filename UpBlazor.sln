@@ -21,6 +21,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UpBlazor.WebUI", "src\UpBla
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UpBlazor.ApiClient", "src\UpBlazor.ApiClient\UpBlazor.ApiClient.csproj", "{7BF6F85B-C2A2-42F5-A833-1442C2E8EA1E}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{D9735A46-56D5-49DA-A150-06D2FE655E7B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UpBlazor.Application.Tests", "tests\UpBlazor.Application.Tests\UpBlazor.Application.Tests.csproj", "{882F872C-BC9F-4A21-BC50-99D306FA44AC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +37,7 @@ Global
 		{405C5882-13F4-4BC1-BD66-0DF400BE6400} = {67E16A27-C84B-47A2-9B81-FE641E10E8A7}
 		{07935127-EB7D-4138-A447-B363648F26AB} = {67E16A27-C84B-47A2-9B81-FE641E10E8A7}
 		{7BF6F85B-C2A2-42F5-A833-1442C2E8EA1E} = {67E16A27-C84B-47A2-9B81-FE641E10E8A7}
+		{882F872C-BC9F-4A21-BC50-99D306FA44AC} = {D9735A46-56D5-49DA-A150-06D2FE655E7B}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{038DC65B-D021-4EDA-AA7E-D56E25A14AB0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -59,5 +64,9 @@ Global
 		{7BF6F85B-C2A2-42F5-A833-1442C2E8EA1E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7BF6F85B-C2A2-42F5-A833-1442C2E8EA1E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7BF6F85B-C2A2-42F5-A833-1442C2E8EA1E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{882F872C-BC9F-4A21-BC50-99D306FA44AC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{882F872C-BC9F-4A21-BC50-99D306FA44AC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{882F872C-BC9F-4A21-BC50-99D306FA44AC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{882F872C-BC9F-4A21-BC50-99D306FA44AC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

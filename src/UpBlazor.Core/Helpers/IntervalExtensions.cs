@@ -15,11 +15,11 @@ namespace UpBlazor.Core.Helpers
                 _ => throw new ArgumentOutOfRangeException(nameof(interval), interval, null)
             };
 
-        public static DateTime FindLastCycleStart(this DateTime start, Interval interval, int units, DateTime? since = null)
+        public static DateTime FindFirstCycle(this DateTime start, Interval interval, int units, DateTime? searchStart = null)
         {
-            since ??= DateTime.Now.Date;
+            searchStart ??= DateTime.Now.Date;
 
-            var nowSubtractStart = since - start;
+            var nowSubtractStart = searchStart - start;
             if (nowSubtractStart.Value.TotalMilliseconds < 0)
             {
                 return start;
@@ -30,14 +30,14 @@ namespace UpBlazor.Core.Helpers
             do
             {
                 currentCycle = currentCycle.Add(cycleStep);
-            } while (currentCycle < since || (since - currentCycle).Value.TotalMilliseconds >= cycleStep.TotalMilliseconds);
+            } while (currentCycle < searchStart || (searchStart - currentCycle).Value.TotalMilliseconds >= cycleStep.TotalMilliseconds);
 
             return currentCycle;
         }
 
         public static List<DateOnly> GetAllCyclesInRange(this DateTime start, DateTime rangeStart, DateTime rangeEnd, Interval interval, int units)
         {
-            var startOfRange = start.FindLastCycleStart(interval, units, rangeStart);
+            var startOfRange = start.FindFirstCycle(interval, units, rangeStart);
 
             // Cycle hasn't started yet
             if (startOfRange > rangeEnd)

@@ -1,12 +1,11 @@
 ﻿@page "/budget/income"
 
-<CreateIncome OnNewIncome="async () => await _incomeTable.ReloadAsync(true)"/>
+<MudStack>
+    <CreateIncome OnNewIncome="async () => await _incomeTable.ReloadAsync(true)"/>
 
-<Divider />
-
-<IncomeTable @ref="_incomeTable"/>
-
+    <IncomeTable @ref="_incomeTable"/>
+</MudStack>
 @code
 {
-    private IncomeTable _incomeTable;
+    private IncomeTable _incomeTable = null!;
 }

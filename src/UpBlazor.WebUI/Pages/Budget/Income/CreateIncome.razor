@@ -1,6 +1,7 @@
 ﻿@using System.Text.RegularExpressions
 @using MudBlazor
 @using System.ComponentModel.DataAnnotations
+@using System.Diagnostics
 @using Color = MudBlazor.Color
 @inject IncomesClient IncomesClient
 
@@ -9,18 +10,25 @@
         <MudText Typo="Typo.h6">
             New Income
         </MudText>
-        <MudForm @ref="_form">
-            <MudTextField @bind-Value="_request.Name" Label="Name" Required/>
-            <MudNumericField @bind-Value="_request.ExactMoney" Adornment="Adornment.Start" AdornmentText="$" Label="Amount" Required Format="F2"/>
-            <MudDatePicker @bind-Date="_request.StartDate" Label="Start Date" Required/>
+        @if (_loading)
+        {
+            <MudProgressCircular Indeterminate />
+        }
+        else
+        {
+            <MudForm @ref="_form">
+                <MudTextField @bind-Value="_request.Name" Label="Name" Required/>
+                <MudNumericField @bind-Value="_request.ExactMoney" Adornment="Adornment.Start" AdornmentText="$" Label="Amount" Required Format="F2"/>
+                <MudDatePicker @bind-Date="_request.StartDate" Label="Start Date" Required/>
             
-            <MudText Class="pt-6">Paid Every</MudText>
+                <MudText Class="pt-6">Paid Every</MudText>
             
-            <IntervalFullInput @bind-Interval="_request.Interval" @bind-IntervalUnits="_request.IntervalUnits" />
-        </MudForm>
+                <IntervalFullInput @bind-Interval="_request.Interval" @bind-IntervalUnits="_request.IntervalUnits" />
+            </MudForm>
+        }
     </MudCardContent>
     <MudCardActions>
-        <MudButton Color="Color.Primary" OnClick="OnFormFinishAsync">
+        <MudButton Color="Color.Primary" OnClick="OnFormFinishAsync" Disabled="_loading">
             Create
         </MudButton>
     </MudCardActions>
@@ -35,7 +43,7 @@
 
     private bool _loading;
 
-    private MudForm _form;
+    private MudForm _form = null!;
     
     private async Task OnFormFinishAsync()
     {
@@ -53,12 +61,12 @@
         {
             Name = _request.Name,
             ExactMoney = _request.ExactMoney,
-            StartDate = _request.StartDate.Value,
+            StartDate = _request.StartDate ?? throw new UnreachableException(),
             Interval = _request.Interval,
             IntervalUnits = _request.IntervalUnits
         });
                 
-        _request = new();
+        _request = new IncomeRequest();
         _loading = false;
 
         if (OnNewIncome.HasDelegate)
@@ -67,15 +75,10 @@
         }
     }
 
-    private string MoneyFormat(decimal value) => $"${value:N2}";
-
-    private string MoneyParse(string value) => Regex.Replace(value, @"\$\s?|(,*)", "");
-
-
     private class IncomeRequest
     {
         [Required]
-        public string Name { get; set; }
+        public string? Name { get; set; }
         [Required]
         public DateTime? StartDate { get; set; }
         [Required]

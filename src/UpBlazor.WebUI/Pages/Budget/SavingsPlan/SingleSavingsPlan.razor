@@ -4,11 +4,11 @@
 }
 else
 {
-    <CreateSavingsPlan Income="Income" OnNewSavingsPlan="async () => await _savingsPlanTable.ReloadAsync(true)"/>
-    
-    <Divider />
-    
-    <SavingsPlanTable Income="Income" @ref="_savingsPlanTable"/>
+    <MudStack>
+        <CreateSavingsPlan Income="Income" OnNewSavingsPlan="async () => await _savingsPlanTable.ReloadAsync(true)"/>
+
+        <SavingsPlanTable Income="Income" @ref="_savingsPlanTable"/>
+    </MudStack>
 }
 
 @code 
@@ -16,5 +16,5 @@ else
     [Parameter]
     public Income? Income { get; set; }
 
-    private SavingsPlanTable _savingsPlanTable;
+    private SavingsPlanTable _savingsPlanTable = null!;
 }

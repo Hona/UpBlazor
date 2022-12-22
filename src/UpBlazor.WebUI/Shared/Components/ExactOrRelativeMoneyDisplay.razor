@@ -23,8 +23,13 @@
 @code
 {
     [Parameter]
-    public Money Item { get; set; }
+    public Money Item { get; set; } = null!;
 
     [Parameter]
     public decimal? PercentCalculated { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        ArgumentNullException.ThrowIfNull(Item);
+    }
 }

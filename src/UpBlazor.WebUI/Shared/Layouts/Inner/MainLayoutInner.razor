@@ -122,19 +122,16 @@
 @code{ 
     private bool _drawerOpen = true;
     private bool _profileDrawerOpen = false;
-    private bool _searchDialogOpen = false;
     
     private void ToggleDrawer() => _drawerOpen = !_drawerOpen;
     private void ProfileDrawer() => _profileDrawerOpen = !_profileDrawerOpen;
-    private void OpenSearchDialog() => _searchDialogOpen = true;
 }
 
 @code
 {
     [Parameter]
-    public RenderFragment ChildContent { get; set; }
+    public RenderFragment? ChildContent { get; set; }
 
-    private bool _siderCollapsed;
     private ErrorBoundary? _errorBoundary;
 
     protected override void OnInitialized()

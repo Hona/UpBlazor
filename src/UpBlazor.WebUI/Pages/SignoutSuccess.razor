@@ -2,15 +2,14 @@
 
 @page "/signout/success"
 
-@inject NavigationManager _navigationManager
-
-<Result
-    Status="success"
-    Title="Success"
-    SubTitle="You are now signed out.">
-    <Extra>
-        <Template>
-            <Button OnClick="@(() => _navigationManager.NavigateTo("/home"))">Sign In</Button>
-        </Template>
-    </Extra>
-</Result>
+<MudAlert Severity="Severity.Success">
+    <MudText>
+        <strong>
+            Success
+        </strong>
+    </MudText>
+    <MudText>
+        You are now signed out.
+    </MudText>
+    <MudButton Href="/authentication/login">Log in</MudButton>
+</MudAlert>

@@ -10,7 +10,7 @@
 @code
 {
     [Parameter]
-    public IReadOnlyList<AccountResource>? Accounts { get; set; }
+    public IReadOnlyList<AccountResource> Accounts { get; set; } = null!;
 
     [Parameter]
     public string? SaverId { get; set; }

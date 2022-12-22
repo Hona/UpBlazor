@@ -1,6 +1,5 @@
 ﻿@page "/settings/up-access-token"
 
-@using MudBlazor
 @using System.ComponentModel
 @using System.ComponentModel.DataAnnotations
 @using Color = MudBlazor.Color
@@ -10,6 +9,10 @@
 @if (_loading)
 {
     <MudProgressLinear Indeterminate />
+}
+else if (_formLoading)
+{
+    <MudProgressCircular Indeterminate />
 }
 else if (IsSet)
 {
@@ -37,12 +40,6 @@ else
         </MudText>
     </MudAlert>
 }
-
-<Divider />
-
-<MudForm>
-    
-</MudForm>
 
 <MudCard Class="mt-4">
     <MudCardContent>
@@ -114,7 +111,7 @@ else
             // Success
             _setAccessToken.Value = string.Empty;
         }
-        catch (Exception e)
+        catch
         {
             _setAccessToken.Value = string.Empty;
 
@@ -141,6 +138,6 @@ else
     private class SetAccessToken
     {
         [Required, DisplayName("API Access Token")]
-        public string Value { get; set; }
+        public string? Value { get; set; }
     }
 }

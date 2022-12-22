@@ -185,7 +185,8 @@ public class GetIncomePlannerQueryHandler : IRequestHandler<GetIncomePlannerQuer
             {
                 Interval.Days => 1,
                 Interval.Weeks => 7,
-                Interval.Fortnights => 14
+                Interval.Fortnights => 14,
+                _ => throw new ArgumentOutOfRangeException()
             };
 
             output.UnbudgetedMoney -= proRataAmount;

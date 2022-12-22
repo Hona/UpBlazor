@@ -69,7 +69,7 @@ services.AddAuthorization(options =>
 
 services.AddMarten(options =>
 {
-    options.Connection(builder.Configuration.GetConnectionString("Marten"));
+    options.Connection(builder.Configuration.GetConnectionString("Marten") ?? throw new InvalidOperationException());
 
     options.AutoCreateSchemaObjects = builder.Environment.IsDevelopment()
         ? AutoCreate.All
@@ -128,7 +128,7 @@ app.UseCors(options =>
     options.AllowAnyHeader()
         .AllowAnyMethod()
         .AllowCredentials()
-        .WithOrigins(builder.Configuration["UiUri"]);
+        .WithOrigins(builder.Configuration["UiUri"] ?? throw new InvalidOperationException());
 });
 
 if (app.Environment.IsDevelopment())

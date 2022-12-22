@@ -1,14 +1,14 @@
 ﻿@page "/insights/planner"
 
-<Title Level="3">Income Planner</Title>
+<MudStack>
+    <MudText Typo="Typo.h3">Income Planner</MudText>
 
-<IncomeSelector @bind-SelectedIncome="_income"/>
-
-<Divider />
-
-<SingleIncomePlanner Income="@_income"/>
+    <IncomeSelector @bind-SelectedIncome="_income"/>
+    
+    <SingleIncomePlanner Income="@_income"/>
+</MudStack>
 
 @code
 {
-    private Income _income;
+    private Income _income = null!;
 }

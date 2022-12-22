@@ -11,6 +11,9 @@
 }
 else
 {
+    ArgumentNullException.ThrowIfNull(_accounts);
+    ArgumentNullException.ThrowIfNull(_transactions);
+    
     <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true">
         @foreach (var account in _accounts)
         {
@@ -70,13 +73,17 @@ else
 {
     private bool _loading;
     
-    private UpPaginatedViewModelOfTransactionResource _transactions;
-    private IReadOnlyList<AccountResource> _accounts;
+    private UpPaginatedViewModelOfTransactionResource? _transactions;
+    private IReadOnlyList<AccountResource>? _accounts;
 
     [Parameter]
-    public string AccountId { get; set; }
+    public string AccountId { get; set; } = null!;
 
-    protected override async Task OnInitializedAsync() => await ReloadAsync();
+    protected override async Task OnParametersSetAsync()
+    {
+        ArgumentNullException.ThrowIfNull(AccountId);
+        await ReloadAsync();
+    }
 
     private async Task ReloadAsync()
     {
@@ -104,6 +111,8 @@ else
 
     private async Task LoadMoreAsync()
     {
+        ArgumentNullException.ThrowIfNull(_transactions);
+        
         _loading = true;
 
         await JS.InvokeVoidAsync("scrollToTop");

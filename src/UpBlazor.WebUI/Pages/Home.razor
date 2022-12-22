@@ -1,9 +1,7 @@
 @page "/home"
 
-@using MudBlazor
 @using Color = MudBlazor.Color
 
-@inject NavigationManager _navigationManager
 @inject UpClient _upClient
 
 @if (_loading)
@@ -12,6 +10,8 @@
 }
 else
 {
+    ArgumentNullException.ThrowIfNull(_accounts);
+    
     <MudStack Row Justify="Justify.Center" AlignItems="AlignItems.Center" Class="flex-wrap pt-4">
         @foreach (var transactionAccount in _accounts)
         {
@@ -28,7 +28,7 @@ else
 @code
 {
     private bool _loading;
-    private IReadOnlyList<AccountResource> _accounts;
+    private IReadOnlyList<AccountResource>? _accounts;
 
     protected override async Task OnInitializedAsync() => await ReloadAsync();
 

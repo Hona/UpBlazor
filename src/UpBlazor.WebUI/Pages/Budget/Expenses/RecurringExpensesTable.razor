@@ -49,8 +49,8 @@
 {
     private bool _loading;
 
-    private IReadOnlyList<RecurringExpense> _recurringExpenses;
-    private IReadOnlyList<AccountResource> _accounts;
+    private IReadOnlyList<RecurringExpense>? _recurringExpenses;
+    private IReadOnlyList<AccountResource>? _accounts;
 
     protected override async Task OnInitializedAsync() => await ReloadAsync();
 

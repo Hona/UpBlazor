@@ -9,7 +9,7 @@
     public Guid? IncomeId { get; set; }
 
     [Parameter]
-    public IReadOnlyList<Income> Incomes { get; set; }
+    public IReadOnlyList<Income> Incomes { get; set; } = null!;
 
     private Income? _income;
     

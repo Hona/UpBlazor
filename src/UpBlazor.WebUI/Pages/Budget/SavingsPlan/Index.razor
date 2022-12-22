@@ -1,18 +1,16 @@
 ﻿@page "/budget/savings-plan"
 
-@using MudBlazor
+<MudStack>
+    <MudText Typo="Typo.h4">
+        Savings Plans
+    </MudText>
 
-<MudText Typo="Typo.h4">
-    Savings Plans
-</MudText>
+    <IncomeSelector @bind-SelectedIncome="_income" />
 
-<IncomeSelector @bind-SelectedIncome="_income" />
 
-<Divider />
-
-<SingleSavingsPlan Income="@_income"/>
-
+    <SingleSavingsPlan Income="@_income"/>
+</MudStack>
 @code
 {
-    private Income _income;
+    private Income _income = null!;
 }

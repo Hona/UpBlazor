@@ -8,7 +8,7 @@
      Income
 </MudText>
 
-<MudDataGrid Items="_savingsPlans">
+<MudDataGrid Items="_savingsPlans" Loading="_loading">
     <Columns>
         <MudBlazor.Column T="SavingsPlan" Field="@nameof(SavingsPlan.Name)" />
         <MudBlazor.Column T="SavingsPlan" Field="@nameof(SavingsPlan.Amount)" Title="Amount">
@@ -37,14 +37,18 @@
 @code
 {
     [Parameter]
-    public Income Income { get; set; }
+    public Income Income { get; set; } = null!;
 
     private bool _loading;
 
-    private IReadOnlyList<SavingsPlan> _savingsPlans;
-    private IReadOnlyList<AccountResource> _accounts;
+    private IReadOnlyList<SavingsPlan>? _savingsPlans;
+    private IReadOnlyList<AccountResource>? _accounts;
 
-    protected override async Task OnParametersSetAsync() => await ReloadAsync();
+    protected override async Task OnParametersSetAsync()
+    {
+        ArgumentNullException.ThrowIfNull(Income);
+        await ReloadAsync();
+    }
 
     internal async Task ReloadAsync(bool forceReload = false)
     {

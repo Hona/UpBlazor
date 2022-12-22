@@ -15,6 +15,7 @@
 }
 else
 {
+    ArgumentNullException.ThrowIfNull(_allNotifications);
     <MoneyStatistic Amount="@_allNotifications.Count" AmountFormatter="G"
                Title="Total Notifications" HideDollarSymbol />
     
@@ -78,12 +79,12 @@ else
 @code
 {
     private bool _loading;
-    private IReadOnlyList<Notification> _allNotifications;
+    private IReadOnlyList<Notification>? _allNotifications;
 
     private bool _modalVisible;
     private bool _modalLoading = true;
-    private ApiClient.Notification _selectedNotification;
-    private IReadOnlyList<RegisteredUser> _selectedNotificationUsersWhoRead;
+    private Notification? _selectedNotification;
+    private IReadOnlyList<RegisteredUser>? _selectedNotificationUsersWhoRead;
 
     protected override async Task OnInitializedAsync() => await ReloadAsync();
 
@@ -98,14 +99,14 @@ else
 
     private async Task HandleNotificationCreatedAsync() => await ReloadAsync();
 
-    private async Task HandleNotificationDeletedAsync(ApiClient.Notification notification)
+    private async Task HandleNotificationDeletedAsync(Notification notification)
     {
         await NotificationsClient.DeleteNotificationAsync(notification.Id);
 
         await ReloadAsync();
     }
 
-    private async Task ShowReadByModal(ApiClient.Notification notification)
+    private async Task ShowReadByModal(Notification notification)
     {
         _selectedNotification = notification;
         _modalVisible = true;

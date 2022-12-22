@@ -11,27 +11,34 @@
         <MudText Typo="Typo.h6">
             New Expense
         </MudText>
-        <MudForm @ref="_form">
-            <MudTextField @bind-Value="_request.Name" Label="Name" Required />
-            <MudText Class="pt-6">
-                Cost
-            </MudText>
-            <MoneyInput @bind-Amount="_request.Amount" Required />
+        @if (_loading)
+        {
+            <MudProgressCircular Indeterminate />
+        }
+        else
+        {
+            <MudForm @ref="_form">
+                <MudTextField @bind-Value="_request.Name" Label="Name" Required />
+                <MudText Class="pt-6">
+                    Cost
+                </MudText>
+                <MoneyInput @bind-Amount="_request.Amount" Required />
             
-            <MudText Class="pt-6">
-                From
-            </MudText>
-            <ExpenseSourceInput @bind-Value="_request.ExpenseSource" @ref="_expenseSourceInput" Required />
-            <MudDatePicker @bind-Date="_request.PaidByDate" Label="Paid By" Required Class="mt-6"/>
-            <MudSwitch @bind-Checked="_request.RegularPayments" Label="Is Repeating" Color="Color.Primary" Class="mt-6"/>
-            @if (_request.RegularPayments)
-            {
-                <IntervalFullInput @bind-Interval="_request.Interval" @bind-IntervalUnits="_request.IntervalUnits"/>
-            }
-        </MudForm>
+                <MudText Class="pt-6">
+                    From
+                </MudText>
+                <ExpenseSourceInput @bind-Value="_request.ExpenseSource" @ref="_expenseSourceInput" Required />
+                <MudDatePicker @bind-Date="_request.PaidByDate" Label="Paid By" Required Class="mt-6"/>
+                <MudSwitch @bind-Checked="_request.RegularPayments" Label="Is Repeating" Color="Color.Primary" Class="mt-6"/>
+                @if (_request.RegularPayments)
+                {
+                    <IntervalFullInput @bind-Interval="_request.Interval" @bind-IntervalUnits="_request.IntervalUnits"/>
+                }
+            </MudForm>
+        }
     </MudCardContent>
     <MudCardActions>
-        <MudButton Color="Color.Primary" OnClick="OnFormFinishAsync">
+        <MudButton Color="Color.Primary" OnClick="OnFormFinishAsync" Disabled="_loading">
             Create
         </MudButton>
     </MudCardActions>
@@ -48,9 +55,9 @@
 
     private string DateLabel => _request.RegularPayments ? "Start Date" : "Due By";
 
-    private ExpenseSourceInput _expenseSourceInput;
+    private ExpenseSourceInput _expenseSourceInput = null!;
 
-    private MudForm _form;
+    private MudForm _form = null!;
 
     private async Task OnFormFinishAsync()
     {
@@ -77,7 +84,7 @@
                 Interval = _request.Interval,
                 IntervalUnits = _request.IntervalUnits,
                 Name = _request.Name,
-                StartDate = _request.PaidByDate.Value,
+                StartDate = _request.PaidByDate ?? throw new ArgumentNullException(),
                 FromSaverId = _expenseSourceInput.Value.SaverId
             });
         }
@@ -87,7 +94,7 @@
             {
                 Amount = _request.Amount,
                 Name = _request.Name,
-                PaidByDate = _request.PaidByDate.Value,
+                PaidByDate = _request.PaidByDate ?? throw new ArgumentNullException(),
                 FromSaverId = _expenseSourceInput.Value.SaverId,
                 FromIncomeId = _expenseSourceInput.Value.IncomeId
             });
@@ -124,7 +131,7 @@
         private ExpenseSourceInput.ExpenseSource _expenseSource = new();
 
         [DisplayName("Name"), Required]
-        public string Name { get; set; }
+        public string? Name { get; set; }
         [Required]
         public Money Amount { get; set; } = new();
         

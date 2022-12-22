@@ -45,6 +45,8 @@ else
                         case TokenType.Real:
                             <MudChip Color="Color.Success">Real</MudChip>
                             break;
+                        default:
+                            throw new ArgumentOutOfRangeException();
                     }
                 </CellTemplate>
             </Column>
@@ -64,7 +66,7 @@ else
 @code
 {
     private bool _loading;
-    private IReadOnlyList<RegisteredUserDto> _allUsers;
+    private IReadOnlyList<RegisteredUserDto>? _allUsers;
 
     protected override async Task OnInitializedAsync() => await ReloadAsync();
 

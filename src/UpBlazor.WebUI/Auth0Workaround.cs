@@ -60,7 +60,7 @@ internal class DefaultAuth0OidcOptionsConfiguration : IPostConfigureOptions<Remo
         }
     }
 
-    public void PostConfigure(string name, RemoteAuthenticationOptions<Auth0OidcProviderOptions> options)
+    public void PostConfigure(string? name, RemoteAuthenticationOptions<Auth0OidcProviderOptions> options)
     {
         if (string.Equals(name, Options.DefaultName))
         {

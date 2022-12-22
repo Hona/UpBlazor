@@ -14,12 +14,17 @@
 
     [Parameter]
     public bool Required { get; set; }
-    
-    [Parameter]
-    public ExpenseSource? Value { get; set; }
 
     [Parameter]
-    public EventCallback<ExpenseSource?> ValueChanged { get; set; }
+    public ExpenseSource Value { get; set; } = null!;
+
+    [Parameter]
+    public EventCallback<ExpenseSource> ValueChanged { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        ArgumentNullException.ThrowIfNull(Value);
+    }
 
     private bool IsRequired()
     {
@@ -87,11 +92,12 @@
     public void Reset()
     {
         _selectedIncome = null;
+        _selectedSaver = null;
     }
     
     public class ExpenseSource
     {
-        public string SaverId { get; set; }
+        public string? SaverId { get; set; }
         public Guid? IncomeId { get; set; }
     }
 }

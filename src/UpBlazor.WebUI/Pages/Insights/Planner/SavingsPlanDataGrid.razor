@@ -34,19 +34,28 @@
 </MudDataGrid>
 
 @code {
+
     [Parameter]
-    public IReadOnlyList<SavingsPlanRunningTotal> Items { get; set; }
+    public IReadOnlyList<SavingsPlanRunningTotal> Items { get; set; } = null!;
     
     [Parameter]
     public Income? Income { get; set; }
 
     [Parameter]
-    public IReadOnlyList<AccountResource> Accounts { get; set; }
+    public IReadOnlyList<AccountResource> Accounts { get; set; } = null!;
 
     [Parameter]
-    public string Title { get; set; }
+    public string Title { get; set; } = null!;
 
     [Parameter]
-    public string SaverColumnTitle { get; set; }
+    public string SaverColumnTitle { get; set; } = null!;
+
+    protected override void OnParametersSet()
+    {
+        ArgumentNullException.ThrowIfNull(Items);
+        ArgumentNullException.ThrowIfNull(Accounts);
+        ArgumentNullException.ThrowIfNull(Title);
+        ArgumentNullException.ThrowIfNull(SaverColumnTitle);
+    }
 
 }

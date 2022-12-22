@@ -1,19 +1,17 @@
 ﻿@page "/budget/expenses"
 
-<CreateExpense OnNewExpense="OnNewExpenseAsync"/>
+<MudStack>
+    <CreateExpense OnNewExpense="OnNewExpenseAsync"/>
 
-<Divider/>
+    <ExpensesTable @ref="_expensesTable"/>
 
-<ExpensesTable @ref="_expensesTable"/>
-
-<Divider/>
-
-<RecurringExpensesTable @ref="_recurringExpensesTable"/>
+    <RecurringExpensesTable @ref="_recurringExpensesTable"/>
+</MudStack>
 
 @code
 {
-    private ExpensesTable _expensesTable;
-    private RecurringExpensesTable _recurringExpensesTable;
+    private ExpensesTable _expensesTable = null!;
+    private RecurringExpensesTable _recurringExpensesTable = null!;
 
     private async Task OnNewExpenseAsync()
     {

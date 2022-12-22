@@ -14,10 +14,15 @@ else if (Income is null)
 }
 else
 {
+    ArgumentNullException.ThrowIfNull(_incomePlanner);
+    ArgumentNullException.ThrowIfNull(_accounts);
+
     <MudStack>
+    
         <MoneyStatistic Title="Starting Total"
                         Amount="@Income.ExactMoney" />
 
+        
         <SavingsPlanDataGrid Items="@_incomePlanner.IncomeExpenseSubTotals"
                          Accounts="_accounts"
                          Income="Income"
@@ -72,9 +77,9 @@ else
 
     private Guid _cachedIncomeId;
 
-    private IReadOnlyList<AccountResource> _accounts;
+    private IReadOnlyList<AccountResource>? _accounts;
 
-    private IncomePlannerDto _incomePlanner;
+    private IncomePlannerDto? _incomePlanner;
     private bool _loading;
 
     protected override async Task OnParametersSetAsync()

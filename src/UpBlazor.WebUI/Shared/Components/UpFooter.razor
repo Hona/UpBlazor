@@ -72,7 +72,7 @@
     {
         if (_previousUrl.Contains("settings", StringComparison.OrdinalIgnoreCase))
         {
-            RefreshAsync(true);
+            _ = RefreshAsync(true);
         }
 
         _previousUrl = e.Location;

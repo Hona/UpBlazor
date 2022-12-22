@@ -8,6 +8,8 @@
 }
 else
 {
+    ArgumentNullException.ThrowIfNull(_incomes);
+    
     <MudSelect Value="SelectedIncome" ValueChanged="SelectedIncomeChanged" Required="Required"
                Placeholder="Select an income" Label="Income">
         @foreach (var income in _incomes)

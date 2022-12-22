@@ -5,13 +5,20 @@
     Create Notification
 </MudText>
 
-<EditForm Model="_createNotification" OnValidSubmit="HandleOk" OnInvalidSubmit="HandleCancel">
-    <MudTextField @bind-Value="_createNotification.Title" Label="Title" />
-    <MudTextField @bind-Value="_createNotification.Description" Label="Description" Lines="5"/>
-    <MudButton Color="Color.Primary" ButtonType="ButtonType.Submit">
-        Create
-    </MudButton>
-</EditForm>
+@if (_formLoading)
+{
+    <MudProgressCircular Indeterminate />
+}
+else
+{
+    <EditForm Model="_createNotification" OnValidSubmit="HandleOk" OnInvalidSubmit="HandleCancel">
+        <MudTextField @bind-Value="_createNotification.Title" Label="Title" />
+        <MudTextField @bind-Value="_createNotification.Description" Label="Description" Lines="5"/>
+        <MudButton Color="Color.Primary" ButtonType="ButtonType.Submit">
+            Create
+        </MudButton>
+    </EditForm>
+}
 
 @code 
 {
@@ -49,7 +56,7 @@
 
     private class CreateNotification
     {
-        public string Title { get; set; }
-        public string Description { get; set; }
+        public string? Title { get; set; }
+        public string? Description { get; set; }
     }
 }

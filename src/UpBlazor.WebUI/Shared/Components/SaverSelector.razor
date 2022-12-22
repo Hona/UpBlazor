@@ -8,6 +8,8 @@
 }
 else
 {
+    ArgumentNullException.ThrowIfNull(_accounts);
+    
     <MudSelect Value="SelectedSaver" ValueChanged="SelectedSaverChanged" Required="Required"
                Placeholder="Select a saver" Label="Saver">
         @foreach (var account in _accounts)

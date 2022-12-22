@@ -13,6 +13,10 @@
 }
 else
 {
+    ArgumentNullException.ThrowIfNull(_totalForecastData);
+    ArgumentNullException.ThrowIfNull(_expensesForecastData);
+    ArgumentNullException.ThrowIfNull(_incomeForecastData);
+
     <MudStack Row AlignItems="AlignItems.Center">
         <MudSlider @bind-Value="_days"
                    Min="20" Max="3000"
@@ -166,9 +170,9 @@ else
 {
     private bool _loading;
 
-    private IReadOnlyList<ForecastDto> _incomeForecastData;
-    private IReadOnlyList<ForecastDto> _expensesForecastData;
-    private IReadOnlyList<ForecastDto> _totalForecastData;
+    private IReadOnlyList<ForecastDto>? _incomeForecastData;
+    private IReadOnlyList<ForecastDto>? _expensesForecastData;
+    private IReadOnlyList<ForecastDto>? _totalForecastData;
 
     private ApexChartOptions<ForecastDto> GetOptions() => new()
     {

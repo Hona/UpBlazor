@@ -6,8 +6,13 @@
 @code 
 {
     [CascadingParameter]
-    private Task<AuthenticationState> AuthenticationStateTask { get; set; }
-    
+    private Task<AuthenticationState> AuthenticationStateTask { get; set; } = null!;
+
+    protected override void OnParametersSet()
+    {
+        ArgumentNullException.ThrowIfNull(AuthenticationStateTask);
+    }
+
     protected override async Task OnInitializedAsync()
     {
         var authenticationState = await AuthenticationStateTask;
@@ -19,6 +24,6 @@
             return;
         }
         
-        _navigationManager.NavigateTo("authentication/login");
+        _navigationManager.NavigateTo("/authentication/login");
     }
 }

@@ -41,9 +41,10 @@ builder.Services.AddScoped<ImpersonationMessageHandler>();
 
 builder.Services.AddScoped<string>(x => builder.Configuration["ApiUri"] ?? throw new InvalidOperationException());
 
+// ReSharper disable once InconsistentNaming
 const string ApiClient = nameof(ApiClient);
 builder.Services.AddHttpClient(ApiClient,
-        client => client.BaseAddress = new Uri(builder.Configuration["ApiUri"]))
+        client => client.BaseAddress = new Uri(builder.Configuration["ApiUri"]!))
     .AddHttpMessageHandler(sp =>
         sp.GetRequiredService<AuthorizationMessageHandler>()
             .ConfigureHandler(

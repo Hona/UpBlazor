@@ -30,6 +30,7 @@ jobs:
       with:
         projectFile: "src/UpBlazor.WebApi/UpBlazor.WebApi.csproj"
         outputFolder: "./API"
+        zip: true
 
     - name: Publish UI
       uses: ./.github/actions/template_pack-dotnet

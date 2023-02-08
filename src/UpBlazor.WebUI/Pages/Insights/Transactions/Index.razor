@@ -77,11 +77,10 @@ else
     private IReadOnlyList<AccountResource>? _accounts;
 
     [Parameter]
-    public string AccountId { get; set; } = null!;
+    public string? AccountId { get; set; }
 
     protected override async Task OnParametersSetAsync()
     {
-        ArgumentNullException.ThrowIfNull(AccountId);
         await ReloadAsync();
     }
 

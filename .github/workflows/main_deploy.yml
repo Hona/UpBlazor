@@ -28,7 +28,7 @@ jobs:
     - name: Publish API
       uses: ./.github/actions/template_pack-dotnet
       with:
-        projectFile: "src/UpBlazor.WebAPI/UpBlazor.WebAPI.csproj"
+        projectFile: "src/UpBlazor.WebApi/UpBlazor.WebApi.csproj"
         outputFolder: "./API"
 
     - name: Publish UI

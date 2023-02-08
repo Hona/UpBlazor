@@ -45,6 +45,9 @@ jobs:
         publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_1A26B43F89B34C58ADF4A707F0D8B3E8 }}
         package: "./publish/API.zip"
 
+    - name: Copy Static Web Apps Config
+      run: cp ./publish/UI/staticwebapp.config.json ./publish/UI/wwwroot
+
     - name: Deploy UI
       id: deploy-ui
       uses: Azure/static-web-apps-deploy@v1

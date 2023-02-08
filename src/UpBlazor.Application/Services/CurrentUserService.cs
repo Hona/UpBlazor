@@ -71,12 +71,22 @@ public class CurrentUserService : ICurrentUserService
         {
             var cachedUser = await _registeredUserRepository.GetByIdAsync(ImpersonationUserId, cancellationToken);
 
-            return new List<Claim>
+            var claims = new List<Claim>()
             {
-                new(ClaimTypes.Email, cachedUser.Email),
-                new(ClaimTypes.NameIdentifier, cachedUser.Id),
-                new(ClaimTypes.GivenName, cachedUser.GivenName)
+                new(ClaimTypes.NameIdentifier, cachedUser.Id)
             };
+
+            if (cachedUser.Email is not null)
+            {
+                claims.Add(new(ClaimTypes.Email, cachedUser.Email));
+            }
+
+            if (cachedUser.GivenName is not null)
+            {
+                claims.Add(new(ClaimTypes.GivenName, cachedUser.GivenName));
+            }
+            
+            return claims;
         }
 
         var user = _httpContext.User;

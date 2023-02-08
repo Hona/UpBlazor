@@ -1,0 +1,25 @@
+name: Pack .NET Project
+description: Build and pack a .NET project
+inputs:
+  projectFile:
+    description: "Path to the csproj file"
+    required: true
+
+  outputFolder:
+    description: "Folder path to the output and use as base zip file name"
+    required: true
+  
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+runs:
+  using: "composite"
+  steps:
+
+    - name: Build
+      shell: pwsh
+      run: dotnet build -c Release "${{ inputs.projectFile }}" --no-restore
+
+    - name: Publish
+      if: github.event_name != 'pull_request'
+      shell: pwsh
+      run: dotnet publish --no-build --configuration Release "${{ inputs.projectFile }}" --output "./publish/${{ inputs.outputFolder }}"

@@ -4642,6 +4642,12 @@ namespace UpBlazor.ApiClient
         [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter))]
         public AccountType AccountType { get; set; }
 
+        [System.Text.Json.Serialization.JsonPropertyName("ownershipType")]
+
+        [System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingDefault)]   
+        [System.Text.Json.Serialization.JsonConverter(typeof(System.Text.Json.Serialization.JsonStringEnumConverter))]
+        public OwnershipType OwnershipType { get; set; }
+
         [System.Text.Json.Serialization.JsonPropertyName("balance")]
 
         [System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingDefault)]   
@@ -4663,6 +4669,21 @@ namespace UpBlazor.ApiClient
 
         [System.Runtime.Serialization.EnumMember(Value = @"Transactional")]
         Transactional = 1,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"HOME_LOAN")]
+        HomeLoan = 2,
+
+    }
+
+    [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "13.18.0.0 (NJsonSchema v10.8.0.0 (Newtonsoft.Json v13.0.0.0))")]
+    public enum OwnershipType
+    {
+
+        [System.Runtime.Serialization.EnumMember(Value = @"Individual")]
+        Individual = 0,
+
+        [System.Runtime.Serialization.EnumMember(Value = @"Joint")]
+        Joint = 1,
 
     }
 

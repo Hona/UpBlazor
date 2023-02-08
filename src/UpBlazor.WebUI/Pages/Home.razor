@@ -15,9 +15,16 @@ else
     <MudStack Row Justify="Justify.Center" AlignItems="AlignItems.Center" Class="flex-wrap pt-4">
         @foreach (var transactionAccount in _accounts)
         {
+            var chipName = transactionAccount.Attributes.AccountType.ToString();
+
+            if (transactionAccount.Attributes.OwnershipType is OwnershipType.Joint)
+            {
+                chipName = "2Up " + chipName;
+            }
+            
             <a href='@($"/insights/transactions/{transactionAccount.Id}")'>
                 <MoneyStatistic Title="@transactionAccount.Attributes.DisplayName"
-                                Chip="@transactionAccount.Attributes.AccountType.ToString()"
+                                Chip="@chipName"
                                 ChipColor="@(transactionAccount.Attributes.AccountType == AccountType.Transactional ? Color.Primary : Color.Secondary)"
                                 Amount="@decimal.Parse(transactionAccount.Attributes.Balance.Value)"/>
             </a>

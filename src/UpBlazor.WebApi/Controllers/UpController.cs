@@ -6,6 +6,7 @@ using Up.NET.Api.Accounts;
 using Up.NET.Api.Transactions;
 using Up.NET.Api.Utilities;
 using UpBlazor.Application.Features.Up;
+using UpBlazor.Application.Features.Users;
 using UpBlazor.Application.Services;
 using UpBlazor.Core.Exceptions;
 using UpBlazor.WebApi.ViewModels;
@@ -50,6 +51,8 @@ public class UpController : Controller
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Ping([FromQuery] bool forceReload = false)
     {
+        await _mediator.Send(new RegisterUserCommand());
+        
         var output = await _mediator.Send(new GetUpPingQuery(forceReload));
 
         if (!output.Success)

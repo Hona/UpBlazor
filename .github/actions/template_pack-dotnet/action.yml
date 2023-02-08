@@ -1,0 +1,34 @@
+name: Pack .NET Project
+description: Build and pack a .NET project
+inputs:
+  projectFile:
+    description: "Path to the csproj file"
+    required: true
+
+  outputFolder:
+    description: "Folder path to the output and use as base zip file name"
+    required: true
+
+  zip:
+    description: "Zip the output folder"
+    required: false
+    default: "false"
+  
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+runs:
+  using: "composite"
+  steps:
+
+    - name: Build
+      shell: pwsh
+      run: dotnet build -c Release "${{ inputs.projectFile }}" --no-restore
+
+    - name: Publish
+      shell: pwsh
+      run: dotnet publish --no-build -c Release "${{ inputs.projectFile }}" --output "./publish/${{ inputs.outputFolder }}"
+
+    - name: Zip
+      if: inputs.zip == 'true'
+      shell: pwsh
+      run: Compress-Archive -Path "./publish/${{ inputs.outputFolder }}/*" -DestinationPath "./publish/${{ inputs.outputFolder }}.zip"

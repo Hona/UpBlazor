@@ -32,6 +32,10 @@ public class HttpResponseExceptionFilter : IActionFilter, IOrderedFilter
             {
                 StatusCode = StatusCodes.Status400BadRequest
             },
+            UpApiException e => new ObjectResult(string.Join(Environment.NewLine, e.Errors.Select(x => $"{x.Title}: {x.Detail}")))
+            {
+                StatusCode = (int)e.Errors.First().Status
+            },
             _ => new ObjectResult("An unexpected error occurred.")
             {
                 StatusCode = StatusCodes.Status500InternalServerError

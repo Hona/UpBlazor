@@ -25,7 +25,6 @@ runs:
       run: dotnet build -c Release "${{ inputs.projectFile }}" --no-restore
 
     - name: Publish
-      if: github.event_name != 'pull_request'
       shell: pwsh
       run: dotnet publish --no-build -c Release "${{ inputs.projectFile }}" --output "./publish/${{ inputs.outputFolder }}"
 

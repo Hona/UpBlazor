@@ -44,7 +44,7 @@ jobs:
         app-name: 'upblazor-webapi'
         slot-name: 'Production'
         publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_1A26B43F89B34C58ADF4A707F0D8B3E8 }}
-        package: "./publish/API"
+        package: "./publish/API.zip"
 
     - name: Deploy UI
       id: deploy-ui

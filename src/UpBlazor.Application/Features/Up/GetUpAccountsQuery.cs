@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using Up.NET.Api.Accounts;
+using Up.NET.Models;
 using UpBlazor.Application.Exceptions;
 using UpBlazor.Application.Services;
 
@@ -24,14 +25,22 @@ public class GetUpAccountsQueryHandler : IRequestHandler<GetUpAccountsQuery, IRe
     {
         var upApi = await _currentUserService.GetApiAsync(cancellationToken: cancellationToken);
 
-        var output = await upApi.GetAccountsAsync();
+        var allAccounts = new List<AccountResource>();
 
-        if (!output.Success)
+        UpResponse<PaginatedDataResponse<AccountResource>> response;
+        do
         {
-            throw new UpApiException(output.Errors);
-        }
+            response = await upApi.GetAccountsAsync();
+
+            if (!response.Success)
+            {
+                throw new UpApiException(response.Errors);
+            }
+            
+            allAccounts.AddRange(response.Response.Data);
+        } while (response.Success && response.Response.Links.HasNext);
         
-        var duplicateAccounts = output.Response.Data.GroupBy(x => x.Attributes.DisplayName);
+        var duplicateAccounts = allAccounts.GroupBy(x => x.Attributes.DisplayName);
 
         foreach (var duplicateAccountGrouping in duplicateAccounts)
         {
@@ -49,6 +58,6 @@ public class GetUpAccountsQueryHandler : IRequestHandler<GetUpAccountsQuery, IRe
             }
         }
 
-        return output.Response.Data;
+        return allAccounts;
     }
 }

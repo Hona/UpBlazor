@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using UpBlazor.Core.Models.Enums;
 
 namespace UpBlazor.Core.Helpers
@@ -42,7 +43,7 @@ namespace UpBlazor.Core.Helpers
             // Cycle hasn't started yet
             if (startOfRange > rangeEnd)
             {
-                return null;
+                return Enumerable.Empty<DateOnly>().ToList();
             }
 
             var output = new List<DateOnly>

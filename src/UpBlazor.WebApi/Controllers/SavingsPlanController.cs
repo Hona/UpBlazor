@@ -46,4 +46,14 @@ public class SavingsPlanController : Controller
         
         return Ok(result);
     }
+    
+    [HttpPut("{id:guid}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    public async Task<IActionResult> UpdateSavingsPlan(Guid id, [FromBody] SavingsPlan savingsPlan)
+    {
+        savingsPlan.Id = id;
+        await _mediator.Send(new UpdateSavingsPlanCommand(savingsPlan));
+        
+        return NoContent();
+    }
 }

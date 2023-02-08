@@ -34,6 +34,9 @@ else
 
     [Parameter]
     public bool SelectFirst { get; set; } = true;
+
+    [Parameter]
+    public Guid? InitialIncomeId { get; set; }
     
     private IReadOnlyList<Income>? _incomes;
 
@@ -53,6 +56,17 @@ else
             {
                 await SelectedIncomeChanged.InvokeAsync(selectedIncome);
             }
+        }
+
+        if (InitialIncomeId is not null)
+        {
+            var selectedIncome = _incomes.First(x => x.Id == InitialIncomeId);
+            
+            if (selectedIncome != SelectedIncome)
+            {
+                await SelectedIncomeChanged.InvokeAsync(selectedIncome);
+            }
+            
         }
         
         _loading = false;

@@ -32,6 +32,9 @@ else
     [Parameter]
     public AccountResource? SelectedSaver { get; set; }
     
+    [Parameter]
+    public string? InitialSaverId { get; set; }
+    
 
     private IReadOnlyList<AccountResource>? _accounts;
 
@@ -42,6 +45,16 @@ else
         _loading = true;
 
         _accounts = await _upClient.GetAccountsAsync();
+
+        if (InitialSaverId is not null)
+        {
+            var account = _accounts.FirstOrDefault(x => x.Id == InitialSaverId);
+
+            if (SelectedSaver != account)
+            {
+                await SelectedSaverChanged.InvokeAsync(account);
+            }
+        }
 
         _loading = false;
     }

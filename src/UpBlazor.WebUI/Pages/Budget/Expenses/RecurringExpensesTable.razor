@@ -1,5 +1,6 @@
 ﻿@using MudBlazor
 @using Color = MudBlazor.Color
+@using System.ComponentModel.Design.Serialization
 
 @inject RecurringExpensesClient RecurringExpensesClient
 @inject UpClient UpClient
@@ -9,31 +10,49 @@
 </MudText>
 
 
-<MudDataGrid Items="_recurringExpenses" Loading="_loading">
+<MudDataGrid Items="_recurringExpenses" Loading="_loading" 
+             ReadOnly="false"
+             EditMode="DataGridEditMode.Form"
+             StartedEditingItem="(RecurringExpense expense) => _editSaver = _accounts?.FirstOrDefault(a => a.Id == expense.SaverId)"
+             CommittedItemChanges="async (RecurringExpense expense) => await SaveAsync(expense)"
+             EditTrigger="DataGridEditTrigger.Manual">
     <Columns>
         <MudBlazor.Column T="RecurringExpense" Field="@nameof(RecurringExpense.Name)" CellClass="mud-typography-body1" />
         <MudBlazor.Column T="RecurringExpense" Title="Amount">
             <CellTemplate>
                 <ExactOrRelativeMoneyDisplay Item="context.Item.Money"/>
             </CellTemplate>
+            <EditTemplate>
+                <MoneyInput @bind-Amount="context.Item.Money" Required />
+            </EditTemplate>
         </MudBlazor.Column>
         <MudBlazor.Column T="RecurringExpense" Field="@nameof(RecurringExpense.StartDate)" Title="Start">
             <CellTemplate>
                 <DateDisplay Date="context.Item.StartDate" />
             </CellTemplate>
+            <EditTemplate>
+                <MudDatePicker Date="context.Item.StartDate" DateChanged="date => context.Item.StartDate = date.Value" Label="Start Date" Required/>
+            </EditTemplate>
         </MudBlazor.Column>
         <MudBlazor.Column T="RecurringExpense" Title="From">
             <CellTemplate>
                 <SaverIdColumn SaverId="@context.Item.SaverId" Accounts="_accounts"/>
             </CellTemplate>
+            <EditTemplate>
+                <SaverSelector @bind-SelectedSaver="@_editSaver" Required InitialSaverId="@context.Item.SaverId"/>
+            </EditTemplate>
         </MudBlazor.Column>
         <MudBlazor.Column T="RecurringExpense" Title="Every">
             <CellTemplate>
                 <IntervalDisplay Interval="context.Item.Interval" IntervalUnits="context.Item.IntervalUnits"/>
             </CellTemplate>
+            <EditTemplate>
+                <IntervalFullInput @bind-Interval="context.Item.Interval" @bind-IntervalUnits="context.Item.IntervalUnits"/>
+            </EditTemplate>
         </MudBlazor.Column>
         <MudBlazor.Column T="RecurringExpense">
             <CellTemplate>
+                <MudIconButton Icon="@Icons.Rounded.Edit" OnClick="context.Actions.StartEditingItem"/>
                 <MudIconButton Icon="@Icons.Rounded.Delete" Color="Color.Tertiary" OnClick="async () => await DeleteAsync(context.Item)"/>
             </CellTemplate>
         </MudBlazor.Column>
@@ -51,6 +70,8 @@
 
     private IReadOnlyList<RecurringExpense>? _recurringExpenses;
     private IReadOnlyList<AccountResource>? _accounts;
+
+    private AccountResource? _editSaver;
 
     protected override async Task OnInitializedAsync() => await ReloadAsync();
 
@@ -83,5 +104,11 @@
         _loading = false;
 
         await ReloadAsync();
+    }
+
+    private async Task SaveAsync(RecurringExpense expense)
+    {
+        expense.SaverId = _editSaver.Id;
+        await RecurringExpensesClient.UpdateRecurringExpenseAsync(expense.Id, expense);
     }
 }

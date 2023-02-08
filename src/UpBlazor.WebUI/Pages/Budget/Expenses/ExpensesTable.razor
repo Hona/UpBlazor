@@ -1,5 +1,6 @@
 ﻿@using MudBlazor
 @using Color = MudBlazor.Color
+@using System.ComponentModel.Design.Serialization
 
 @inject ExpensesClient ExpensesClient
 @inject IncomesClient IncomesClient
@@ -9,23 +10,39 @@
     Expenses
 </MudText>
 
-<MudDataGrid Items="_expenses" Loading="_loading" >
+<MudDataGrid Items="_expenses" Loading="_loading" ReadOnly="false" 
+             EditMode="DataGridEditMode.Form" 
+             StartedEditingItem="(Expense expense) => HandleStartedEditingItem(expense)"
+             CommittedItemChanges="async (Expense expense) => await SaveAsync(expense)" 
+             EditTrigger="DataGridEditTrigger.Manual">
     <Columns>
         <MudBlazor.Column T="Expense" Field="@nameof(Expense.Name)" CellClass="mud-typography-body1" />
         <MudBlazor.Column T="Expense" Title="Amount">
             <CellTemplate>
                 <ExactOrRelativeMoneyDisplay Item="context.Item.Money"/>
             </CellTemplate>
+            <EditTemplate>
+                <MoneyInput @bind-Amount="context.Item.Money" Required />
+            </EditTemplate>
         </MudBlazor.Column>
         <MudBlazor.Column T="Expense" Field="@nameof(Expense.PaidByDate)" Title="Paid By">
             <CellTemplate>
                 <DateDisplay Date="context.Item.PaidByDate"/>
             </CellTemplate>
+            <EditTemplate>
+                <MudDatePicker Date="context.Item.PaidByDate" DateChanged="date => context.Item.PaidByDate = date.Value" Label="Paid By" Required/>
+            </EditTemplate>
         </MudBlazor.Column>
         <MudBlazor.Column T="Expense" Title="From Saver">
             <CellTemplate>
                 <SaverIdColumn SaverId="@context.Item.SaverId" Accounts="_accounts"/>
             </CellTemplate>
+            <EditTemplate>
+                @if (_editExpenseSource is not null)
+                {
+                    <ExpenseSourceInput @bind-Value="_editExpenseSource" Required />
+                }
+            </EditTemplate>
         </MudBlazor.Column>
         <MudBlazor.Column T="Expense" Title="From Income">
             <CellTemplate>
@@ -34,6 +51,7 @@
         </MudBlazor.Column>
         <MudBlazor.Column T="Expense" >
             <CellTemplate>
+                <MudIconButton Icon="@Icons.Rounded.Edit" OnClick="context.Actions.StartEditingItem"/>
                 <MudIconButton Icon="@Icons.Rounded.Delete" Color="Color.Tertiary" OnClick="async () => await DeleteAsync(context.Item)"/>
             </CellTemplate>
         </MudBlazor.Column>
@@ -86,4 +104,24 @@
 
         await ReloadAsync();
     }
+
+    private async Task SaveAsync(Expense expense)
+    {
+        expense.SaverId = _editExpenseSource.SaverId;
+        expense.FromIncomeId = _editExpenseSource.IncomeId;
+        
+        await ExpensesClient.UpdateExpenseAsync(expense.Id, expense);
+        _editExpenseSource = null;
+    }
+
+    private void HandleStartedEditingItem(Expense expense)
+    {
+        _editExpenseSource = new ExpenseSourceInput.ExpenseSource
+        {
+            SaverId = expense.SaverId,
+            IncomeId = expense.FromIncomeId
+        };
+    }
+
+    private ExpenseSourceInput.ExpenseSource? _editExpenseSource;
 }

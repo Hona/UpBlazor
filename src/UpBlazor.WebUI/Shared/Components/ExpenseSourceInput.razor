@@ -2,9 +2,9 @@
 @using MudBlazor
 
 <MudStack Row AlignItems="AlignItems.End">
-    <IncomeSelector @bind-SelectedIncome="SelectedIncome" SelectFirst="false" Required="IsRequired()" />
+    <IncomeSelector @bind-SelectedIncome="SelectedIncome" SelectFirst="false" Required="IsRequired()" InitialIncomeId="@Value.IncomeId"/>
     <MudText>or</MudText>
-    <SaverSelector @bind-SelectedSaver="SelectedSaver" Required="IsRequired()" />
+    <SaverSelector @bind-SelectedSaver="SelectedSaver" Required="IsRequired()" InitialSaverId="@Value.SaverId"/>
 </MudStack>
 
 @code

@@ -44,4 +44,14 @@ public class RecurringExpensesController : Controller
         
         return Ok(output);
     }
+    
+    [HttpPut("{id:guid}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    public async Task<IActionResult> UpdateRecurringExpense(Guid id, [FromBody] RecurringExpense expense)
+    {
+        expense.Id = id;
+        await _mediator.Send(new UpdateRecurringExpenseCommand(expense));
+        
+        return NoContent();
+    }
 }

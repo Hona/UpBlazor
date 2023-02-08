@@ -1,5 +1,6 @@
 ﻿@using MudBlazor
 @using Color = MudBlazor.Color
+@using System.ComponentModel.Design.Serialization
 
 @inject IncomesClient IncomesClient
 
@@ -11,7 +12,10 @@
 }
 else
 {
-    <MudDataGrid Items="_incomes">
+    <MudDataGrid Items="_incomes" ReadOnly="false" 
+                 EditMode="DataGridEditMode.Form" 
+                 CommittedItemChanges="async (Income income) => await SaveAsync(income)" 
+                 EditTrigger="DataGridEditTrigger.Manual">
         <Columns>
             <MudBlazor.Column T="Income" Field="@nameof(Income.Name)" CellClass="mud-typography-body1"/>
             <MudBlazor.Column T="Income" Field="@nameof(Income.ExactMoney)" Title="Amount">
@@ -20,19 +24,30 @@ else
                         $@context.Item.ExactMoney.ToString("F2")
                     </MudText>
                 </CellTemplate>
+                <EditTemplate>
+                    <MudNumericField @bind-Value="context.Item.ExactMoney" Label="Amount" Adornment="Adornment.Start" AdornmentText="$" Required Format="F2"/>
+                </EditTemplate>
             </MudBlazor.Column>
             <MudBlazor.Column T="Income" Field="@nameof(Income.StartDate)" Title="Start Date">
                 <CellTemplate>
                     <DateDisplay Date="context.Item.StartDate"/>
                 </CellTemplate>
+                <EditTemplate>
+                    <MudDatePicker Date="context.Item.StartDate" DateChanged="date => context.Item.StartDate = date.Value" Label="Start Date" Required/>
+                </EditTemplate>
             </MudBlazor.Column>
             <MudBlazor.Column T="Income" Title="Paid Every">
                 <CellTemplate>
                     <IntervalDisplay Interval="context.Item.Interval" IntervalUnits="context.Item.IntervalUnits" />
                 </CellTemplate>
+                <EditTemplate>
+                    <MudText Class="pt-4">Paid Every</MudText>
+                    <IntervalFullInput @bind-Interval="context.Item.Interval" @bind-IntervalUnits="context.Item.IntervalUnits"/>
+                </EditTemplate>
             </MudBlazor.Column>
             <MudBlazor.Column T="Income">
                 <CellTemplate>
+                    <MudIconButton Icon="@Icons.Rounded.Edit" OnClick="context.Actions.StartEditingItem"/>
                     <MudIconButton Icon="@Icons.Rounded.Delete" Color="Color.Tertiary" OnClick="async () => await DeleteAsync(context.Item)"/>
                 </CellTemplate>
             </MudBlazor.Column>
@@ -47,8 +62,6 @@ else
 
 @code
 {
-    private Guid _editId = Guid.Empty;
-    
     private bool _loading;
 
     private IReadOnlyList<Income>? _incomes;
@@ -85,16 +98,9 @@ else
         await ReloadAsync();
     }
 
+
     private async Task SaveAsync(Income income)
     {
-        _loading = true;
-
         await IncomesClient.UpdateIncomeAsync(income.Id, income);
-
-        _loading = false;
-        
-        _editId = Guid.Empty;
-
-        await ReloadAsync();
     }
 }

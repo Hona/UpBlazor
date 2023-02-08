@@ -8,21 +8,33 @@
      Income
 </MudText>
 
-<MudDataGrid Items="_savingsPlans" Loading="_loading">
+<MudDataGrid Items="_savingsPlans" Loading="_loading"
+             ReadOnly="false"
+             EditMode="DataGridEditMode.Form"
+             StartedEditingItem="(SavingsPlan savingsPlan) => _editSaver = _accounts?.FirstOrDefault(a => a.Id == savingsPlan.SaverId)"
+             CommittedItemChanges="async (SavingsPlan savingsPlan) => await SaveAsync(savingsPlan)"
+             EditTrigger="DataGridEditTrigger.Manual">
     <Columns>
         <MudBlazor.Column T="SavingsPlan" Field="@nameof(SavingsPlan.Name)" />
         <MudBlazor.Column T="SavingsPlan" Field="@nameof(SavingsPlan.Amount)" Title="Amount">
             <CellTemplate>
                 <ExactOrRelativeMoneyDisplay Item="@context.Item.Amount" />
             </CellTemplate>
+            <EditTemplate>
+                <MoneyInput @bind-Amount="context.Item.Amount" Required />
+            </EditTemplate>
         </MudBlazor.Column>
         <MudBlazor.Column T="SavingsPlan" Field="@nameof(SavingsPlan.SaverId)" Title="To">
             <CellTemplate>
                 <SaverIdColumn SaverId="@context.Item.SaverId" Accounts="_accounts" />
             </CellTemplate>
+            <EditTemplate>
+                <SaverSelector @bind-SelectedSaver="@_editSaver" Required InitialSaverId="@context.Item.SaverId"/>
+            </EditTemplate>
         </MudBlazor.Column>
         <MudBlazor.Column T="SavingsPlan">
             <CellTemplate>
+                <MudIconButton Icon="@Icons.Rounded.Edit" OnClick="context.Actions.StartEditingItem"/>
                 <MudIconButton Icon="@Icons.Rounded.Delete" Color="Color.Tertiary" OnClick="async () => await DeleteAsync(context.Item)"/>
             </CellTemplate>
         </MudBlazor.Column>
@@ -43,6 +55,8 @@
 
     private IReadOnlyList<SavingsPlan>? _savingsPlans;
     private IReadOnlyList<AccountResource>? _accounts;
+    
+    private AccountResource? _editSaver;
 
     protected override async Task OnParametersSetAsync()
     {
@@ -79,5 +93,11 @@
         _loading = false;
 
         await ReloadAsync();
+    }
+
+    private async Task SaveAsync(SavingsPlan savingsPlan)
+    {
+        savingsPlan.SaverId = _editSaver.Id;
+        await SavingsPlanClient.UpdateSavingsPlanAsync(savingsPlan.Id, savingsPlan);
     }
 }

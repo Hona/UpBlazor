@@ -44,4 +44,14 @@ public class ExpensesController : Controller
 
         return Ok(output);
     }
+    
+    [HttpPut("{id:guid}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    public async Task<IActionResult> UpdateExpense(Guid id, [FromBody] Expense expense)
+    {
+        expense.Id = id;
+        await _mediator.Send(new UpdateExpenseCommand(expense));
+
+        return NoContent();
+    }
 }

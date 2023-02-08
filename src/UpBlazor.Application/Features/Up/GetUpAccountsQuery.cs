@@ -27,18 +27,26 @@ public class GetUpAccountsQueryHandler : IRequestHandler<GetUpAccountsQuery, IRe
 
         var allAccounts = new List<AccountResource>();
 
-        UpResponse<PaginatedDataResponse<AccountResource>> response;
-        do
+        var response = await upApi.GetAccountsAsync();
+        
+        if (!response.Success)
         {
-            response = await upApi.GetAccountsAsync();
+            throw new UpApiException(response.Errors);
+        }
 
+        allAccounts.AddRange(response.Response.Data);
+        
+        while (response.Success && response.Response.Links.HasNext)
+        {
+            response = await response.Response.GetNextPageAsync();
+            
             if (!response.Success)
             {
                 throw new UpApiException(response.Errors);
             }
-            
+
             allAccounts.AddRange(response.Response.Data);
-        } while (response.Success && response.Response.Links.HasNext);
+        }
         
         var duplicateAccounts = allAccounts.GroupBy(x => x.Attributes.DisplayName);
 

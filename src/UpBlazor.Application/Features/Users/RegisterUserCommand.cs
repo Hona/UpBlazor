@@ -34,8 +34,8 @@ public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommand>
         var registeredUser = new RegisteredUser
         {
             Id = await _currentUserService.GetUserIdAsync(cancellationToken),
-            Email = claims.FirstOrDefault(x => x.Type == "email").Value,
-            GivenName = claims.FirstOrDefault(x => x.Type == "given_name").Value
+            Email = claims.FirstOrDefault(x => x.Type == "email")?.Value,
+            GivenName = claims.FirstOrDefault(x => x.Type == "given_name")?.Value
         };
 
         await _registeredUserRepository.AddOrUpdateAsync(registeredUser, cancellationToken);

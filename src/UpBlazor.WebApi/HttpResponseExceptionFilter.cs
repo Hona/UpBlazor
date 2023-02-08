@@ -28,15 +28,25 @@ public class HttpResponseExceptionFilter : IActionFilter, IOrderedFilter
             {
                 StatusCode = StatusCodes.Status403Forbidden
             },
-            BadRequestException e => new ObjectResult(e.Message)
+            BadRequestException e => new ObjectResult(new ProblemDetails()
+            {
+                Title = e.Message
+            })
             {
                 StatusCode = StatusCodes.Status400BadRequest
             },
-            UpApiException e => new ObjectResult(string.Join(Environment.NewLine, e.Errors.Select(x => $"{x.Title}: {x.Detail}")))
+            UpApiException e => new ObjectResult(new ProblemDetails()
             {
-                StatusCode = (int)e.Errors.First().Status
+                Title = "An Up API error occurred.",
+                Detail = string.Join(Environment.NewLine, e.Errors.Select(x => $"{x.Title}: {x.Detail}"))
+            })
+            {
+                StatusCode = StatusCodes.Status500InternalServerError
             },
-            _ => new ObjectResult("An unexpected error occurred.")
+            _ => new ObjectResult(new ProblemDetails
+            {
+                Title = "An unexpected error occurred."
+            })
             {
                 StatusCode = StatusCodes.Status500InternalServerError
             }

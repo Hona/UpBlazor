@@ -60,6 +60,13 @@ else
         <MudText Typo="Typo.subtitle1">
             Want to try it out? Use 'up:demo'
         </MudText>
+        
+        @if (_errorMessage is not null)
+        {
+            <MudAlert Severity="Severity.Error" Class="mt-4">
+                @_errorMessage
+            </MudAlert>
+        }
     </MudCardContent>
     <MudCardActions>
         <MudButton Color="Color.Primary" Variant="Variant.Filled" DisableElevation OnClick="OnFinishAsync">
@@ -73,6 +80,8 @@ else
 
 @code
 {
+
+    private string? _errorMessage;
     private bool _loading;
     private bool _formLoading;
 
@@ -111,8 +120,9 @@ else
             // Success
             _setAccessToken.Value = string.Empty;
         }
-        catch
+        catch (ApiException<ProblemDetails> e)
         {
+            _errorMessage = $"{e.Result.Title}: {e.Result.Detail}";
             _setAccessToken.Value = string.Empty;
 
             _formLoading = false;

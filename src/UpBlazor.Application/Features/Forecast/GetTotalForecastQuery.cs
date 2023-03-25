@@ -5,14 +5,14 @@ using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using Up.NET.Api.Accounts;
+using UpBlazor.Application.Common.Services;
 using UpBlazor.Application.Features.Expenses;
 using UpBlazor.Application.Features.Incomes;
 using UpBlazor.Application.Features.Planner;
 using UpBlazor.Application.Features.RecurringExpenses;
 using UpBlazor.Application.Features.Up;
-using UpBlazor.Application.Services;
-using UpBlazor.Domain.Models;
-using UpBlazor.Domain.Repositories;
+using UpBlazor.Application.Repositories;
+using UpBlazor.Domain.Entities;
 
 namespace UpBlazor.Application.Features.Forecast;
 

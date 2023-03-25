@@ -2,8 +2,8 @@
 using System.Threading.Tasks;
 using MediatR;
 using UpBlazor.Application.Features.Expenses;
-using UpBlazor.Domain.Models;
-using UpBlazor.Domain.Repositories;
+using UpBlazor.Application.Repositories;
+using UpBlazor.Domain.Entities;
 
 namespace UpBlazor.Application.Features.SavingsPlans;
 

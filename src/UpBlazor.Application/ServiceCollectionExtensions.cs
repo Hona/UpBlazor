@@ -1,8 +1,9 @@
 ﻿using MediatR;
 using Microsoft.Extensions.DependencyInjection;
+using UpBlazor.Application.Common.Behaviours;
+using UpBlazor.Application.Common.Services;
 using UpBlazor.Application.Features.Forecast;
 using UpBlazor.Application.Features.Notifications;
-using UpBlazor.Application.Services;
 
 namespace UpBlazor.Application;
 

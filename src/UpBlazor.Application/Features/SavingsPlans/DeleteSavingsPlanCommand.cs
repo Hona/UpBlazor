@@ -1,11 +1,12 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
-using UpBlazor.Domain.Repositories;
+using UpBlazor.Application.Repositories;
+using UpBlazor.Domain.Entities;
 
 namespace UpBlazor.Application.Features.SavingsPlans;
 
-public record DeleteSavingsPlanCommand(Domain.Models.SavingsPlan SavingsPlan) : IRequest;
+public record DeleteSavingsPlanCommand(SavingsPlan SavingsPlan) : IRequest;
 
 public class DeleteSavingsPlanCommandHandler : IRequestHandler<DeleteSavingsPlanCommand>
 {

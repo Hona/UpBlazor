@@ -5,8 +5,8 @@ using System.Threading.Tasks;
 using MediatR;
 using Up.NET.Api.Accounts;
 using Up.NET.Models;
+using UpBlazor.Application.Common.Services;
 using UpBlazor.Application.Exceptions;
-using UpBlazor.Application.Services;
 
 namespace UpBlazor.Application.Features.Up;
 

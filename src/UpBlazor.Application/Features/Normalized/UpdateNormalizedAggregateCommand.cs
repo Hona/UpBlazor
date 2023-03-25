@@ -1,7 +1,7 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
-using UpBlazor.Application.Services;
+using UpBlazor.Application.Common.Services;
 
 namespace UpBlazor.Application.Features.Normalized;
 

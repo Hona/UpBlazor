@@ -5,10 +5,10 @@ using Microsoft.AspNetCore.Mvc;
 using Up.NET.Api.Accounts;
 using Up.NET.Api.Transactions;
 using Up.NET.Api.Utilities;
+using UpBlazor.Application.Common.Services;
 using UpBlazor.Application.Features.Up;
 using UpBlazor.Application.Features.Users;
-using UpBlazor.Application.Services;
-using UpBlazor.Domain.Exceptions;
+using UpBlazor.Domain.Common.Exceptions;
 using UpBlazor.WebApi.ViewModels;
 
 namespace UpBlazor.WebApi.Controllers;

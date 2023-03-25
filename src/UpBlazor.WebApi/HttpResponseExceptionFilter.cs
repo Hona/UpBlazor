@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using UpBlazor.Application.Exceptions;
-using UpBlazor.Domain.Exceptions;
+using UpBlazor.Domain.Common.Exceptions;
 
 namespace UpBlazor.WebApi;
 

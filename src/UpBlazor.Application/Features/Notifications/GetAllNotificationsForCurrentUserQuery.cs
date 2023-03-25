@@ -3,9 +3,9 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
-using UpBlazor.Application.Services;
-using UpBlazor.Domain.Models;
-using UpBlazor.Domain.Repositories;
+using UpBlazor.Application.Common.Services;
+using UpBlazor.Application.Repositories;
+using UpBlazor.Domain.Entities;
 
 namespace UpBlazor.Application.Features.Notifications;
 

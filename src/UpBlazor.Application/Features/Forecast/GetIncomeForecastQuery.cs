@@ -5,10 +5,10 @@ using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
-using UpBlazor.Application.Services;
-using UpBlazor.Domain.Helpers;
-using UpBlazor.Domain.Models;
-using UpBlazor.Domain.Repositories;
+using UpBlazor.Application.Common.Helpers;
+using UpBlazor.Application.Common.Services;
+using UpBlazor.Application.Repositories;
+using UpBlazor.Domain.Entities;
 
 namespace UpBlazor.Application.Features.Forecast;
 

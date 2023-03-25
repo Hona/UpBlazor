@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using UpBlazor.Application.Features.Notifications;
-using UpBlazor.Domain.Models;
+using UpBlazor.Domain.Entities;
 
 namespace UpBlazor.WebApi.Controllers;
 

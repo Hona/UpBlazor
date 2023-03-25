@@ -88,7 +88,7 @@
 
 This project follows a simplistic take on Clean Architecture.
 
-#### UpBlazor.Core
+#### UpBlazor.Domain
 
 * Contains the core models that are stored in the database/not dependent on anything
 * Repository interfaces to abstract the infrastructure layer

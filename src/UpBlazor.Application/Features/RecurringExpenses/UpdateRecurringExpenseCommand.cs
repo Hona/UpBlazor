@@ -1,8 +1,8 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
-using UpBlazor.Core.Models;
-using UpBlazor.Core.Repositories;
+using UpBlazor.Domain.Models;
+using UpBlazor.Domain.Repositories;
 
 namespace UpBlazor.Application.Features.RecurringExpenses;
 

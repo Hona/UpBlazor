@@ -8,8 +8,8 @@ using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Http;
 using Up.NET.Api;
 using UpBlazor.Application.Exceptions;
-using UpBlazor.Core.Models.Mock;
-using UpBlazor.Core.Repositories;
+using UpBlazor.Domain.Models.Mock;
+using UpBlazor.Domain.Repositories;
 
 namespace UpBlazor.Application.Services;
 

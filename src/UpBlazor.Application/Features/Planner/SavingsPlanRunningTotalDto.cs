@@ -1,4 +1,4 @@
-﻿using UpBlazor.Core.Models;
+﻿using UpBlazor.Domain.Models;
 
 namespace UpBlazor.Application.Features.Planner
 {

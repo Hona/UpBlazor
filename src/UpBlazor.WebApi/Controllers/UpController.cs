@@ -8,7 +8,7 @@ using Up.NET.Api.Utilities;
 using UpBlazor.Application.Features.Up;
 using UpBlazor.Application.Features.Users;
 using UpBlazor.Application.Services;
-using UpBlazor.Core.Exceptions;
+using UpBlazor.Domain.Exceptions;
 using UpBlazor.WebApi.ViewModels;
 
 namespace UpBlazor.WebApi.Controllers;

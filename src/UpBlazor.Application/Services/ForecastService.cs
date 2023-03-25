@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using MediatR;
 using UpBlazor.Application.Features.Incomes;
 using UpBlazor.Application.Features.RecurringExpenses;
-using UpBlazor.Core.Helpers;
+using UpBlazor.Domain.Helpers;
 
 namespace UpBlazor.Application.Services;
 

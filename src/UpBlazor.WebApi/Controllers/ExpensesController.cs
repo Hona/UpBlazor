@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using UpBlazor.Application.Features.Expenses;
-using UpBlazor.Core.Models;
+using UpBlazor.Domain.Models;
 
 namespace UpBlazor.WebApi.Controllers;
 

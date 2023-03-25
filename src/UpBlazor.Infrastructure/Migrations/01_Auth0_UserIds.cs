@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using System;
 using Marten;
-using UpBlazor.Core.Models;
+using UpBlazor.Domain.Models;
 using UpBlazor.Infrastructure.Migrations.Core;
 
 namespace UpBlazor.Infrastructure.Migrations;

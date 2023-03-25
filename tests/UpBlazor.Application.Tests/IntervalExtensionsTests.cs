@@ -1,6 +1,6 @@
 ﻿using FluentAssertions;
-using UpBlazor.Core.Helpers;
-using UpBlazor.Core.Models.Enums;
+using UpBlazor.Domain.Helpers;
+using UpBlazor.Domain.Models.Enums;
 
 namespace UpBlazor.Application.Tests;
 

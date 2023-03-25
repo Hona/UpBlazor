@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using UpBlazor.Core.Models;
+using UpBlazor.Domain.Models;
 
 namespace UpBlazor.Application.Services;
 

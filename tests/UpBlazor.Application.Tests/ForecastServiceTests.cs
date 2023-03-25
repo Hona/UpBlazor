@@ -3,8 +3,8 @@ using MediatR;
 using Moq;
 using UpBlazor.Application.Features.RecurringExpenses;
 using UpBlazor.Application.Services;
-using UpBlazor.Core.Models;
-using UpBlazor.Core.Models.Enums;
+using UpBlazor.Domain.Models;
+using UpBlazor.Domain.Models.Enums;
 
 namespace UpBlazor.Application.Tests;
 

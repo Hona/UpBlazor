@@ -4,8 +4,8 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Marten;
-using UpBlazor.Core.Models;
-using UpBlazor.Core.Repositories;
+using UpBlazor.Domain.Models;
+using UpBlazor.Domain.Repositories;
 
 namespace UpBlazor.Infrastructure.Repositories
 {

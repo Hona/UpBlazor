@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using UpBlazor.Core.Helpers;
-using UpBlazor.Core.Models;
-using UpBlazor.Core.Models.Normalized;
-using UpBlazor.Core.Repositories;
+using UpBlazor.Domain.Helpers;
+using UpBlazor.Domain.Models;
+using UpBlazor.Domain.Models.Normalized;
+using UpBlazor.Domain.Repositories;
 
 namespace UpBlazor.Application.Services
 {

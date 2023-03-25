@@ -3,8 +3,8 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
-using UpBlazor.Core.Models.Mock;
-using UpBlazor.Core.Repositories;
+using UpBlazor.Domain.Models.Mock;
+using UpBlazor.Domain.Repositories;
 
 namespace UpBlazor.Application.Features.Users;
 

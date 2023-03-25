@@ -11,8 +11,8 @@ using UpBlazor.Application.Features.Planner;
 using UpBlazor.Application.Features.RecurringExpenses;
 using UpBlazor.Application.Features.Up;
 using UpBlazor.Application.Services;
-using UpBlazor.Core.Models;
-using UpBlazor.Core.Repositories;
+using UpBlazor.Domain.Models;
+using UpBlazor.Domain.Repositories;
 
 namespace UpBlazor.Application.Features.Forecast;
 

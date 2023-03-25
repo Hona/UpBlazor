@@ -2,8 +2,8 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using UpBlazor.Application.Features.SavingsPlans;
-using UpBlazor.Core.Exceptions;
-using UpBlazor.Core.Models;
+using UpBlazor.Domain.Exceptions;
+using UpBlazor.Domain.Models;
 
 namespace UpBlazor.WebApi.Controllers;
 

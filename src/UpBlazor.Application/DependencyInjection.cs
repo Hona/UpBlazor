@@ -7,7 +7,7 @@ using UpBlazor.Application.Features.Notifications;
 
 namespace UpBlazor.Application;
 
-public static class ServiceCollectionExtensions
+public static class DependencyInjection
 {
     public static void AddApplication(this IServiceCollection services)
     {

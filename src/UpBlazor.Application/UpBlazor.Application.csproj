@@ -12,7 +12,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\UpBlazor.Core\UpBlazor.Core.csproj" />
+      <ProjectReference Include="..\UpBlazor.Domain\UpBlazor.Domain.csproj" />
     </ItemGroup>
 
 </Project>

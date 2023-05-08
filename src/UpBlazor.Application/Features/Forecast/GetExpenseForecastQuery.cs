@@ -8,11 +8,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Xml.Schema;
 using MediatR;
-using UpBlazor.Application.Services;
-using UpBlazor.Core.Helpers;
-using UpBlazor.Core.Models;
-using UpBlazor.Core.Models.Enums;
-using UpBlazor.Core.Repositories;
+using UpBlazor.Application.Common.Helpers;
+using UpBlazor.Application.Common.Services;
+using UpBlazor.Application.Repositories;
 
 namespace UpBlazor.Application.Features.Forecast;
 

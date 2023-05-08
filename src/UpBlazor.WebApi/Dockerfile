@@ -7,7 +7,7 @@ FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /src
 COPY ["src/UpBlazor.WebApi/UpBlazor.WebApi.csproj", "UpBlazor.WebApi/"]
 COPY ["src/UpBlazor.Application/UpBlazor.Application.csproj", "UpBlazor.Application/"]
-COPY ["src/UpBlazor.Core/UpBlazor.Core.csproj", "UpBlazor.Core/"]
+COPY ["src/UpBlazor.Domain/UpBlazor.Domain.csproj", "UpBlazor.Domain/"]
 COPY ["src/UpBlazor.Infrastructure/UpBlazor.Infrastructure.csproj", "UpBlazor.Infrastructure/"]
 RUN dotnet restore "UpBlazor.WebApi/UpBlazor.WebApi.csproj"
 COPY . .

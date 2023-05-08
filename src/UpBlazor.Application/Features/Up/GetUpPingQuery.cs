@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using MediatR;
 using Up.NET.Api.Utilities;
 using Up.NET.Models;
-using UpBlazor.Application.Services;
+using UpBlazor.Application.Common.Services;
 
 namespace UpBlazor.Application.Features.Up;
 

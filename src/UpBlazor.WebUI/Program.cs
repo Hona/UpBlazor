@@ -41,7 +41,7 @@ builder.Services.AddScoped<ImpersonationMessageHandler>();
 
 builder.Services.AddScoped<string>(x => builder.Configuration["ApiUri"] ?? throw new InvalidOperationException());
 
-// ReSharper disable once InconsistentNaming
+// Add a custom handler to attach JWT & impersonation headers to the API
 const string ApiClient = nameof(ApiClient);
 builder.Services.AddHttpClient(ApiClient,
         client => client.BaseAddress = new Uri(builder.Configuration["ApiUri"]!))
@@ -52,15 +52,7 @@ builder.Services.AddHttpClient(ApiClient,
             )
     ).AddHttpMessageHandler<ImpersonationMessageHandler>();
 
-builder.Services.AddHttpClient<ExpensesClient>(ApiClient);
-builder.Services.AddHttpClient<ForecastClient>(ApiClient);
-builder.Services.AddHttpClient<IncomesClient>(ApiClient);
-builder.Services.AddHttpClient<NormalizedClient>(ApiClient);
-builder.Services.AddHttpClient<NotificationsClient>(ApiClient);
-builder.Services.AddHttpClient<UpClient>(ApiClient);
-builder.Services.AddHttpClient<PlannerClient>(ApiClient);
-builder.Services.AddHttpClient<UsersClient>(ApiClient);
-builder.Services.AddHttpClient<RecurringExpensesClient>(ApiClient);
-builder.Services.AddHttpClient<SavingsPlanClient>(ApiClient);
+
+builder.Services.AddApiClients(ApiClient);
 
 await builder.Build().RunAsync();

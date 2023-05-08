@@ -2,7 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Marten;
-using UpBlazor.Core.Repositories;
+using UpBlazor.Application.Repositories;
 
 namespace UpBlazor.Infrastructure.Repositories
 {

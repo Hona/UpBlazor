@@ -2,7 +2,8 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using UpBlazor.Application.Features.Normalized;
-using UpBlazor.Core.Models;
+using UpBlazor.Domain.Entities;
+using UpBlazor.Domain.Entities.Normalized;
 
 namespace UpBlazor.WebApi.Controllers;
 

@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Marten;
-using UpBlazor.Core.Models;
-using UpBlazor.Core.Repositories;
+using UpBlazor.Application.Repositories;
+using UpBlazor.Domain.Entities;
 
 namespace UpBlazor.Infrastructure.Repositories;
 

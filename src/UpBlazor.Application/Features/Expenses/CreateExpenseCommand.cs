@@ -2,9 +2,10 @@
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
-using UpBlazor.Application.Services;
-using UpBlazor.Core.Models;
-using UpBlazor.Core.Repositories;
+using UpBlazor.Application.Common.Services;
+using UpBlazor.Application.Repositories;
+using UpBlazor.Domain.Common.Models;
+using UpBlazor.Domain.Entities;
 
 namespace UpBlazor.Application.Features.Expenses;
 

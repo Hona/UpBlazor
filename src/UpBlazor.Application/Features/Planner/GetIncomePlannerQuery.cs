@@ -5,12 +5,13 @@ using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using Up.NET.Api.Accounts;
+using UpBlazor.Application.Common.Services;
 using UpBlazor.Application.Features.Up;
-using UpBlazor.Application.Services;
-using UpBlazor.Core.Exceptions;
-using UpBlazor.Core.Models;
-using UpBlazor.Core.Models.Enums;
-using UpBlazor.Core.Repositories;
+using UpBlazor.Application.Repositories;
+using UpBlazor.Domain.Common.Exceptions;
+using UpBlazor.Domain.Entities;
+using UpBlazor.Domain.Entities.Enums;
+using UpBlazor.Domain.Entities.Normalized;
 
 namespace UpBlazor.Application.Features.Planner;
 

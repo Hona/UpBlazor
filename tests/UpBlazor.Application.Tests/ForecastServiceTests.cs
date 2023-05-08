@@ -1,10 +1,11 @@
 ﻿using FluentAssertions;
 using MediatR;
 using Moq;
+using UpBlazor.Application.Common.Services;
 using UpBlazor.Application.Features.RecurringExpenses;
-using UpBlazor.Application.Services;
-using UpBlazor.Core.Models;
-using UpBlazor.Core.Models.Enums;
+using UpBlazor.Domain.Common.Models;
+using UpBlazor.Domain.Entities;
+using UpBlazor.Domain.Entities.Enums;
 
 namespace UpBlazor.Application.Tests;
 

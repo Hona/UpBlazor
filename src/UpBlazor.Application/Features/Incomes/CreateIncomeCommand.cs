@@ -2,10 +2,10 @@
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
-using UpBlazor.Application.Services;
-using UpBlazor.Core.Models;
-using UpBlazor.Core.Models.Enums;
-using UpBlazor.Core.Repositories;
+using UpBlazor.Application.Common.Services;
+using UpBlazor.Application.Repositories;
+using UpBlazor.Domain.Entities;
+using UpBlazor.Domain.Entities.Enums;
 
 namespace UpBlazor.Application.Features.Incomes;
 

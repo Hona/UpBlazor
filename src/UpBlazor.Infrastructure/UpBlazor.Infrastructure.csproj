@@ -3,13 +3,13 @@
     <PropertyGroup>
         <TargetFramework>net7.0</TargetFramework>
     </PropertyGroup>
-
-    <ItemGroup>
-      <ProjectReference Include="..\UpBlazor.Core\UpBlazor.Core.csproj" />
-    </ItemGroup>
-
+    
     <ItemGroup>
       <PackageReference Include="Marten" Version="5.11.0" />
+    </ItemGroup>
+    
+    <ItemGroup>
+      <ProjectReference Include="..\UpBlazor.Application\UpBlazor.Application.csproj" />
     </ItemGroup>
 
 </Project>

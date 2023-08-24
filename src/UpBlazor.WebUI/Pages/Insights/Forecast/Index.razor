@@ -113,7 +113,7 @@ else
                         <ApexPointSeries TItem="ForecastDto"
                                          Items="_incomeForecastData.Where(x => x.AccountName == incomeName)"
                                          Name="@incomeName"
-                                         XValue="@(x => DateTime.ParseExact(x.Cycle, "dd/MM/yyyy", CultureInfo.InvariantCulture))"
+                                         XValue="@GetXValue()"
                                          YValue="x => x.Balance"/>
                     }
 
@@ -134,7 +134,7 @@ else
                         <ApexPointSeries TItem="ForecastDto"
                                          Items="@_expensesForecastData.Where(x => x.AccountName == incomeName)"
                                          Name="@incomeName"
-                                         XValue="@(x => DateTime.ParseExact(x.Cycle, "dd/MM/yyyy", CultureInfo.InvariantCulture))"
+                                         XValue="@GetXValue()"
                                          YValue="x => x.Balance"/>
                     }
 
@@ -155,9 +155,7 @@ else
                         <ApexPointSeries TItem="ForecastDto"
                                          Items="@_totalForecastData.Where(x => x.AccountName == incomeName)"
                                          Name="@incomeName"
-                                         XValue="@(x => 
-                                                 { 
-                                                     var date = DateOnly.ParseExact(x.Cycle, "dd/MM/yyyy", CultureInfo.InvariantCulture); return date.AddDays(1); })"
+                                         XValue="@GetXValue()"
                                          YValue="x => x.Balance"/>
                     }
 
@@ -175,6 +173,10 @@ else
     private IReadOnlyList<ForecastDto>? _incomeForecastData;
     private IReadOnlyList<ForecastDto>? _expensesForecastData;
     private IReadOnlyList<ForecastDto>? _totalForecastData;
+    
+    private Func<ForecastDto, object> GetXValue() => 
+        x => DateTime.ParseExact(x.Cycle, "dd/MM/yyyy", CultureInfo.InvariantCulture)
+            .AddDays(1);
 
     private ApexChartOptions<ForecastDto> GetOptions() => new()
     {

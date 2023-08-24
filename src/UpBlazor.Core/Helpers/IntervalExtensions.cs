@@ -13,6 +13,7 @@ namespace UpBlazor.Core.Helpers
                 Interval.Days => TimeSpan.FromDays(units),
                 Interval.Weeks => TimeSpan.FromDays(units * 7),
                 Interval.Fortnights => TimeSpan.FromDays(units * 14),
+                Interval.Monthly => TimeSpan.FromDays(units * 30.437), // https://www.britannica.com/science/time/Lengths-of-years-and-months),
                 _ => throw new ArgumentOutOfRangeException(nameof(interval), interval, null)
             };
 
@@ -36,6 +37,29 @@ namespace UpBlazor.Core.Helpers
             return currentCycle;
         }
 
+        private static List<DateOnly> GetAllCyclesInMonthlyRange(this DateTime start, DateTime rangeStart,
+            DateTime rangeEnd, int units)
+        {
+            var dayOfMonth = start.Day;
+    
+            var output = new List<DateOnly>();
+
+            var potentialHit = new DateTime(start.Year, start.Month, dayOfMonth);
+
+            while (potentialHit <= rangeEnd)
+            {
+                if (potentialHit >= rangeStart)
+                {
+                    output.Add(DateOnly.FromDateTime(potentialHit));
+                }
+        
+                // Increment by the number of months specified in units
+                potentialHit = potentialHit.AddMonths(units);
+            }
+
+            return output;
+        }
+
         public static List<DateOnly> GetAllCyclesInRange(this DateTime start, DateTime rangeStart, DateTime rangeEnd, Interval interval, int units)
         {
             var startOfRange = start.FindFirstCycle(interval, units, rangeStart);
@@ -44,6 +68,11 @@ namespace UpBlazor.Core.Helpers
             if (startOfRange > rangeEnd)
             {
                 return Enumerable.Empty<DateOnly>().ToList();
+            }
+            
+            if (interval is Interval.Monthly)
+            {
+                return GetAllCyclesInMonthlyRange(start, rangeStart, rangeEnd, units);
             }
 
             var output = new List<DateOnly>

@@ -117,7 +117,13 @@ public class GetExpenseForecastQueryHandler : IRequestHandler<GetExpenseForecast
             {
                 if (expense.FromIncomeId is not null)
                 {
-                    var income = incomeCycleRanges.Keys.First(x => x == expense.FromIncomeId.Value);
+                    var income = incomeCycleRanges.Keys.FirstOrDefault(x => x == expense.FromIncomeId.Value);
+
+                    if (income == default)
+                    {
+                        // TODO: log this or delette the record
+                        continue;
+                    }
                     
                     var cycleCollision = incomeCycleRanges[income]
                         .FirstOrDefault(x => x == currentDay);

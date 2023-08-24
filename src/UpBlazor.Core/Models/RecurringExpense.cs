@@ -23,48 +23,5 @@ namespace UpBlazor.Core.Models
             get => FromSaverId;
             set => FromSaverId = value;
         }
-        
-        public bool FallsOn(DateTime dateTime, DateTime startDate, out int totalCyclesSinceStart)
-        {
-            var date = dateTime.Date;
-            
-            if (date < startDate)
-            {
-                totalCyclesSinceStart = default;
-                return false;
-            }
-
-            if (date == startDate)
-            {
-                totalCyclesSinceStart = 0;
-                return true;
-            }
-
-            var loopDate = startDate.Date;
-
-            totalCyclesSinceStart = 0;
-            
-            do
-            {
-                totalCyclesSinceStart++;
-                var toAdd = Interval switch
-                {
-                    Interval.Days => TimeSpan.FromDays(IntervalUnits),
-                    Interval.Fortnights => TimeSpan.FromDays(IntervalUnits * 14),
-                    Interval.Weeks => TimeSpan.FromDays(7),
-                    _ => throw new ArgumentOutOfRangeException()
-                };
-
-                loopDate = loopDate.Add(toAdd);
-
-                if (loopDate.Date == date.Date)
-                {
-                    return true;
-                }
-            } while (loopDate < date);
-
-            return false;
-        }
-
     }
 }

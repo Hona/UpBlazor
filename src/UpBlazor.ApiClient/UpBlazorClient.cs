@@ -4398,6 +4398,9 @@ namespace UpBlazor.ApiClient
         [System.Runtime.Serialization.EnumMember(Value = @"Fortnights")]
         Fortnights = 2,
 
+        [System.Runtime.Serialization.EnumMember(Value = @"Monthly")]
+        Monthly = 3,
+
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "13.18.0.0 (NJsonSchema v10.8.0.0 (Newtonsoft.Json v13.0.0.0))")]

@@ -155,7 +155,9 @@ else
                         <ApexPointSeries TItem="ForecastDto"
                                          Items="@_totalForecastData.Where(x => x.AccountName == incomeName)"
                                          Name="@incomeName"
-                                         XValue="@(x => DateTime.ParseExact(x.Cycle, "dd/MM/yyyy", CultureInfo.InvariantCulture))"
+                                         XValue="@(x => 
+                                                 { 
+                                                     var date = DateOnly.ParseExact(x.Cycle, "dd/MM/yyyy", CultureInfo.InvariantCulture); return date.AddDays(1); })"
                                          YValue="x => x.Balance"/>
                     }
 
@@ -196,6 +198,7 @@ else
         Xaxis = new XAxis()
         {
             Type = XAxisType.Datetime,
+            TickPlacement = TickPlacement.On,
         },
         Yaxis = new List<YAxis>()
         {

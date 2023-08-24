@@ -183,9 +183,10 @@ public class GetIncomePlannerQueryHandler : IRequestHandler<GetIncomePlannerQuer
 
             var proRataAmount = recurringExpense.Amount * income.IntervalUnits * income.Interval switch
             {
-                Interval.Days => 1,
-                Interval.Weeks => 7,
-                Interval.Fortnights => 14,
+                Interval.Days => 1M,
+                Interval.Weeks => 7M,
+                Interval.Fortnights => 14M,
+                Interval.Monthly => 30.437M, // https://www.britannica.com/science/time/Lengths-of-years-and-months
                 _ => throw new ArgumentOutOfRangeException()
             };
 

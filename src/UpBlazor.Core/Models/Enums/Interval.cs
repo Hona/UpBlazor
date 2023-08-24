@@ -4,6 +4,7 @@
     {
         Days,
         Weeks,
-        Fortnights
+        Fortnights,
+        Monthly
     }
 }
